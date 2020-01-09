@@ -1,62 +1,44 @@
 import 'package:flutter/material.dart';
 
-void main() => runApp(MyApp());
+final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
+
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primaryColor: Colors.blue.shade900,
+        backgroundColor: Colors.red.shade900,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'orfewi fhuipos hvioehgf9puehfgpiorh gf9srhb fgerhfu9oehroi gufsehfuesouifghe roiugf',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.display1,
-            ),
-          ],
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(title: Text('A P P  B A R')),
+        body: Container(
+          color: Colors.red.shade900,
+          child: Column(
+            children: <Widget>[
+              Center(
+                child: Text(
+                  'Hello Wolrd',
+                  style: TextStyle(color: Colors.green, fontSize: 40.0),
+                ),
+              ),
+              Center(
+                child: FlatButton(
+                  onPressed: () {},
+                  child: Text(
+                    'Hello Wolrd',
+                    style: TextStyle(color: Colors.green, fontSize: 40.0),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }
