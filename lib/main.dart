@@ -6,36 +6,49 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  createState() => MyAppState();
+}
+
+class MyAppState extends State<MyApp> {
+  int foo = 0;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
         primaryColor: Colors.blue.shade900,
-        backgroundColor: Colors.red.shade900,
+        backgroundColor: Colors.grey.shade200,
       ),
       debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(title: Text('A P P  B A R')),
         body: Container(
-          color: Colors.red.shade900,
-          child: Column(
+          color: Colors.grey.shade200,
+          child: Row(
             children: <Widget>[
+              Spacer(),
               Center(
                 child: Text(
                   'Hello Wolrd',
                   style: TextStyle(color: Colors.green, fontSize: 40.0),
                 ),
               ),
+              Spacer(),
               Center(
-                child: FlatButton(
-                  onPressed: () {},
+                child: RaisedButton(
+                  onPressed: () {
+                    setState(() {
+                      foo++;
+                    });
+                  },
                   child: Text(
-                    'Hello Wolrd',
+                    '$foo',
                     style: TextStyle(color: Colors.green, fontSize: 40.0),
                   ),
                 ),
               ),
+              Spacer(),
             ],
           ),
         ),
