@@ -1,58 +1,44 @@
+import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
-final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
+import 'common.dart';
+import 'home.dart';
 
-void main() {
-  runApp(MyApp());
-}
+void main() => runApp(MainApp());
 
-class MyApp extends StatefulWidget {
-  createState() => MyAppState();
-}
+/*
+Main hierarchy:
 
-class MyAppState extends State<MyApp> {
-  int foo = 0;
+void main => StatefulWidget MainApp => [
+  StatefulWidget HomePage || 
+  StatelessWidget Game || 
+  StatefulWidget SettingsPage
+]
+*/
+
+class MainApp extends StatefulWidget {
+  const MainApp({Key key}) : super(key: key);
 
   @override
+  _MainAppState createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  @override
   Widget build(BuildContext context) {
+    Flame.util.fullScreen();
+    Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
     return MaterialApp(
-      theme: ThemeData(
-        primaryColor: Colors.blue.shade900,
-        backgroundColor: Colors.grey.shade200,
-      ),
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(title: Text('A P P  B A R')),
-        body: Container(
-          color: Colors.grey.shade200,
-          child: Row(
-            children: <Widget>[
-              Spacer(),
-              Center(
-                child: Text(
-                  'Hello Wolrd',
-                  style: TextStyle(color: Colors.green, fontSize: 40.0),
-                ),
-              ),
-              Spacer(),
-              Center(
-                child: RaisedButton(
-                  onPressed: () {
-                    setState(() {
-                      foo++;
-                    });
-                  },
-                  child: Text(
-                    '$foo',
-                    style: TextStyle(color: Colors.green, fontSize: 40.0),
-                  ),
-                ),
-              ),
-              Spacer(),
-            ],
-          ),
-        ),
-      ),
+      theme: ThemeData(
+          backgroundColor: darkBlue,
+          accentColor: Colors.orangeAccent,
+          primaryColor: darkBlue,
+          fontFamily: "PTSans",
+          buttonTheme: ButtonThemeData(buttonColor: darkBlueAccent, textTheme: ButtonTextTheme.normal)),
+      home: Scaffold(body: HomePage()),
     );
   }
 }
