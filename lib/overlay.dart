@@ -8,14 +8,14 @@ MainGame game = MainGame();
 final Color _overlayButtonColor = darkBlue;
 final double _overlayButtonSize = 64;
 
-class GamePage extends StatefulWidget {
-  const GamePage({Key key}) : super(key: key);
+class GameOverlay extends StatefulWidget {
+  const GameOverlay({Key key}) : super(key: key);
 
   @override
-  _GamePageState createState() => _GamePageState();
+  _GameOverlayState createState() => _GameOverlayState();
 }
 
-class _GamePageState extends State<GamePage> {
+class _GameOverlayState extends State<GameOverlay> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -52,7 +52,9 @@ class _GamePageState extends State<GamePage> {
                 height: _overlayButtonSize,
                 child: RawMaterialButton(
                   shape: CircleBorder(),
-                  onPressed: () {},
+                  onPressed: () => game.updateControls(
+                    leftPressed: true
+                  ),
                   fillColor: _overlayButtonColor,
                   child: Icon(
                     Icons.arrow_left,

@@ -51,7 +51,7 @@ packages:
     source: hosted
     version: "1.0.5"
   box2d_flame:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: box2d_flame
       url: "https://pub.dartlang.org"

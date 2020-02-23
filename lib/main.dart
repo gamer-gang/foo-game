@@ -13,7 +13,7 @@ Main hierarchy:
 
 void main => StatefulWidget MainApp => [
   StatefulWidget HomePage || 
-  StatelessWidget Game || 
+  StatelessWidget GamePage || 
   StatefulWidget SettingsPage
 ]
 */
@@ -37,7 +37,14 @@ class _MainAppState extends State<MainApp> {
           accentColor: Colors.orangeAccent,
           primaryColor: darkBlue,
           fontFamily: "PTSans",
-          buttonTheme: ButtonThemeData(buttonColor: darkBlueAccent, textTheme: ButtonTextTheme.normal)),
+          brightness: Brightness.dark,
+          textTheme: TextTheme(
+
+          ),
+          buttonTheme: ButtonThemeData(
+            buttonColor: darkBlueAccent,
+            textTheme: ButtonTextTheme.normal,
+          )),
       home: Scaffold(body: HomePage()),
     );
   }
