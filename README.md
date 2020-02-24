@@ -1,4 +1,4 @@
-# foo-game
+# Monument Plaftormer
 
 Capstone 2019-20
 
