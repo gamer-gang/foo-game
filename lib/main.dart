@@ -5,13 +5,13 @@ import 'package:flutter/services.dart';
 import 'common.dart';
 import 'home.dart';
 
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
+void main() async {
+  runApp(LoadingPage());
 
-  Flame.util.fullScreen();
-  Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
+  await Flame.util.fullScreen();
+  await Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
 
-  Flame.images.loadAll(<String>[
+  await Flame.images.loadAll(<String>[
     'bird-0.png',
     'bird-1.png',
     'bird-0-left.png',
@@ -21,7 +21,64 @@ void main() {
     'cloud-3.png',
   ]);
 
-  runApp(MainApp());
+  
+}
+
+class LoadingPage extends StatelessWidget {
+  const LoadingPage({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: commonTheme(),
+      home: LoadingScreen(),
+    );
+  }
+}
+
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 3), () => Navigator.of(context).pushReplacement(PageRouteBuilder(
+      pageBuilder: (context, anim1, anim2) => MainApp(),
+      transitionsBuilder: pageTransition,
+    )));
+    return Scaffold(
+      body: Container(
+        color: darkBlue,
+        child: Center(
+          child: Column(children: <Widget>[
+            Spacer(flex: 16),
+            Text(
+              "MONUMENT PLATFORMER",
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
+              ),
+            ),
+            Spacer(),
+            Text(
+              "Loading...",
+              style: TextStyle(fontSize: 16),
+            ),
+            Spacer(),
+            CircularProgressIndicator(
+              strokeWidth: 2,
+              value: null,
+            ),
+            Spacer(flex: 16)
+          ]),
+        ),
+      ),
+    );
+  }
 }
 
 class MainApp extends StatefulWidget {
@@ -36,20 +93,8 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        backgroundColor: darkBlue,
-        accentColor: Colors.orangeAccent,
-        primaryColor: darkBlue,
-        fontFamily: "PTSans",
-        brightness: Brightness.dark,
-        textTheme: Typography.blackMountainView,
-        buttonTheme: ButtonThemeData(
-          buttonColor: darkBlueAccent,
-          textTheme: ButtonTextTheme.normal,
-        ),
-      ),
+      theme: commonTheme(),
       home: Scaffold(body: HomePage()),
     );
   }
 }
-

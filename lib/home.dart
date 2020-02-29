@@ -17,6 +17,7 @@ Future<MonumentPlatformerGame> initGame() {
     tapRecognizer.onTapDown = game.onTapDown;
     tapRecognizer.onTapUp = game.onTapUp;
     Flame.util.addGestureRecognizer(tapRecognizer);
+
     completer.complete(game);
   });
 
@@ -37,16 +38,22 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     MonumentPlatformerGame game;
     initGame().then((val) => game = val);
+
     return Scaffold(
       body: Container(
         color: darkBlue,
         child: Center(
           child: Column(children: <Widget>[
-            Spacer(),
+            Spacer(flex: 3),
             Text(
-              "FOO GAME",
-              style: TextStyle(fontSize: 48),
+              "MONUMENT PLATFORMER",
+              style: TextStyle(
+                fontSize: 48,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 6,
+              ),
             ),
+            Spacer(),
             Text(
               "A minimalist platformer game",
               style: TextStyle(fontSize: 16),
