@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# Monument Platformer
-=======
 # Monument Plaftormer
->>>>>>> dev
 
 ## An open-source minimalist platformer game
 
