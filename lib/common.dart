@@ -77,3 +77,16 @@ final SlideTransition Function(BuildContext context, Animation<double> animation
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
 final Color darkBlueAccent = Color.fromARGB(255, 34, 58, 84);
+
+ThemeData commonTheme() => ThemeData(
+  backgroundColor: darkBlue,
+  accentColor: Colors.orange,
+  primaryColor: darkBlue,
+  fontFamily: "PTSans",
+  brightness: Brightness.dark,
+  // textTheme: Typography.blackMountainView,
+  buttonTheme: ButtonThemeData(
+    buttonColor: darkBlueAccent,
+    textTheme: ButtonTextTheme.normal,
+  ),
+);
