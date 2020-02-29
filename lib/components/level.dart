@@ -27,14 +27,14 @@ class Level {
       if (movingRng == 4) {
         obstacleWidth = (rng.nextDouble() * (game.viewport.width * 0.2)) +
             (game.viewport.width * 0.3);
-        obstacleHeight = game.viewport.height / game.tileSize * 6;
+        obstacleHeight = game.viewport.height / game.tileSize * 2;
         isLeft = true;
         isMoving = true;
       } else {
         obstacleWidth =
             (rng.nextDouble() * game.tileSize / 4) + game.viewport.width / 40;
         obstacleHeight =
-            (rng.nextDouble() * game.tileSize * 6) + game.viewport.height / 10;
+            (rng.nextDouble() * game.tileSize * 2) + game.viewport.height / 10;
       }
       // Position Obstacles
       posY = ((-i * 300) + game.viewport.height);

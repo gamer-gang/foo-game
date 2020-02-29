@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:flame/game.dart';
 import 'package:flutter/gestures.dart';
 
-import 'common.dart';
 import 'components/background.dart';
 import 'components/dialog.dart';
 import 'components/ground.dart';
@@ -11,13 +10,45 @@ import 'components/level.dart';
 import 'components/obstacle.dart';
 import 'components/player.dart';
 import 'components/text.dart';
+import 'components/wall.dart';
 
 enum GamepadButtons { left, right, jump, dash }
 enum GameState { playing, paused, gameOver }
 
 class MonumentPlatformerGame extends BaseGame {
-  @override
-  bool debugMode() => true;
+  // Essential
+  double tileSize;
+  Size viewport;
+  GameState currentGameState = GameState.playing;
+  bool _left = false, _right = false, _dash = false;
+
+  // Game score counters
+  double currentHeight = 0, currentWidth = 0;
+
+  // Canvas translations
+  double renderHeight = 0, renderWidth = 0;
+
+  // Jumping
+  bool jumping = false;
+  double jumpIntensity = 30;
+  double jumpState = 0;
+
+  // Player
+  Player player;
+  double playerPosY;
+  double playerPosYOffset = 8;
+
+  // Ground
+  Ground groundFloor;
+  double groundHeight;
+  TextComponent groundText;
+
+  // Other
+  Dialog gameOverDialog;
+  Background skyBackground;
+  Wall leftWall;
+  TextComponent scoreText;
+  Level currentLevel;
 
   MonumentPlatformerGame(Size screenDimensions) {
     resize(screenDimensions);
@@ -30,17 +61,25 @@ class MonumentPlatformerGame extends BaseGame {
     );
     groundFloor = Ground(
       game: this,
-      x: 0,
-      y: viewport.height - floorHeight,
+      x: -viewport.width,
+      y: viewport.height - groundHeight,
+      width: viewport.width * 25,
+      height: groundHeight,
+      colorCode: 0xffaaaaaa,
+    );
+    leftWall = Wall(
+      game: this,
+      x: -viewport.width,
+      y: -viewport.height * 99,
       width: viewport.width,
-      height: floorHeight,
-      colorCode: 0xff48BB78,
+      height: viewport.height * 100,
+      colorCode: 0xffaaaaaa,
     );
     currentLevel = Level(game: this);
-    birdPlayer = Player(
+    player = Player(
       game: this,
       x: 0,
-      y: birdPosY,
+      y: playerPosY - playerPosYOffset,
       width: tileSize,
       height: tileSize,
     );
@@ -49,58 +88,49 @@ class MonumentPlatformerGame extends BaseGame {
       text: '0',
       fontSize: 30.0,
       y: 60,
+      offsetType: OffsetType.fixed,
     );
-    floorText = TextComponent(
+    groundText = TextComponent(
       game: this,
-      text: 'Tap to flutter!',
+      text: 'go go go!',
       fontSize: 40.0,
-      y: viewport.height - floorHeight / 2,
+      align: TextAlign.left,
+      offset: Offset(100, viewport.height - groundHeight),
+      y: viewport.height - groundHeight / 1.1,
+      offsetType: OffsetType.specified,
     );
     gameOverDialog = Dialog(game: this);
+
+    // extra modification
+    player.x += 25;
   }
-
-  Player birdPlayer;
-  double birdPosY;
-  double birdPosYOffset = 8;
-  GameState currentGameState = GameState.playing;
-  // Game Score
-  double currentHeight = 0;
-
-  bool _left = false, _right = false, _dash = false;
-
-  Level currentLevel;
-  double floorHeight = 150;
-  TextComponent floorText;
-  double flutterIntensity = 20;
-  double flutterState = 0;
-  Dialog gameOverDialog;
-  Ground groundFloor;
-  bool isFluttering = false;
-  TextComponent scoreText;
-  Background skyBackground;
-  double tileSize;
-  Size viewport;
 
   void resize(Size size) {
     super.resize(size);
+
     viewport = size;
-    tileSize = viewport.width / 12;
-    birdPosY = viewport.height - floorHeight - tileSize + (tileSize / 8);
+    groundHeight = viewport.height / 2;
+    tileSize = viewport.width / 20;
+    playerPosY = viewport.height - groundHeight - tileSize + (tileSize / 8);
   }
 
   void render(Canvas c) {
     skyBackground.render(c);
+
     c.save();
-    c.translate(0, currentHeight);
+    c.translate(renderWidth, (renderHeight + viewport.height * 0));
 
     currentLevel.levelObstacles.forEach((obstacle) {
       if (obstacleInRange(obstacle)) obstacle.render(c);
     });
-    groundFloor.render(c);
-    floorText.render(c);
-    c.restore();
 
-    birdPlayer.render(c);
+    leftWall.render(c);
+    groundFloor.render(c);
+    groundText.render(c);
+
+    player.render(c);
+    player.renderCollisionBox(c);
+    c.restore();
 
     if (currentGameState == GameState.gameOver)
       gameOverDialog.render(c);
@@ -109,6 +139,9 @@ class MonumentPlatformerGame extends BaseGame {
   }
 
   void update(double t) {
+    renderWidth = (-player.x + viewport.width / 2 - player.width / 2);
+    renderHeight = (-player.y + viewport.height / 2 - player.height / 2);
+
     if (currentGameState == GameState.playing) {
       currentLevel.levelObstacles.forEach((obstacle) {
         if (obstacleInRange(obstacle)) {
@@ -116,28 +149,27 @@ class MonumentPlatformerGame extends BaseGame {
         }
       });
       skyBackground.update(t);
-      birdPlayer.move(
+      player.move(
         left: _left,
         right: _right,
         dash: _dash,
         time: t,
       );
-      birdPlayer.update(t);
+      player.update(t);
       // Update scoreText
-      scoreText.setText(currentHeight.floor().toString());
-      scoreText.update(t);
-      floorText.update(t);
+      scoreText.setText((currentHeight / 10).floor().toString());
+      scoreText.updateWithOffset();
+      groundText.updateWithOffset();
       gameOverDialog.update(t);
       // Game tasks
-      flutterHandler();
+      jumpHandler();
       checkCollision();
     }
   }
 
   void checkCollision() {
     currentLevel.levelObstacles.forEach((obstacle) {
-      if (obstacleInRange(obstacle) &&
-          birdPlayer.toCollisionRect().overlaps(obstacle.toRect())) {
+      if (obstacleInRange(obstacle) && player.toCollisionRect().overlaps(obstacle.toRect())) {
         obstacle.markHit();
         gameOver();
       }
@@ -149,61 +181,67 @@ class MonumentPlatformerGame extends BaseGame {
   }
 
   void restartGame() {
-    birdPlayer.setRotation(0);
+    player.setRotation(0);
     currentHeight = 0;
+    player.y = playerPosY;
+    player.x = 25;
     currentLevel.generateObstacles();
     currentGameState = GameState.playing;
   }
 
   bool obstacleInRange(Obstacle obs) {
-    return (-obs.y < viewport.height + currentHeight &&
-        -obs.y > currentHeight - viewport.height);
+    return (-obs.y < viewport.height + currentHeight && -obs.y > currentHeight - viewport.height);
   }
 
-  void flutterHandler() {
-    if (isFluttering) {
-      flutterState = flutterState * 0.8;
-      currentHeight += flutterState;
-      birdPlayer.setRotation(-flutterState * birdPlayer.direction * 1.5);
+  void jumpHandler() {
+    if (jumping) {
+      jumpState = jumpState * 0.8;
+      currentHeight += jumpState;
+      player.y -= jumpState;
+
       // Cut the jump below 1 unit
-      if (flutterState < 1) isFluttering = false;
+      if (jumpState < 1) jumping = false;
     } else {
       // If max. fallspeed not yet reached
-      if (flutterState < 15) {
-        flutterState = flutterState * 1.2;
+      if (jumpState < 15) {
+        jumpState = jumpState * 1.2;
       }
-      if (currentHeight > flutterState) {
-        birdPlayer.setRotation(flutterState * birdPlayer.direction * 2);
-        currentHeight -= flutterState;
+      if (currentHeight > jumpState) {
+        currentHeight -= jumpState;
+        player.y += jumpState;
+
         // stop jumping below floor
       } else if (currentHeight > 0) {
         currentHeight = 0;
-        birdPlayer.setRotation(0);
+        player.y = 0 + groundHeight - player.width;
       }
     }
   }
 
   void onTapDown(TapDownDetails tapDownDetails) {
-    if (gameOverDialog.playButton.contains(tapDownDetails.globalPosition))
-      restartGame();
+    if (gameOverDialog.playButton.contains(tapDownDetails.globalPosition)) restartGame();
   }
 
   void jumpStart(PointerDownEvent pointerDownEvent) {
-    if (currentGameState != GameState.gameOver) {
-      // Make the bird flutter
-      birdPlayer.startFlutter();
-      isFluttering = true;
-      flutterState = flutterIntensity;
+    print(jumpState);
+    if (jumping)
       return;
+    else {
+      if (currentGameState != GameState.gameOver) {
+        // Make the bird flutter
+        player.startJump();
+        jumping = true;
+        jumpState = jumpIntensity;
+        return;
+      }
     }
   }
 
   void jumpEnd(PointerUpEvent pointerUpEvent) {
-    birdPlayer.endFlutter();
+    player.endJump();
   }
 
   void pressed(List<GamepadButtons> pressed, PointerDownEvent tapDownDetails) {
-    print("xV: " + birdPlayer.xV.roundToPrecision(2).toString());
     pressed.forEach((GamepadButtons button) {
       print("pressed " + button.toString());
       switch (button) {
@@ -225,7 +263,6 @@ class MonumentPlatformerGame extends BaseGame {
 
   void released(List<GamepadButtons> released, PointerUpEvent pointerUpEvent) {
     released.forEach((GamepadButtons button) {
-      print("xV: " + birdPlayer.xV.roundToPrecision(2).toString());
       print("released " + button.toString());
       switch (button) {
         case GamepadButtons.left:

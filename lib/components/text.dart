@@ -13,27 +13,34 @@ class TextComponent extends GameObject {
   Offset position;
   double fontSize;
   double y;
+  Offset offset;
+  OffsetType offsetType;
 
   TextComponent({
     this.game,
     String text,
     double fontSize,
     double y,
+    TextAlign align = TextAlign.center,
     int colorCode = 0xfffafafa,
+    Offset offset = Offset.zero,
+    OffsetType offsetType = OffsetType.fixed,
   }) : super(game) {
     this.fontSize = fontSize;
     this.displayString = text;
     this.y = y;
     painter = TextPainter(
-      textAlign: TextAlign.center,
+      textAlign: align,
       textDirection: TextDirection.ltr,
     );
     textStyle = TextStyle(
-      fontFamily: 'Baloo',
+      fontFamily: 'PTSans',
+      fontWeight: FontWeight.bold,
       color: Color(colorCode),
       fontSize: fontSize,
     );
-    position = Offset.zero;
+    this.offset = offset;
+    this.offsetType = offsetType;
   }
 
   void setText(String text) {
@@ -41,17 +48,17 @@ class TextComponent extends GameObject {
   }
 
   Rect toRect() {
-    return Rect.fromLTWH((game.viewport.width / 2) - (painter.width / 2),
-        y - (painter.height / 2), painter.width, painter.height);
+    return Rect.fromLTWH((game.viewport.width / 2) - (painter.width / 2), y - (painter.height / 2), painter.width, painter.height);
   }
 
   @override
   void render(Canvas c) {
-    painter.paint(c, position);
+    updateWithOffset();
+    painter.paint(c, this.position);
   }
 
-  @override
-  void update(double t) {
+
+  void updateWithOffset() {
     // ignore: deprecated_member_use
     if ((painter.text?.text ?? '') != displayString) {
       painter.text = TextSpan(
@@ -59,10 +66,20 @@ class TextComponent extends GameObject {
         style: textStyle,
       );
       painter.layout();
-      position = Offset(
-        (game.viewport.width / 2) - (painter.width / 2),
-        y - (painter.height / 2),
-      );
+    }
+
+    switch (this.offsetType) {
+      case OffsetType.specified:
+        this.position = this.offset;
+        break;
+      case OffsetType.fixed:
+        this.position = Offset(
+          (game.viewport.width / 2) - (painter.width / 2),
+          y - (painter.height / 2),
+        );
+        break;
     }
   }
 }
+
+enum OffsetType { specified, fixed }
