@@ -1,11 +1,7 @@
-# foo-game
+# Monument Platformer
 
-Capstone 2019-20
+## An open-source minimalist platformer game
 
-bruh?
+### 8th Grade Capstone 2020
 
-made by a bunch of gamers who arent gaming atm for a school project. 
-
-## Building a release
-
-Follow [this guide](https://flutter.dev/docs/deployment/android) to sign and build a relase.
+This is the source code for our game, Monument Platformer. Find it on the Play Store [here](https://google.com).
