@@ -1,9 +1,9 @@
 import 'dart:ui';
 
-import '../game.dart';
+import '../../game.dart';
 
 class GameObject {
-  final MainGame game;
+  final MonumentPlatformerGame game;
   List<GameObject> children = List<GameObject>();
   GameObject(this.game);
 

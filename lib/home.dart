@@ -1,7 +1,27 @@
+import 'dart:async';
+
+import 'package:flame/flame.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'common.dart';
+import 'game.dart';
 import 'overlay.dart';
+
+Future<MonumentPlatformerGame> initGame() {
+  var completer = new Completer<MonumentPlatformerGame>();
+
+  Flame.util.initialDimensions().then((Size dimensions) {
+    MonumentPlatformerGame game = MonumentPlatformerGame(dimensions);
+    TapGestureRecognizer tapRecognizer = TapGestureRecognizer();
+    tapRecognizer.onTapDown = game.onTapDown;
+    tapRecognizer.onTapUp = game.onTapUp;
+    Flame.util.addGestureRecognizer(tapRecognizer);
+    completer.complete(game);
+  });
+
+  return completer.future;
+}
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -15,9 +35,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    MonumentPlatformerGame game;
+    initGame().then((val) => game = val);
     return Scaffold(
       body: Container(
-        color: Colors.grey.shade900,
+        color: darkBlue,
         child: Center(
           child: Column(children: <Widget>[
             Spacer(),
@@ -36,9 +58,9 @@ class _HomePageState extends State<HomePage> {
                 if (!bottomSheetVisible) {
                   bottomSheetVisible = true;
                   showBottomSheet(
-                    elevation: 2,
+                    elevation: 4,
                     context: context,
-                    builder: (context) => FileSelector(),
+                    builder: (context) => FileSelector(game: game),
                   );
                 }
               },
@@ -52,7 +74,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class FileSelector extends StatelessWidget {
-  const FileSelector({Key key}) : super(key: key);
+  final MonumentPlatformerGame game;
+  const FileSelector({MonumentPlatformerGame game}) : this.game = game;
 
   final double buttonPadding = 8;
 
@@ -60,7 +83,7 @@ class FileSelector extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 64,
-      color: darkBlue,
+      color: darkBlueAccent,
       child: Align(
         alignment: Alignment.centerLeft,
         child: Row(children: <Widget>[
@@ -75,37 +98,61 @@ class FileSelector extends StatelessWidget {
           ),
           Text(
             "Select file",
-            style: TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: 20),
           ),
           Spacer(flex: 256),
           RaisedButton(
+            color: darkBlue,
             padding: EdgeInsets.all(buttonPadding),
             child: Text(
               "File 1",
               style: TextStyle(fontSize: 20),
             ),
-            onPressed: () => Navigator.of(context).push(PageRouteBuilder(
-              pageBuilder: (context, anim1, anim2) => GameOverlay(),
-              transitionsBuilder: pageTransition,
-            )),
+            onPressed: () {
+              Navigator.of(context).push(PageRouteBuilder(
+                pageBuilder: (context, anim1, anim2) => GamePage(
+                  game: game,
+                  file: File.file1,
+                ),
+                transitionsBuilder: pageTransition,
+              ));
+            },
           ),
-          Spacer(flex: 1),
+          Spacer(flex: 4),
           RaisedButton(
+            color: darkBlue,
             padding: EdgeInsets.all(buttonPadding),
             child: Text(
               "File 2",
               style: TextStyle(fontSize: 20),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(PageRouteBuilder(
+                pageBuilder: (context, anim1, anim2) => GamePage(
+                  game: game,
+                  file: File.file2,
+                ),
+                transitionsBuilder: pageTransition,
+              ));
+            },
           ),
-          Spacer(flex: 1),
+          Spacer(flex: 4),
           RaisedButton(
+            color: darkBlue,
             padding: EdgeInsets.all(buttonPadding),
             child: Text(
               "File 3",
               style: TextStyle(fontSize: 20),
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).push(PageRouteBuilder(
+                pageBuilder: (context, anim1, anim2) => GamePage(
+                  game: game,
+                  file: File.file1,
+                ),
+                transitionsBuilder: pageTransition,
+              ));
+            },
           ),
           Spacer(flex: 32),
         ]),

@@ -1,5 +1,13 @@
+import 'dart:math' as Math;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+extension PrecisionRounding on double {
+  double roundToPrecision(int places) {
+    double mod = Math.pow(10.0, places);
+    return ((this * mod).round().toDouble() / mod);
+  }
+}
 
 dynamic getPref(Type type, {String pref = ""}) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -68,4 +76,4 @@ final SlideTransition Function(BuildContext context, Animation<double> animation
 };
 
 final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
-final Color darkBlueAccent = Color.fromARGB(255, 65,	77, 89);
+final Color darkBlueAccent = Color.fromARGB(255, 34, 58, 84);

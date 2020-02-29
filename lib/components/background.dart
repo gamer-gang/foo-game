@@ -2,39 +2,42 @@ import 'dart:ui';
 
 import 'package:flutter/rendering.dart';
 
-import 'object.dart';
 import '../game.dart';
+import 'core/gameobject.dart';
 
 class Background extends GameObject {
-  final Gradient gradient = new LinearGradient(
+  final Gradient gradient = LinearGradient(
     begin: Alignment.topCenter,
     colors: <Color>[
-      Color(0xff0165b1),
-      Color(0xffFFFFFF),
+      Color.fromARGB(255, 1, 101, 177),
+      Color.fromARGB(255, 255, 255, 255),
     ],
     stops: [
       0.0,
       1.0,
     ],
-    end: Alignment(0, 0.9),
+    end: Alignment(0, 01),
   );
   Rect rect;
   Paint paint;
-  Background(MainGame game, double x, double y, double width, double height)
-      : super(game) {
+  Background({
+    MonumentPlatformerGame game,
+    double x,
+    double y,
+    double width,
+    double height,
+  }) : super(game) {
     paint = Paint();
     paint.color = Color(0xff77b5e1);
 
     rect = Rect.fromLTWH(x, y, width, height);
     paint = new Paint()..shader = gradient.createShader(rect);
-    // this.addChild(new Cloud(this.game, 0, game.tileSize * 1.7));
-    // this.addChild(new Cloud(this.game, 0, game.tileSize * 4.4));
   }
 
   @override
   void render(Canvas c) {
     c.drawRect(rect, paint);
-    super.render(c);
+    // super.render(c);
   }
 
   @override

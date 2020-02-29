@@ -1,25 +1,31 @@
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 
 import 'common.dart';
 import 'home.dart';
 
-void main() => runApp(MainApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
 
-/*
-Main hierarchy:
+  Flame.util.fullScreen();
+  Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
 
-void main => StatefulWidget MainApp => [
-  StatefulWidget HomePage || 
-  StatelessWidget GamePage || 
-  StatefulWidget SettingsPage
-]
-*/
+  Flame.images.loadAll(<String>[
+    'bird-0.png',
+    'bird-1.png',
+    'bird-0-left.png',
+    'bird-1-left.png',
+    'cloud-1.png',
+    'cloud-2.png',
+    'cloud-3.png',
+  ]);
+
+  runApp(MainApp());
+}
 
 class MainApp extends StatefulWidget {
-  const MainApp({Key key}) : super(key: key);
+  MainApp({Key key}) : super(key: key);
 
   @override
   _MainAppState createState() => _MainAppState();
@@ -28,24 +34,22 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
-    Flame.util.fullScreen();
-    Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          backgroundColor: darkBlue,
-          accentColor: Colors.orangeAccent,
-          primaryColor: darkBlue,
-          fontFamily: "PTSans",
-          brightness: Brightness.dark,
-          textTheme: TextTheme(
-
-          ),
-          buttonTheme: ButtonThemeData(
-            buttonColor: darkBlueAccent,
-            textTheme: ButtonTextTheme.normal,
-          )),
+        backgroundColor: darkBlue,
+        accentColor: Colors.orangeAccent,
+        primaryColor: darkBlue,
+        fontFamily: "PTSans",
+        brightness: Brightness.dark,
+        textTheme: Typography.blackMountainView,
+        buttonTheme: ButtonThemeData(
+          buttonColor: darkBlueAccent,
+          textTheme: ButtonTextTheme.normal,
+        ),
+      ),
       home: Scaffold(body: HomePage()),
     );
   }
 }
+
