@@ -1,4 +1,4 @@
-package dev.wiisportsresorts.foo_bar
+package dev.wiisportsresorts.games.monument_platformer
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity
