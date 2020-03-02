@@ -41,14 +41,6 @@ flutter:
     - family: Baloo
       fonts:
         - asset: assets/fonts/Baloo-Regular.ttf
-  assets:
-    - assets/bird-0.png
-    - assets/bird-1.png
-    - assets/bird-0-left.png
-    - assets/bird-1-left.png
-    - assets/cloud-1.png
-    - assets/cloud-2.png
-    - assets/cloud-3.png
             
 
   # Material Icons class
