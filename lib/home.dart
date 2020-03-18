@@ -1,44 +1,27 @@
-import 'dart:async';
-
-import 'package:flame/flame.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import 'common.dart';
 import 'game.dart';
 import 'overlay.dart';
 
-Future<MonumentPlatformerGame> initGame() {
-  var completer = new Completer<MonumentPlatformerGame>();
-
-  Flame.util.initialDimensions().then((Size dimensions) {
-    MonumentPlatformerGame game = MonumentPlatformerGame(dimensions);
-    TapGestureRecognizer tapRecognizer = TapGestureRecognizer();
-    tapRecognizer.onTapDown = game.onTapDown;
-    tapRecognizer.onTapUp = game.onTapUp;
-    Flame.util.addGestureRecognizer(tapRecognizer);
-
-    completer.complete(game);
-  });
-
-  return completer.future;
-}
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  final MonumentPlatformerGame game; 
+
+  HomePage({Key key, this.game}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(game: game);
 }
 
 class _HomePageState extends State<HomePage> {
+  MonumentPlatformerGame game;
+
   static bool bottomSheetVisible = false;
+  _HomePageState({this.game});
 
   @override
   Widget build(BuildContext context) {
-    MonumentPlatformerGame game;
-    initGame().then((val) => game = val);
-
     return Scaffold(
       body: Container(
         color: darkBlue,

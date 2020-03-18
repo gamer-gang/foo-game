@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/painting.dart';
 
 import '../game.dart';
-import 'core/gameobject.dart';
+import 'component.dart';
 
 class TextComponent extends GameObject {
   final MonumentPlatformerGame game;
@@ -16,19 +16,20 @@ class TextComponent extends GameObject {
   Offset offset;
   OffsetType offsetType;
 
+  double fixedOffset = 0;
+
   TextComponent({
     this.game,
-    String text,
-    double fontSize,
-    double y,
+    this.displayString,
+    this.fontSize,
+    this.y,
     TextAlign align = TextAlign.center,
     int colorCode = 0xfffafafa,
-    Offset offset = Offset.zero,
-    OffsetType offsetType = OffsetType.fixed,
+    this.offset = Offset.zero,
+    this.offsetType = OffsetType.fixed, 
+    double fixedOffset = 0,
   }) : super(game) {
-    this.fontSize = fontSize;
-    this.displayString = text;
-    this.y = y;
+    this.fixedOffset = fixedOffset;
     painter = TextPainter(
       textAlign: align,
       textDirection: TextDirection.ltr,
@@ -39,8 +40,6 @@ class TextComponent extends GameObject {
       color: Color(colorCode),
       fontSize: fontSize,
     );
-    this.offset = offset;
-    this.offsetType = offsetType;
   }
 
   void setText(String text) {
@@ -74,7 +73,7 @@ class TextComponent extends GameObject {
         break;
       case OffsetType.fixed:
         this.position = Offset(
-          (game.viewport.width / 2) - (painter.width / 2),
+          (game.viewport.width / 2) - (painter.width / 2) + fixedOffset,
           y - (painter.height / 2),
         );
         break;

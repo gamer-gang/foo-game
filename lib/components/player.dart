@@ -1,35 +1,15 @@
+import 'dart:math';
 import 'dart:ui';
 
-import 'package:flame/sprite.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 
 import '../common.dart';
 import '../game.dart';
-import 'core/gameobject.dart';
+import 'component.dart';
+import 'platform.dart';
 
 class Player extends GameObject {
-  final List<List<Sprite>> characterSprites = [
-    [Sprite('bird-0.png'), Sprite('bird-1.png')],
-    [Sprite('bird-0-left.png'), Sprite('bird-1-left.png')]
-  ];
-
-  Rect rect, playerRect;
-  Paint paint, playerPaint;
-
-  double collisionToleranceX, collisionToleranceY;
-
-  double x, y, xV = 1, yV, friction, dashMultiplier = 32;
-  double width, height;
-  double rotation;
-
-  bool isDashing = false;
-
-  int direction = 1;
-  int characterSpritesIndex = 0;
-  int flutterFrame = 0;
-  double movementSpeed;
-
   Player({
     MonumentPlatformerGame game,
     this.x,
@@ -44,6 +24,19 @@ class Player extends GameObject {
     movementSpeed = game.viewport.width / 12;
   }
 
+  double collisionToleranceX, collisionToleranceY;
+  int direction = 1;
+  double width, height;
+  bool isDashing = false;
+  double jumpHeight = 30;
+  bool jumping = false;
+  int jumps = 2;
+  double movementSpeed;
+  Paint paint, playerPaint;
+  Rect rect, playerRect;
+  double rotation;
+  double x = 0, y = 0, xV = 0, yV = 0, friction, dashMultiplier = 32;
+
   @override
   void render(Canvas c) {
     paint = Paint();
@@ -53,7 +46,7 @@ class Player extends GameObject {
     playerPaint.color = Color.fromARGB(255, 200, 200, 200);
     rect = Rect.fromLTWH(0, 0, width, height);
     playerRect = Rect.fromLTWH(0, 0, width, height);
-    
+
     c.save();
     c.translate(x, y);
     c.translate(width / 2, height / 2);
@@ -61,55 +54,93 @@ class Player extends GameObject {
     c.translate(-width / 2, -height / 2);
     c.drawRect(rect, paint);
     c.drawRect(playerRect, playerPaint);
-    // characterSprites[characterSpritesIndex][flutterFrame].renderRect(c, rect.inflate(0));
+
     c.restore();
   }
 
   @override
   void update(double t) {
     checkCollision();
-    // if (y + height >= game.groundHeight) y = game.playerPosY - game.playerPosYOffset;
   }
 
   void move({bool left, bool right, bool dash, double time}) {
     if (dash) {
       if (!isDashing) {
-        xV += movementSpeed * time * dashMultiplier * (characterSpritesIndex == 1 ? -1 : 1);
+        xV += movementSpeed * time * dashMultiplier * direction;
         isDashing = true;
       } else {
-        if (xV.roundToPrecision(2) == 0) isDashing = false;
+        if (xV.roundToPrecision(1) == 0) isDashing = false;
       }
     } else {
       if (left) {
         xV -= movementSpeed * time;
-        characterSpritesIndex = 1;
+        direction = 1;
       }
       if (right) {
         xV += movementSpeed * time;
-        characterSpritesIndex = 0;
+        direction = -1;
       }
       xV *= 1 - friction;
       x += xV;
     }
-  }
 
-  void setRotation(double deg) {
-    // rotation = deg * math.pi / 180;
-    rotation = 0;
+    if (jumping) {
+      yV = yV * (1 - game.gravity);
+      // game.currentHeight += yV;
+      y -= yV;
+
+      // Cut the jump below 1 unit
+      if (yV < 1) jumping = false;
+    } else {
+      // If max. fallspeed not yet reached
+      if (yV < 15) {
+        yV = yV * (1 + game.gravity);
+      }
+      if (y < yV) {
+        y += yV;
+      }
+    }
   }
 
   void checkCollision() {
-    // if (x >= game.viewport.width - width)
-    //   x = game.viewport.width - width;
+    // left wall
     if (x <= 0) x = 0;
-  }
 
-  void startJump() {
-    flutterFrame = 1;
-  }
+    // floor
+    if (y + height >= game.groundHeight - height) {
+      y = game.groundHeight - width;
+      yV = 0;
+    }
 
-  void endJump() {
-    flutterFrame = 0;
+    for (Platform platform in game.currentLevel.levelPlatforms) {
+      if (platform.toRectangle().intersects(this.toCollisionRectangle())) {
+        // left of platform
+        if (x + width + collisionToleranceX <= platform.x) {
+          x = platform.x + width;
+        }
+
+        // right of platform
+        else if (x + collisionToleranceX >= platform.x + platform.width) {
+          x = platform.x + platform.width;
+        }
+
+        // within platform
+        else if (x + collisionToleranceX + width >= platform.x &&
+            x <= platform.x + platform.width) {
+          // above platform
+          if (y + collisionToleranceY * 2 + height <= platform.y) {
+            y = platform.y - height;
+            yV = 0;
+            jumps = 2;
+          }
+
+          // below platform
+          else if (y + collisionToleranceY <= platform.y + platform.height) {
+            y = platform.y + platform.height;
+          }
+        }
+      }
+    }
   }
 
   Rect toRect() {
@@ -122,7 +153,18 @@ class Player extends GameObject {
     double top = y;
     double bottom = y + height;
 
-    return Rect.fromLTRB(left + collisionToleranceX, top + collisionToleranceX, right - collisionToleranceX, bottom - collisionToleranceY);
+    return Rect.fromLTRB(left + collisionToleranceX, top + collisionToleranceX,
+        right - collisionToleranceX, bottom - collisionToleranceY);
+  }
+
+  Rectangle toCollisionRectangle() {
+    double left = x;
+    double right = x + width;
+    double top = y;
+    double bottom = y + height;
+
+    return Rectangle(left + collisionToleranceX, top + collisionToleranceX,
+        right - collisionToleranceX, bottom - collisionToleranceY);
   }
 
   void renderCollisionBox(Canvas c) {
@@ -130,6 +172,15 @@ class Player extends GameObject {
     paint.color = Colors.red;
     Rect collisionRect = this.toCollisionRect();
 
-    c.drawRect(collisionRect, paint);  
+    c.drawRect(collisionRect, paint);
+  }
+
+  void jump() {
+    print('jump handler');
+    if (jumps != 0) {
+      // jumps--;
+      jumping = true;
+      yV = jumpHeight;
+    }
   }
 }

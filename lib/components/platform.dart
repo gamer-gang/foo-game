@@ -62,4 +62,7 @@ class Platform extends GameObject {
   Rect toRect() {
     return Rect.fromLTWH(x, y, width, height);
   }
+  Rectangle toRectangle() {
+    return Rectangle(x, y, width, height);
+  }
 }

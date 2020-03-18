@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import '../game.dart';
-import 'core/gameobject.dart';
+import 'component.dart';
 
 class Wall extends GameObject {
   Wall({MonumentPlatformerGame game, double x, double y, double width, double height,

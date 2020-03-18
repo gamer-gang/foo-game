@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 
 import '../game.dart';
-import 'core/gameobject.dart';
+import 'component.dart';
 import 'text.dart';
 
 class Dialog extends GameObject {
@@ -41,14 +41,14 @@ class Dialog extends GameObject {
 
     titleText = TextComponent(
       game: game,
-      text: 'Game Over!',
+      displayString: 'Game Over!',
       fontSize: 45.0,
       y: rectTop + padding,
       colorCode: 0xff3D4852,
     );
     scoreText = TextComponent(
       game: game,
-      text: '',
+      displayString: '',
       fontSize: 30.0,
       y: playButton.top - padding / 2,
       colorCode: 0xff606F7B,
@@ -56,7 +56,7 @@ class Dialog extends GameObject {
 
     buttonText = TextComponent(
       game: game,
-      text: 'Play again',
+      displayString: 'Play again',
       fontSize: 25.0,
       y: playButton.center.dy,
       colorCode: 0xfffafafa,
@@ -79,7 +79,7 @@ class Dialog extends GameObject {
 
   @override
   void update(double t) {
-    scoreText.setText('Score: ${game.currentHeight.floor().toString()}');
+    scoreText.setText('Score: ${(-game.player.y).floor().toString()}');
     super.update(t);
   }
 }

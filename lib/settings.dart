@@ -26,7 +26,7 @@ class _SettingsPageState extends State<SettingsPage> {
       next = true;
     }
 
-    await prefs.setBool(pref, next);
+    prefs.setBool(pref, next);
 
     callback(next);
   }
@@ -62,43 +62,39 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
       body: Container(
         child: Center(
-          child: Column(
-            children: <Widget>[
+          child: Column(children: <Widget>[
+            Spacer(flex: 1),
+            Row(children: <Widget>[
               Spacer(flex: 1),
-              Row(
-                children: <Widget>[
-                  Spacer(flex: 1),
-                  Text("Animations"),
-                  Spacer(flex: 1),
-                  RaisedButton(
-                    onPressed: () {
-                      setPref("animations", (val) => setSetting("animations"));
-                    },
-                    child: Text(settingsText["animations"] ?? "..."),
-                  ),
-                  Spacer(flex: 20),
-                ],
-              ),
+              Text("Animations"),
               Spacer(flex: 1),
-              Row(
-                children: <Widget>[
-                  Spacer(flex: 1),
-                  Text("Send anonymous usage data"),
-                  Spacer(flex: 1),
-                  RaisedButton(
-                    onPressed: () {
-                      setPref("sendUsageData", (val) => setSetting("sendUsageData"));
-                    },
-                    child: Text(settingsText["sendUsageData"] ?? ""),
-                  ),
-                  Spacer(flex: 20),
-                ],
+              RaisedButton(
+                onPressed: () {
+                  setPref("animations", (val) => setSetting("animations"));
+                },
+                child: Text(settingsText["animations"] ?? "..."),
               ),
-              Spacer(flex: 15),
-            ],
-          ),
+              Spacer(flex: 20),
+            ]),
+            Spacer(flex: 1),
+            Row(children: <Widget>[
+              Spacer(flex: 1),
+              Text("Send anonymous usage data"),
+              Spacer(flex: 1),
+              RaisedButton(
+                onPressed: () {
+                  setPref(
+                      "sendUsageData", (val) => setSetting("sendUsageData"));
+                },
+                child: Text(settingsText["sendUsageData"] ?? ""),
+              ),
+              Spacer(flex: 20)
+            ]),
+            Spacer(flex: 15)
+          ]),
         ),
       ),
     );
   }
 }
+

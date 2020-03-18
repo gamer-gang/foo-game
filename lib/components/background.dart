@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/rendering.dart';
 
 import '../game.dart';
-import 'core/gameobject.dart';
+import 'component.dart';
 
 class Background extends GameObject {
   final Gradient gradient = LinearGradient(

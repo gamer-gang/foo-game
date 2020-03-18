@@ -1,35 +1,37 @@
+import 'dart:async';
+
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'common.dart';
+import 'game.dart';
 import 'home.dart';
 
-void main() async {
-  runApp(LoadingPage());
+void main() => runApp(LoadingPage());
 
-  await Flame.util.fullScreen();
+Future<MonumentPlatformerGame> initGame() async {
+  var completer = new Completer<MonumentPlatformerGame>();
+
   await Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
+  await Flame.util.fullScreen();
 
-  await Flame.images.loadAll(<String>[
-    'bird-0.png',
-    'bird-1.png',
-    'bird-0-left.png',
-    'bird-1-left.png',
-    'cloud-1.png',
-    'cloud-2.png',
-    'cloud-3.png',
-  ]);
+  final Size dimensions = await Flame.util.initialDimensions();
+  MonumentPlatformerGame game = MonumentPlatformerGame(dimensions);
+  // TapGestureRecognizer tapRecognizer = TapGestureRecognizer();
+  // tapRecognizer.onTapDown = game.onTapDown;
+  // tapRecognizer.onTapUp = game.onTapUp;
+  // Flame.util.addGestureRecognizer(tapRecognizer);
 
-  
+  completer.complete(game);
+  return completer.future;
 }
 
 class LoadingPage extends StatelessWidget {
   const LoadingPage({Key key}) : super(key: key);
-
+  
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: commonTheme(),
@@ -39,16 +41,18 @@ class LoadingPage extends StatelessWidget {
 }
 
 class LoadingScreen extends StatelessWidget {
-  const LoadingScreen({
-    Key key,
-  }) : super(key: key);
+  const LoadingScreen({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 3), () => Navigator.of(context).pushReplacement(PageRouteBuilder(
-      pageBuilder: (context, anim1, anim2) => MainApp(),
-      transitionsBuilder: pageTransition,
-    )));
+    initGame().then((MonumentPlatformerGame game) {
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder(
+          pageBuilder: (context, anim1, anim2) => MainApp(game: game),
+          transitionsBuilder: pageTransition,
+        ),
+      );
+    });
     return Scaffold(
       body: Container(
         color: darkBlue,
@@ -82,19 +86,25 @@ class LoadingScreen extends StatelessWidget {
 }
 
 class MainApp extends StatefulWidget {
-  MainApp({Key key}) : super(key: key);
+  MainApp({Key key, this.game}) : super(key: key);
+
+  final MonumentPlatformerGame game;
 
   @override
-  _MainAppState createState() => _MainAppState();
+  _MainAppState createState() => _MainAppState(game: game);
 }
 
 class _MainAppState extends State<MainApp> {
+  _MainAppState({this.game});
+
+  MonumentPlatformerGame game;
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: commonTheme(),
-      home: Scaffold(body: HomePage()),
+      home: Scaffold(body: HomePage(game: game)),
     );
   }
 }

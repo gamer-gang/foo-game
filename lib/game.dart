@@ -7,7 +7,7 @@ import 'components/background.dart';
 import 'components/dialog.dart';
 import 'components/ground.dart';
 import 'components/level.dart';
-import 'components/obstacle.dart';
+import 'components/platform.dart';
 import 'components/player.dart';
 import 'components/text.dart';
 import 'components/wall.dart';
@@ -15,28 +15,24 @@ import 'components/wall.dart';
 enum GamepadButtons { left, right, jump, dash }
 enum GameState { playing, paused, gameOver }
 
-class MonumentPlatformerGame extends BaseGame {
+class MonumentPlatformerGame extends Game {
   // Essential
   double tileSize;
   Size viewport;
   GameState currentGameState = GameState.playing;
-  bool _left = false, _right = false, _dash = false;
 
   // Game score counters
-  double currentHeight = 0, currentWidth = 0;
+  // double currentHeight = 0, currentWidth = 0;
 
   // Canvas translations
   double renderHeight = 0, renderWidth = 0;
-
-  // Jumping
-  bool jumping = false;
-  double jumpIntensity = 30;
-  double jumpState = 0;
 
   // Player
   Player player;
   double playerPosY;
   double playerPosYOffset = 8;
+  double gravity = 0.25;
+  bool _left = false, _right = false, _dash = false;
 
   // Ground
   Ground groundFloor;
@@ -49,6 +45,7 @@ class MonumentPlatformerGame extends BaseGame {
   Wall leftWall;
   TextComponent scoreText;
   Level currentLevel;
+  TextComponent xPos, yPos, xV, yV;
 
   MonumentPlatformerGame(Size screenDimensions) {
     resize(screenDimensions);
@@ -85,19 +82,56 @@ class MonumentPlatformerGame extends BaseGame {
     );
     scoreText = TextComponent(
       game: this,
-      text: '0',
+      displayString: '0',
       fontSize: 30.0,
       y: 60,
       offsetType: OffsetType.fixed,
+      fixedOffset: 0,
     );
     groundText = TextComponent(
       game: this,
-      text: 'go go go!',
+      displayString: 'go go go!',
       fontSize: 40.0,
       align: TextAlign.left,
       offset: Offset(100, viewport.height - groundHeight),
       y: viewport.height - groundHeight / 1.1,
       offsetType: OffsetType.specified,
+    );
+    xPos = TextComponent(
+      game: this,
+      displayString: '0',
+      fontSize: 30,
+      y: 60,
+      align: TextAlign.left,
+      offsetType: OffsetType.fixed,
+      fixedOffset: -(viewport.width / 2 - 300),
+    );
+    yPos = TextComponent(
+      game: this,
+      displayString: '0',
+      fontSize: 30,
+      y: 60,
+      align: TextAlign.left,
+      offsetType: OffsetType.fixed,
+      fixedOffset: -(viewport.width / 2 - 150),
+    );
+    xV = TextComponent(
+      game: this,
+      displayString: '0',
+      fontSize: 30,
+      y: 60,
+      align: TextAlign.left,
+      offsetType: OffsetType.fixed,
+      fixedOffset: viewport.width / 2 - 300,
+    );
+    yV = TextComponent(
+      game: this,
+      displayString: '0',
+      fontSize: 30,
+      y: 60,
+      align: TextAlign.left,
+      offsetType: OffsetType.fixed,
+      fixedOffset: viewport.width / 2 - 150,
     );
     gameOverDialog = Dialog(game: this);
 
@@ -109,7 +143,7 @@ class MonumentPlatformerGame extends BaseGame {
     super.resize(size);
 
     viewport = size;
-    groundHeight = viewport.height / 2;
+    groundHeight = viewport.height / 6;
     tileSize = viewport.width / 20;
     playerPosY = viewport.height - groundHeight - tileSize + (tileSize / 8);
   }
@@ -118,10 +152,10 @@ class MonumentPlatformerGame extends BaseGame {
     skyBackground.render(c);
 
     c.save();
-    c.translate(renderWidth, (renderHeight + viewport.height * 0));
+    c.translate(renderWidth, renderHeight);
 
-    currentLevel.levelObstacles.forEach((obstacle) {
-      if (obstacleInRange(obstacle)) obstacle.render(c);
+    currentLevel.levelPlatforms.forEach((platform) {
+      if (obstacleInRange(platform)) platform.render(c);
     });
 
     leftWall.render(c);
@@ -136,6 +170,11 @@ class MonumentPlatformerGame extends BaseGame {
       gameOverDialog.render(c);
     else
       scoreText.render(c);
+
+    xPos.render(c);
+    yPos.render(c);
+    xV.render(c);
+    yV.render(c);
   }
 
   void update(double t) {
@@ -143,7 +182,7 @@ class MonumentPlatformerGame extends BaseGame {
     renderHeight = (-player.y + viewport.height / 2 - player.height / 2);
 
     if (currentGameState == GameState.playing) {
-      currentLevel.levelObstacles.forEach((obstacle) {
+      currentLevel.levelPlatforms.forEach((obstacle) {
         if (obstacleInRange(obstacle)) {
           obstacle.update(t);
         }
@@ -157,89 +196,76 @@ class MonumentPlatformerGame extends BaseGame {
       );
       player.update(t);
       // Update scoreText
-      scoreText.setText((currentHeight / 10).floor().toString());
+      scoreText.setText((-player.y / 10).floor().toString());
+
+      xPos.setText('x: ' + player.x.round().toString());
+      yPos.setText('y: ' + player.y.round().toString());
+
+      xV.setText('xV: ' + player.xV.round().toString());
+      yV.setText('yV: ' + player.yV.round().toString());
+
       scoreText.updateWithOffset();
       groundText.updateWithOffset();
       gameOverDialog.update(t);
-      // Game tasks
-      jumpHandler();
-      checkCollision();
     }
   }
 
-  void checkCollision() {
-    currentLevel.levelObstacles.forEach((obstacle) {
-      if (obstacleInRange(obstacle) && player.toCollisionRect().overlaps(obstacle.toRect())) {
-        obstacle.markHit();
-        gameOver();
-      }
-    });
-  }
+  void checkCollision() {}
 
   void gameOver() {
     currentGameState = GameState.gameOver;
   }
 
   void restartGame() {
-    player.setRotation(0);
-    currentHeight = 0;
+    // currentHeight = 0;
     player.y = playerPosY;
     player.x = 25;
-    currentLevel.generateObstacles();
+    currentLevel.generatePlatforms();
     currentGameState = GameState.playing;
   }
 
-  bool obstacleInRange(Obstacle obs) {
-    return (-obs.y < viewport.height + currentHeight && -obs.y > currentHeight - viewport.height);
+  bool obstacleInRange(Platform platform) {
+    return (-platform.y < viewport.height + -player.y &&
+        -platform.y > -player.y - viewport.height);
   }
 
-  void jumpHandler() {
-    if (jumping) {
-      jumpState = jumpState * 0.8;
-      currentHeight += jumpState;
-      player.y -= jumpState;
+  // void jumpHandler() {
+  //   if (jumping) {
+  //     jumpState = jumpState * 0.8;
+  //     currentHeight += jumpState;
+  //     player.y -= jumpState;
 
-      // Cut the jump below 1 unit
-      if (jumpState < 1) jumping = false;
-    } else {
-      // If max. fallspeed not yet reached
-      if (jumpState < 15) {
-        jumpState = jumpState * 1.2;
-      }
-      if (currentHeight > jumpState) {
-        currentHeight -= jumpState;
-        player.y += jumpState;
+  //     // Cut the jump below 1 unit
+  //     if (jumpState < 1) jumping = false;
+  //   } else {
+  //     // If max. fallspeed not yet reached
+  //     if (jumpState < 15) {
+  //       jumpState = jumpState * 1.2;
+  //     }
+  //     if (currentHeight > jumpState) {
+  //       currentHeight -= jumpState;
+  //       player.y += jumpState;
 
-        // stop jumping below floor
-      } else if (currentHeight > 0) {
-        currentHeight = 0;
-        player.y = 0 + groundHeight - player.width;
-      }
-    }
-  }
+  //       // stop jumping below floor
+  //     } else if (currentHeight > 0) {
+  //       currentHeight = 0;
+  //       player.y = 0 + groundHeight - player.width;
+  //     }
+  //   }
+  // }
 
   void onTapDown(TapDownDetails tapDownDetails) {
-    if (gameOverDialog.playButton.contains(tapDownDetails.globalPosition)) restartGame();
+    if (gameOverDialog.playButton.contains(tapDownDetails.globalPosition))
+      restartGame();
   }
+
+  void onTapUp(TapUpDetails details) {}
 
   void jumpStart(PointerDownEvent pointerDownEvent) {
-    print(jumpState);
-    if (jumping)
-      return;
-    else {
-      if (currentGameState != GameState.gameOver) {
-        // Make the bird flutter
-        player.startJump();
-        jumping = true;
-        jumpState = jumpIntensity;
-        return;
-      }
-    }
+    player.jump();
   }
 
-  void jumpEnd(PointerUpEvent pointerUpEvent) {
-    player.endJump();
-  }
+  void jumpEnd(PointerUpEvent pointerUpEvent) {}
 
   void pressed(List<GamepadButtons> pressed, PointerDownEvent tapDownDetails) {
     pressed.forEach((GamepadButtons button) {

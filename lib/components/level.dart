@@ -1,22 +1,22 @@
 import 'dart:math';
 
 import '../game.dart';
-import 'obstacle.dart';
+import 'platform.dart';
 
 class Level {
   final MonumentPlatformerGame game;
-  List<Obstacle> levelObstacles;
+  List<Platform> levelPlatforms;
   final Random rng = new Random();
 
   Level({this.game}) {
-    generateObstacles();
+    generatePlatforms();
   }
 
-  void generateObstacles() {
-    levelObstacles = List<Obstacle>();
-    Obstacle obstacle;
-    double obstacleWidth;
-    double obstacleHeight;
+  void generatePlatforms() {
+    levelPlatforms = List<Platform>();
+    Platform platform;
+    double platformWidth;
+    double platformHeight;
     double posX;
     double posY;
     for (int i = 2; i < 200; i++) {
@@ -25,15 +25,15 @@ class Level {
       int movingRng = rng.nextInt(5);
 
       if (movingRng == 4) {
-        obstacleWidth = (rng.nextDouble() * (game.viewport.width * 0.2)) +
+        platformWidth = (rng.nextDouble() * (game.viewport.width * 0.2)) +
             (game.viewport.width * 0.3);
-        obstacleHeight = game.viewport.height / game.tileSize * 2;
+        platformHeight = game.viewport.height / game.tileSize * 2;
         isLeft = true;
         isMoving = true;
       } else {
-        obstacleWidth =
+        platformWidth =
             (rng.nextDouble() * game.tileSize / 4) + game.viewport.width / 40;
-        obstacleHeight =
+        platformHeight =
             (rng.nextDouble() * game.tileSize * 2) + game.viewport.height / 10;
       }
       // Position Obstacles
@@ -41,18 +41,18 @@ class Level {
       if (isLeft) {
         posX = 0;
       } else {
-        posX = game.viewport.width - obstacleWidth;
+        posX = game.viewport.width - platformWidth;
       }
-      obstacle = Obstacle(
+      platform = Platform(
         game: game,
         x: posX,
         y: posY,
-        width: obstacleWidth,
-        height: obstacleHeight,
+        width: platformWidth,
+        height: platformHeight,
         isMoving: isMoving,
       );
       // Add obstacles to level
-      levelObstacles.add(obstacle);
+      levelPlatforms.add(platform);
     }
   }
 }
