@@ -11,6 +11,7 @@ import 'components/platform.dart';
 import 'components/player.dart';
 import 'components/text.dart';
 import 'components/wall.dart';
+import 'components/obstacle.dart';
 
 enum GamepadButtons { left, right, jump, dash }
 enum GameState { playing, paused, gameOver }
@@ -46,6 +47,7 @@ class MonumentPlatformerGame extends Game {
   TextComponent scoreText;
   Level currentLevel;
   TextComponent xPos, yPos, xV, yV;
+  Obstacle obstacle;
 
   MonumentPlatformerGame(Size screenDimensions) {
     resize(screenDimensions);
@@ -134,6 +136,16 @@ class MonumentPlatformerGame extends Game {
       fixedOffset: viewport.width / 2 - 150,
     );
     gameOverDialog = Dialog(game: this);
+    obstacle = Obstacle(
+      game: this,
+      points: [
+        Offset(200, 200),
+        Offset(200, 400),
+        Offset(400, 400),
+        Offset(400, 200),
+      ],
+      
+    );
 
     // extra modification
     player.x += 25;

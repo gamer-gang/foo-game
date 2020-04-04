@@ -63,7 +63,12 @@ class Player extends GameObject {
     checkCollision();
   }
 
-  void move({bool left, bool right, bool dash, double time}) {
+  void move({
+    bool left,
+    bool right,
+    bool dash,
+    double time,
+  }) {
     if (dash) {
       if (!isDashing) {
         xV += movementSpeed * time * dashMultiplier * direction;
@@ -86,19 +91,18 @@ class Player extends GameObject {
 
     if (jumping) {
       yV = yV * (1 - game.gravity);
-      // game.currentHeight += yV;
       y -= yV;
 
       // Cut the jump below 1 unit
       if (yV < 1) jumping = false;
     } else {
       // If max. fallspeed not yet reached
-      if (yV < 15) {
+      if (yV < 30) {
         yV = yV * (1 + game.gravity);
       }
-      if (y < yV) {
+      // if (y < yV) {
         y += yV;
-      }
+      // }
     }
   }
 
@@ -107,10 +111,10 @@ class Player extends GameObject {
     if (x <= 0) x = 0;
 
     // floor
-    if (y + height >= game.groundHeight - height) {
-      y = game.groundHeight - width;
-      yV = 0;
-    }
+    // if (y + height >= game.groundHeight - height) {
+    //   y = game.groundHeight - width;
+    //   yV = 0;
+    // }
 
     for (Platform platform in game.currentLevel.levelPlatforms) {
       if (platform.toRectangle().intersects(this.toCollisionRectangle())) {
@@ -125,8 +129,7 @@ class Player extends GameObject {
         }
 
         // within platform
-        else if (x + collisionToleranceX + width >= platform.x &&
-            x <= platform.x + platform.width) {
+        else if (x + collisionToleranceX + width >= platform.x && x <= platform.x + platform.width) {
           // above platform
           if (y + collisionToleranceY * 2 + height <= platform.y) {
             y = platform.y - height;
@@ -153,8 +156,7 @@ class Player extends GameObject {
     double top = y;
     double bottom = y + height;
 
-    return Rect.fromLTRB(left + collisionToleranceX, top + collisionToleranceX,
-        right - collisionToleranceX, bottom - collisionToleranceY);
+    return Rect.fromLTRB(left + collisionToleranceX, top + collisionToleranceX, right - collisionToleranceX, bottom - collisionToleranceY);
   }
 
   Rectangle toCollisionRectangle() {
@@ -163,8 +165,7 @@ class Player extends GameObject {
     double top = y;
     double bottom = y + height;
 
-    return Rectangle(left + collisionToleranceX, top + collisionToleranceX,
-        right - collisionToleranceX, bottom - collisionToleranceY);
+    return Rectangle(left + collisionToleranceX, top + collisionToleranceX, right - collisionToleranceX, bottom - collisionToleranceY);
   }
 
   void renderCollisionBox(Canvas c) {
