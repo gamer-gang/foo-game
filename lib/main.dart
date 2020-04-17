@@ -10,7 +10,7 @@ import 'home.dart';
 
 void main() => runApp(LoadingPage());
 
-Future<MonumentPlatformerGame> initGame() async {
+Future<MonumentPlatformerGame> setupGame() async {
   var completer = new Completer<MonumentPlatformerGame>();
 
   await Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
@@ -29,7 +29,7 @@ Future<MonumentPlatformerGame> initGame() async {
 
 class LoadingPage extends StatelessWidget {
   const LoadingPage({Key key}) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,7 +45,7 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    initGame().then((MonumentPlatformerGame game) {
+    setupGame().then((MonumentPlatformerGame game) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (context, anim1, anim2) => MainApp(game: game),

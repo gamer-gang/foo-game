@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 extension PrecisionRounding on double {
-  double roundToPrecision(int places) {
+  double roundToPlaces(int places) {
     double mod = Math.pow(10.0, places);
     return ((this * mod).round().toDouble() / mod);
   }
@@ -37,16 +37,18 @@ dynamic getPref(Type type, {String pref = ""}) async {
   }
 }
 
-final SlideTransition Function(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child)
-    pageTransition = (
+SlideTransition pageTransition(
   BuildContext context,
   Animation<double> animation,
   Animation<double> secondaryAnimation,
   Widget child,
 ) {
-  Offset begin = Offset(0, 1);
-  Offset end = Offset.zero;
-  Animatable<Offset> tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.decelerate));
+  Animatable<Offset> tween = Tween(
+    begin: Offset(0, 1),
+    end: Offset.zero,
+  ).chain(
+    CurveTween(curve: Curves.decelerate),
+  );
 
   Animation<Offset> offsetAnimation = animation.drive(tween);
 
@@ -54,18 +56,20 @@ final SlideTransition Function(BuildContext context, Animation<double> animation
     position: offsetAnimation,
     child: child,
   );
-};
+}
 
-final SlideTransition Function(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child)
-    fileSelectTransition = (
+SlideTransition fileSelectTransition(
   BuildContext context,
   Animation<double> animation,
   Animation<double> secondaryAnimation,
   Widget child,
 ) {
-  Offset begin = Offset(0, 1);
-  Offset end = Offset(0, 0.8);
-  Animatable<Offset> tween = Tween(begin: begin, end: end).chain(CurveTween(curve: Curves.decelerate));
+  Animatable<Offset> tween = Tween(
+    begin: Offset(0, 1),
+    end: Offset(0, 0.8),
+  ).chain(
+    CurveTween(curve: Curves.decelerate),
+  );
 
   Animation<Offset> offsetAnimation = animation.drive(tween);
 
@@ -73,20 +77,22 @@ final SlideTransition Function(BuildContext context, Animation<double> animation
     position: offsetAnimation,
     child: child,
   );
-};
+}
 
-final Color darkBlue = Color.fromARGB(255, 18, 32, 47);
-final Color darkBlueAccent = Color.fromARGB(255, 34, 58, 84);
+const Color darkBlue = Color.fromARGB(255, 18, 32, 47);
+const Color darkBlueAccent = Color.fromARGB(255, 34, 58, 84);
 
-ThemeData commonTheme() => ThemeData(
-  backgroundColor: darkBlue,
-  accentColor: Colors.orange,
-  primaryColor: darkBlue,
-  fontFamily: "PTSans",
-  brightness: Brightness.dark,
-  // textTheme: Typography.blackMountainView,
-  buttonTheme: ButtonThemeData(
-    buttonColor: darkBlueAccent,
-    textTheme: ButtonTextTheme.normal,
-  ),
-);
+ThemeData commonTheme() {
+  return ThemeData(
+    backgroundColor: darkBlue,
+    accentColor: Colors.orange,
+    primaryColor: darkBlue,
+    fontFamily: "PTSans",
+    brightness: Brightness.dark,
+    // textTheme: Typography.blackMountainView,
+    buttonTheme: ButtonThemeData(
+      buttonColor: darkBlueAccent,
+      textTheme: ButtonTextTheme.normal,
+    ),
+  );
+}

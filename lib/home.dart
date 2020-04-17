@@ -4,9 +4,8 @@ import 'common.dart';
 import 'game.dart';
 import 'overlay.dart';
 
-
 class HomePage extends StatefulWidget {
-  final MonumentPlatformerGame game; 
+  final MonumentPlatformerGame game;
 
   HomePage({Key key, this.game}) : super(key: key);
 
@@ -42,19 +41,28 @@ class _HomePageState extends State<HomePage> {
               style: TextStyle(fontSize: 16),
             ),
             Spacer(),
-            RaisedButton(
-              child: Text("Start"),
-              onPressed: () {
-                if (!bottomSheetVisible) {
-                  bottomSheetVisible = true;
-                  showBottomSheet(
-                    elevation: 4,
-                    context: context,
-                    builder: (context) => FileSelector(game: game),
-                  );
-                }
-              },
-            ),
+            Row(children: [
+              RaisedButton(
+                child: Row(children: [
+                  Icon(Icons.play_arrow),
+                  Text("Start"),
+                ]),
+                onPressed: () {
+                  if (!bottomSheetVisible) {
+                    bottomSheetVisible = true;
+                    showBottomSheet(
+                      elevation: 4,
+                      context: context,
+                      builder: (context) => FileSelector(game: game),
+                    );
+                  }
+                },
+              ),
+              RaisedButton(
+                child: Icon(Icons.settings),
+                onPressed: () {},
+              ),
+            ]),
             Spacer(flex: 3),
           ]),
         ),
@@ -67,7 +75,7 @@ class FileSelector extends StatelessWidget {
   final MonumentPlatformerGame game;
   const FileSelector({MonumentPlatformerGame game}) : this.game = game;
 
-  final double buttonPadding = 8;
+  final double _buttonPadding = 8;
 
   @override
   Widget build(BuildContext context) {
@@ -76,7 +84,7 @@ class FileSelector extends StatelessWidget {
       color: darkBlueAccent,
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Row(children: <Widget>[
+        child: Row(children: [
           Spacer(flex: 1),
           IconButton(
             onPressed: () {
@@ -93,7 +101,7 @@ class FileSelector extends StatelessWidget {
           Spacer(flex: 256),
           RaisedButton(
             color: darkBlue,
-            padding: EdgeInsets.all(buttonPadding),
+            padding: EdgeInsets.all(_buttonPadding),
             child: Text(
               "File 1",
               style: TextStyle(fontSize: 20),
@@ -111,7 +119,7 @@ class FileSelector extends StatelessWidget {
           Spacer(flex: 4),
           RaisedButton(
             color: darkBlue,
-            padding: EdgeInsets.all(buttonPadding),
+            padding: EdgeInsets.all(_buttonPadding),
             child: Text(
               "File 2",
               style: TextStyle(fontSize: 20),
@@ -129,7 +137,7 @@ class FileSelector extends StatelessWidget {
           Spacer(flex: 4),
           RaisedButton(
             color: darkBlue,
-            padding: EdgeInsets.all(buttonPadding),
+            padding: EdgeInsets.all(_buttonPadding),
             child: Text(
               "File 3",
               style: TextStyle(fontSize: 20),

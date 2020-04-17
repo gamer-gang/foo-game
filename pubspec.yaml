@@ -11,22 +11,24 @@ dependencies:
 
   # Cupertino Icons font
   cupertino_icons: ^0.1.2
-  
+
   flame: ^0.18.1
   shared_preferences: ^0.5.6+2
   json_annotation: ^3.0.1
   json_serializable: ^3.2.5
   build_runner: ^1.7.4
 
-
+  # won't build without for some reason
+  flutter_svg: ^0.17.4
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
-# The following section is specific to Flutter.
+# Flutter specific config
 flutter:
+  # Material Icons class
+  uses-material-design: true
   fonts:
     - family: PTSans
       fonts:
@@ -41,7 +43,3 @@ flutter:
     - family: Baloo
       fonts:
         - asset: assets/fonts/Baloo-Regular.ttf
-            
-
-  # Material Icons class
-  uses-material-design: true

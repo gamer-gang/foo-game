@@ -74,7 +74,7 @@ class Player extends GameObject {
         xV += movementSpeed * time * dashMultiplier * direction;
         isDashing = true;
       } else {
-        if (xV.roundToPrecision(1) == 0) isDashing = false;
+        if (xV.roundToPlaces(1) == 0) isDashing = false;
       }
     } else {
       if (left) {
