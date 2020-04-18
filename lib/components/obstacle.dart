@@ -11,7 +11,7 @@ class Obstacle extends GameObject {
   double movementSpeed;
 
   Obstacle({
-    MonumentPlatformerGame game,
+    MonumentPlatformer game,
     this.points,
   }) : super(game) {
     paint = Paint();

@@ -7,7 +7,7 @@ import 'component.dart';
 import 'text.dart';
 
 class Dialog extends GameObject {
-  final MonumentPlatformerGame game;
+  final MonumentPlatformer game;
   Paint paint;
   Rect wrapper;
   RRect wrapperBox;

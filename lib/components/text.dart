@@ -6,7 +6,7 @@ import '../game.dart';
 import 'component.dart';
 
 class TextComponent extends GameObject {
-  final MonumentPlatformerGame game;
+  final MonumentPlatformer game;
   TextPainter painter;
   TextStyle textStyle;
   String displayString;

@@ -21,7 +21,7 @@ class Background extends GameObject {
   Rect rect;
   Paint paint;
   Background({
-    MonumentPlatformerGame game,
+    MonumentPlatformer game,
     double x,
     double y,
     double width,

@@ -4,7 +4,7 @@ import '../game.dart';
 import 'component.dart';
 
 class Ground extends GameObject {
-  Ground({MonumentPlatformerGame game, double x, double y, double width, double height,
+  Ground({MonumentPlatformer game, double x, double y, double width, double height,
       int colorCode})
       : super(game) {
     this.colorCode = colorCode;

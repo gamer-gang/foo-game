@@ -3,7 +3,7 @@ import 'dart:ui';
 import '../game.dart';
 
 class GameObject {
-  final MonumentPlatformerGame game;
+  final MonumentPlatformer game;
   List<GameObject> children = List<GameObject>();
   GameObject(this.game);
 

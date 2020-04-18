@@ -4,7 +4,7 @@ import '../game.dart';
 import 'platform.dart';
 
 class Level {
-  final MonumentPlatformerGame game;
+  final MonumentPlatformer game;
   List<Platform> levelPlatforms;
   final Random rng = new Random();
 

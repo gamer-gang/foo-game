@@ -20,7 +20,7 @@ class Platform extends GameObject {
   double movementSpeed;
 
   Platform({
-    MonumentPlatformerGame game,
+    MonumentPlatformer game,
     this.x,
     this.y,
     this.width,

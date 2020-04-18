@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flame/game.dart';
+import 'package:flame/game.dart' as Flame;
 import 'package:flutter/gestures.dart';
 
 import 'components/background.dart';
@@ -13,10 +13,10 @@ import 'components/text.dart';
 import 'components/wall.dart';
 import 'components/obstacle.dart';
 
-enum GamepadButtons { left, right, jump, dash }
+enum Gamepad { left, right, jump, dash }
 enum GameState { playing, paused, gameOver }
 
-class MonumentPlatformerGame extends Game {
+class MonumentPlatformer extends Flame.Game {
   // Essential
   double tileSize;
   Size viewport;
@@ -49,7 +49,7 @@ class MonumentPlatformerGame extends Game {
   TextComponent xPos, yPos, xV, yV;
   Obstacle obstacle;
 
-  MonumentPlatformerGame(Size screenDimensions) {
+  MonumentPlatformer(Size screenDimensions) {
     resize(screenDimensions);
     skyBackground = Background(
       game: this,
@@ -144,7 +144,6 @@ class MonumentPlatformerGame extends Game {
         Offset(400, 400),
         Offset(400, 200),
       ],
-      
     );
 
     // extra modification
@@ -195,9 +194,7 @@ class MonumentPlatformerGame extends Game {
 
     if (currentGameState == GameState.playing) {
       currentLevel.levelPlatforms.forEach((obstacle) {
-        if (obstacleInRange(obstacle)) {
-          obstacle.update(t);
-        }
+        if (obstacleInRange(obstacle)) obstacle.update(t);
       });
       skyBackground.update(t);
       player.move(
@@ -207,7 +204,7 @@ class MonumentPlatformerGame extends Game {
         time: t,
       );
       player.update(t);
-      // Update scoreText
+
       scoreText.setText((-player.y / 10).floor().toString());
 
       xPos.setText('x: ' + player.x.round().toString());
@@ -228,7 +225,7 @@ class MonumentPlatformerGame extends Game {
     currentGameState = GameState.gameOver;
   }
 
-  void restartGame() {
+  void restart() {
     // currentHeight = 0;
     player.y = playerPosY;
     player.x = 25;
@@ -266,56 +263,51 @@ class MonumentPlatformerGame extends Game {
   //   }
   // }
 
-  void onTapDown(TapDownDetails tapDownDetails) {
-    if (gameOverDialog.playButton.contains(tapDownDetails.globalPosition))
-      restartGame();
+  void onTapDown(TapDownDetails event) {
+    if (gameOverDialog.playButton.contains(event.globalPosition)) restart();
   }
 
   void onTapUp(TapUpDetails details) {}
 
-  void jumpStart(PointerDownEvent pointerDownEvent) {
+  void jumpStart(PointerDownEvent event) {
     player.jump();
   }
 
   void jumpEnd(PointerUpEvent pointerUpEvent) {}
 
-  void pressed(List<GamepadButtons> pressed, PointerDownEvent tapDownDetails) {
-    pressed.forEach((GamepadButtons button) {
-      print("pressed " + button.toString());
-      switch (button) {
-        case GamepadButtons.left:
-          _left = true;
-          break;
-        case GamepadButtons.right:
-          _right = true;
-          break;
-        case GamepadButtons.jump:
-          jumpStart(tapDownDetails);
-          break;
-        case GamepadButtons.dash:
-          _dash = true;
-          break;
-      }
-    });
+  void press(Gamepad pressed, PointerDownEvent event) {
+    print("pressed " + pressed.toString());
+    switch (pressed) {
+      case Gamepad.left:
+        _left = true;
+        break;
+      case Gamepad.right:
+        _right = true;
+        break;
+      case Gamepad.jump:
+        jumpStart(event);
+        break;
+      case Gamepad.dash:
+        _dash = true;
+        break;
+    }
   }
 
-  void released(List<GamepadButtons> released, PointerUpEvent pointerUpEvent) {
-    released.forEach((GamepadButtons button) {
-      print("released " + button.toString());
-      switch (button) {
-        case GamepadButtons.left:
-          _left = false;
-          break;
-        case GamepadButtons.right:
-          _right = false;
-          break;
-        case GamepadButtons.jump:
-          jumpEnd(pointerUpEvent);
-          break;
-        case GamepadButtons.dash:
-          _dash = false;
-          break;
-      }
-    });
+  void release(Gamepad released, PointerUpEvent event) {
+    print("released " + released.toString());
+    switch (released) {
+      case Gamepad.left:
+        _left = false;
+        break;
+      case Gamepad.right:
+        _right = false;
+        break;
+      case Gamepad.jump:
+        jumpEnd(event);
+        break;
+      case Gamepad.dash:
+        _dash = false;
+        break;
+    }
   }
 }

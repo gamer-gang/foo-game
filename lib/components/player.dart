@@ -11,7 +11,7 @@ import 'platform.dart';
 
 class Player extends GameObject {
   Player({
-    MonumentPlatformerGame game,
+    MonumentPlatformer game,
     this.x,
     this.y,
     this.width,
