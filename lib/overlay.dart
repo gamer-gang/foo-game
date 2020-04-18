@@ -5,17 +5,14 @@ import 'game.dart';
 
 enum File { file1, file2, file3 }
 
-final Color _overlayButtonColor = darkBlue,
-    _overlayButtonPressedColor = Color.fromARGB(255, 85, 109, 135);
-final double _overlayButtonSize = 64,
-    _overlayIconSize = 40,
-    _overlayButtonMargin = 20,
-    _overlayButtonSpacing = 32;
+final Color _btnColor = darkBlue,
+    _btnColorPressed = Color.fromARGB(255, 85, 109, 135);
+final double _btnSize = 64, _iconSize = 40, _btnMargin = 20, _btnSpacing = 32;
 
 class GamePage extends StatefulWidget {
-  final MonumentPlatformerGame game;
+  final MonumentPlatformer game;
   final File file;
-  GamePage({MonumentPlatformerGame game, File file})
+  GamePage({MonumentPlatformer game, File file})
       : this.game = game,
         this.file = file;
 
@@ -25,7 +22,7 @@ class GamePage extends StatefulWidget {
 
 class _GamePageState extends State<GamePage> {
   _GamePageState(this.game);
-  final MonumentPlatformerGame game;
+  final MonumentPlatformer game;
 
   @override
   Widget build(BuildContext context) {
@@ -41,38 +38,24 @@ class GameStack extends StatefulWidget {
     @required this.game,
   }) : super(key: key);
 
-  final MonumentPlatformerGame game;
+  final MonumentPlatformer game;
 
   @override
   _GameStackState createState() => _GameStackState();
 }
 
 class _GameStackState extends State<GameStack> {
-  Color _leftButtonColor = _overlayButtonColor,
-      _rightButtonColor = _overlayButtonColor,
-      _dashButtonColor = _overlayButtonColor,
-      _jumpButtonColor = _overlayButtonColor;
+  Color _leftBtnColor, _rightBtnColor, _dashBtnColor, _jumpBtnColor;
   @override
   Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      Container(
-          child: widget.game == null
-              ? Container(color: Colors.black)
-              : widget.game.widget),
+    return Stack(children: [
+      Container(child: widget.game.widget),
       Positioned(
         top: 0,
         right: 0,
-        child: Row(children: <Widget>[
+        child: Row(children: [
           IconButton(
-            onPressed: () {
-              // Navigator.of(context).push(
-              //   PageRouteBuilder(
-              //     pageBuilder: (context, animation1, animation2) =>
-              //         SettingsPage(),
-              //     transitionsBuilder: pageTransition,
-              //   ),
-              // );
-            },
+            onPressed: () {},
             icon: Icon(
               Icons.pause,
               color: Colors.white,
@@ -81,129 +64,49 @@ class _GameStackState extends State<GameStack> {
         ]),
       ),
       Positioned(
-        bottom: _overlayButtonMargin,
-        left: _overlayButtonMargin,
+        bottom: _btnMargin,
+        left: _btnMargin,
         child: Container(
-          width: _overlayButtonSize * 2 + _overlayButtonSpacing,
-          child: Row(children: <Widget>[
-            Listener(
-              onPointerDown: (PointerDownEvent pointerDownEvent) {
-                setState(() => _leftButtonColor = _overlayButtonPressedColor);
-                widget.game.pressed([GamepadButtons.left], pointerDownEvent);
-              },
-              onPointerUp: (PointerUpEvent pointerUpEvent) {
-                setState(() => _leftButtonColor = _overlayButtonColor);
-                widget.game.released([GamepadButtons.left], pointerUpEvent);
-              },
-              child: AnimatedContainer(
-                curve: Curves.easeOut,
-                duration: Duration(milliseconds: 75),
-                width: _overlayButtonSize,
-                height: _overlayButtonSize,
-                decoration: BoxDecoration(
-                  color: _leftButtonColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.arrow_left,
-                    color: Colors.white,
-                    size: _overlayIconSize,
-                  ),
-                ),
-              ),
+          width: _btnSize * 2 + _btnSpacing,
+          child: Row(children: [
+            overlayButton(
+              game: widget.game,
+              color: _leftBtnColor,
+              key: Gamepad.left,
+              icon: Icons.arrow_left,
+              update: (newColor) => setState(() => _leftBtnColor = newColor),
             ),
             Spacer(),
-            Listener(
-              onPointerDown: (PointerDownEvent pointerDownEvent) {
-                setState(() => _rightButtonColor = _overlayButtonPressedColor);
-                widget.game.pressed([GamepadButtons.right], pointerDownEvent);
-              },
-              onPointerUp: (PointerUpEvent pointerUpEvent) {
-                setState(() => _rightButtonColor = _overlayButtonColor);
-                widget.game.released([GamepadButtons.right], pointerUpEvent);
-              },
-              child: AnimatedContainer(
-                curve: Curves.easeOut,
-                duration: Duration(milliseconds: 75),
-                width: _overlayButtonSize,
-                height: _overlayButtonSize,
-                decoration: BoxDecoration(
-                  color: _rightButtonColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.arrow_right,
-                    color: Colors.white,
-                    size: _overlayIconSize,
-                  ),
-                ),
-              ),
+            overlayButton(
+              game: widget.game,
+              color: _rightBtnColor,
+              key: Gamepad.right,
+              icon: Icons.arrow_right,
+              update: (newColor) => setState(() => _rightBtnColor = newColor),
             ),
           ]),
         ),
       ),
       Positioned(
-        bottom: _overlayButtonMargin,
-        right: _overlayButtonMargin,
+        bottom: _btnMargin,
+        right: _btnMargin,
         child: Container(
-          width: _overlayButtonSize * 2 + _overlayButtonSpacing,
-          child: Row(children: <Widget>[
-            Listener(
-              onPointerDown: (PointerDownEvent pointerDownEvent) {
-                setState(() => _dashButtonColor = _overlayButtonPressedColor);
-                widget.game.pressed([GamepadButtons.dash], pointerDownEvent);
-              },
-              onPointerUp: (PointerUpEvent pointerUpEvent) {
-                setState(() => _dashButtonColor = _overlayButtonColor);
-                widget.game.released([GamepadButtons.dash], pointerUpEvent);
-              },
-              child: AnimatedContainer(
-                curve: Curves.easeOut,
-                duration: Duration(milliseconds: 75),
-                width: _overlayButtonSize,
-                height: _overlayButtonSize,
-                decoration: BoxDecoration(
-                  color: _dashButtonColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.fast_forward,
-                    color: Colors.white,
-                    size: _overlayIconSize - 16,
-                  ),
-                ),
-              ),
+          width: _btnSize * 2 + _btnSpacing,
+          child: Row(children: [
+            overlayButton(
+              game: widget.game,
+              color: _dashBtnColor,
+              key: Gamepad.dash,
+              icon: Icons.fast_forward,
+              update: (newColor) => setState(() => _dashBtnColor = newColor),
             ),
             Spacer(),
-            Listener(
-              onPointerDown: (PointerDownEvent pointerDownEvent) {
-                setState(() => _jumpButtonColor = _overlayButtonPressedColor);
-                widget.game.pressed([GamepadButtons.jump], pointerDownEvent);
-              },
-              onPointerUp: (PointerUpEvent pointerUpEvent) {
-                setState(() => _jumpButtonColor = _overlayButtonColor);
-                widget.game.released([GamepadButtons.jump], pointerUpEvent);
-              },
-              child: AnimatedContainer(
-                curve: Curves.easeOut,
-                duration: Duration(milliseconds: 75),
-                width: _overlayButtonSize,
-                height: _overlayButtonSize,
-                decoration: BoxDecoration(
-                  color: _jumpButtonColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.arrow_drop_up,
-                    color: Colors.white,
-                    size: _overlayIconSize,
-                  ),
-                ),
-              ),
+            overlayButton(
+              game: widget.game,
+              color: _jumpBtnColor,
+              key: Gamepad.jump,
+              icon: Icons.arrow_drop_up,
+              update: (newColor) => setState(() => _jumpBtnColor = newColor),
             ),
           ]),
         ),
@@ -211,3 +114,55 @@ class _GameStackState extends State<GameStack> {
     ]);
   }
 }
+
+Widget overlayButton({
+  MonumentPlatformer game,
+  Color color,
+  Function(Color) update,
+  Gamepad key,
+  IconData icon,
+}) {
+  if (color == null) color = _btnColor;
+  return Listener(
+    onPointerDown: (PointerDownEvent pointerDownEvent) {
+      update(_btnColorPressed);
+      game.press(key, pointerDownEvent);
+    },
+    onPointerUp: (PointerUpEvent pointerUpEvent) {
+      update(_btnColor);
+      game.release(key, pointerUpEvent);
+    },
+    child: AnimatedContainer(
+      curve: Curves.easeOut,
+      duration: Duration(milliseconds: 75),
+      width: _btnSize,
+      height: _btnSize,
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: Icon(
+          icon,
+          color: Colors.white,
+          size: _iconSize,
+        ),
+      ),
+    ),
+  );
+}
+
+// class OverlayButton extends StatelessWidget {
+//   const OverlayButton({
+//     Key key,
+//     @required Color buttonColor,
+//   })  : _buttonColor = buttonColor,
+//         super(key: key);
+
+//   final Color _buttonColor;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return
+//   }
+// }
