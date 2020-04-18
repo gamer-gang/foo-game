@@ -9,10 +9,15 @@ extension PrecisionRounding on double {
   }
 }
 
-dynamic getPref(Type type, {String pref = ""}) async {
+Future<Set<String>> getPrefKeys() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  if (type == Key) return prefs.getKeys();
-  if (pref == "") throw ArgumentError("No preference name provided.");
+
+  return prefs.getKeys();
+}
+
+dynamic getPref(String pref, Type type) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  if (pref == null) throw ArgumentError("No preference name provided.");
   try {
     switch (type) {
       case bool:
@@ -47,7 +52,7 @@ SlideTransition pageTransition(
     begin: Offset(0, 1),
     end: Offset.zero,
   ).chain(
-    CurveTween(curve: Curves.decelerate),
+    CurveTween(curve: Curves.ease),
   );
 
   Animation<Offset> offsetAnimation = animation.drive(tween);
@@ -68,7 +73,7 @@ SlideTransition fileSelectTransition(
     begin: Offset(0, 1),
     end: Offset(0, 0.8),
   ).chain(
-    CurveTween(curve: Curves.decelerate),
+    CurveTween(curve: Curves.ease),
   );
 
   Animation<Offset> offsetAnimation = animation.drive(tween);
