@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,21 +8,22 @@ import 'home.dart';
 
 void main() => runApp(LoadingPage());
 
-Future<MonumentPlatformerGame> setupGame() async {
-  var completer = new Completer<MonumentPlatformerGame>();
+Future<MonumentPlatformer> setupGame() async {
+  // var completer = new Completer<MonumentPlatformerGame>();
 
   await Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
   await Flame.util.fullScreen();
 
   final Size dimensions = await Flame.util.initialDimensions();
-  MonumentPlatformerGame game = MonumentPlatformerGame(dimensions);
+  MonumentPlatformer game = MonumentPlatformer(dimensions);
   // TapGestureRecognizer tapRecognizer = TapGestureRecognizer();
   // tapRecognizer.onTapDown = game.onTapDown;
   // tapRecognizer.onTapUp = game.onTapUp;
   // Flame.util.addGestureRecognizer(tapRecognizer);
 
-  completer.complete(game);
-  return completer.future;
+  // completer.complete(game);
+  // return completer.future;
+  return game;
 }
 
 class LoadingPage extends StatelessWidget {
@@ -45,7 +44,7 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    setupGame().then((MonumentPlatformerGame game) {
+    setupGame().then((MonumentPlatformer game) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (context, anim1, anim2) => MainApp(game: game),
@@ -88,7 +87,7 @@ class LoadingScreen extends StatelessWidget {
 class MainApp extends StatefulWidget {
   MainApp({Key key, this.game}) : super(key: key);
 
-  final MonumentPlatformerGame game;
+  final MonumentPlatformer game;
 
   @override
   _MainAppState createState() => _MainAppState(game: game);
@@ -97,7 +96,7 @@ class MainApp extends StatefulWidget {
 class _MainAppState extends State<MainApp> {
   _MainAppState({this.game});
 
-  MonumentPlatformerGame game;
+  MonumentPlatformer game;
 
   @override
   Widget build(BuildContext context) {
