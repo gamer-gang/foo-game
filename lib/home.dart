@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:monument_platformer/settings.dart';
 
 import 'common.dart';
 import 'game.dart';
 import 'overlay.dart';
 
 class HomePage extends StatefulWidget {
-  final MonumentPlatformerGame game;
+  final MonumentPlatformer game;
 
   HomePage({Key key, this.game}) : super(key: key);
 
@@ -14,7 +15,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  MonumentPlatformerGame game;
+  MonumentPlatformer game;
 
   static bool bottomSheetVisible = false;
   _HomePageState({this.game});
@@ -42,11 +43,15 @@ class _HomePageState extends State<HomePage> {
             ),
             Spacer(),
             Row(children: [
+              Spacer(flex: 128),
               RaisedButton(
-                child: Row(children: [
-                  Icon(Icons.play_arrow),
-                  Text("Start"),
-                ]),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.play_arrow),
+                    Text("Start"),
+                  ],
+                ),
                 onPressed: () {
                   if (!bottomSheetVisible) {
                     bottomSheetVisible = true;
@@ -58,10 +63,25 @@ class _HomePageState extends State<HomePage> {
                   }
                 },
               ),
+              Spacer(),
               RaisedButton(
-                child: Icon(Icons.settings),
-                onPressed: () {},
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(Icons.settings),
+                    Text('Settings'),
+                  ],
+                ),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, anim1, anim2) => SettingsPage(),
+                      transitionsBuilder: pageTransition,
+                    ),
+                  );
+                },
               ),
+              Spacer(flex: 128),
             ]),
             Spacer(flex: 3),
           ]),
@@ -72,8 +92,8 @@ class _HomePageState extends State<HomePage> {
 }
 
 class FileSelector extends StatelessWidget {
-  final MonumentPlatformerGame game;
-  const FileSelector({MonumentPlatformerGame game}) : this.game = game;
+  final MonumentPlatformer game;
+  const FileSelector({MonumentPlatformer game}) : this.game = game;
 
   final double _buttonPadding = 8;
 
@@ -107,13 +127,15 @@ class FileSelector extends StatelessWidget {
               style: TextStyle(fontSize: 20),
             ),
             onPressed: () {
-              Navigator.of(context).push(PageRouteBuilder(
-                pageBuilder: (context, anim1, anim2) => GamePage(
-                  game: game,
-                  file: File.file1,
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, anim1, anim2) => GamePage(
+                    game: game,
+                    file: File.file1,
+                  ),
+                  transitionsBuilder: pageTransition,
                 ),
-                transitionsBuilder: pageTransition,
-              ));
+              );
             },
           ),
           Spacer(flex: 4),
