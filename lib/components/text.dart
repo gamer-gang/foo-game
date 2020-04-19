@@ -1,84 +1,36 @@
 import 'dart:ui';
-
 import 'package:flutter/painting.dart';
 
 import '../game.dart';
 import 'component.dart';
 
-class TextComponent extends GameObject {
-  final MonumentPlatformer game;
+class Text extends GameObject {
+  MonumentPlatformer game;
+  String text;
   TextPainter painter;
-  TextStyle textStyle;
-  String displayString;
-  Offset position;
-  double fontSize;
-  double y;
-  Offset offset;
-  OffsetType offsetType;
+  TextStyle style;
+  TextAlign align;
+  Offset pos;
+  double size;
 
-  double fixedOffset = 0;
-
-  TextComponent({
-    this.game,
-    this.displayString,
-    this.fontSize,
-    this.y,
-    TextAlign align = TextAlign.center,
-    int colorCode = 0xfffafafa,
-    this.offset = Offset.zero,
-    this.offsetType = OffsetType.fixed, 
-    double fixedOffset = 0,
-  }) : super(game) {
-    this.fixedOffset = fixedOffset;
+  Text({this.game, this.text, this.size, this.style, this.pos, this.align}) {
     painter = TextPainter(
-      textAlign: align,
+      text: TextSpan(text: text, style: style),
       textDirection: TextDirection.ltr,
-    );
-    textStyle = TextStyle(
-      fontFamily: 'PTSans',
-      fontWeight: FontWeight.bold,
-      color: Color(colorCode),
-      fontSize: fontSize,
+      textAlign: align,
     );
   }
 
-  void setText(String text) {
-    this.displayString = text;
-  }
-
-  Rect toRect() {
-    return Rect.fromLTWH((game.viewport.width / 2) - (painter.width / 2), y - (painter.height / 2), painter.width, painter.height);
-  }
-
-  @override
   void render(Canvas c) {
-    updateWithOffset();
-    painter.paint(c, this.position);
+    painter.layout();
+    painter.paint(c, pos);
   }
 
+  void update(double t) {}
 
-  void updateWithOffset() {
-    // ignore: deprecated_member_use
-    if ((painter.text?.text ?? '') != displayString) {
-      painter.text = TextSpan(
-        text: displayString,
-        style: textStyle,
-      );
-      painter.layout();
-    }
-
-    switch (this.offsetType) {
-      case OffsetType.specified:
-        this.position = this.offset;
-        break;
-      case OffsetType.fixed:
-        this.position = Offset(
-          (game.viewport.width / 2) - (painter.width / 2) + fixedOffset,
-          y - (painter.height / 2),
-        );
-        break;
-    }
+  void setText(String newText) {
+    text = newText;
+    painter.text = TextSpan(text: text, style: style);
+    painter.layout();
   }
 }
-
-enum OffsetType { specified, fixed }

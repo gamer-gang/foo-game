@@ -1,187 +1,64 @@
-import 'dart:math';
 import 'dart:ui';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-
-import '../common.dart';
 import '../game.dart';
 import 'component.dart';
-import 'platform.dart';
 
 class Player extends GameObject {
+  MonumentPlatformer game;
+  Color color;
+  Offset pos; // note: abb. for position
+  Offset size; // note: not an abbreviation
+  Offset vel; // note: abb. for velocity
+  
+  bool dead;
+
+  static double speed = 5;
+  static double maxSpeed = 5;
+  static double friction = 0.1;
+
+  // vc?
+  
   Player({
-    MonumentPlatformer game,
-    this.x,
-    this.y,
-    this.width,
-    this.height,
-    this.rotation: 0,
-    this.friction: 0.2,
-  }) : super(game) {
-    collisionToleranceX = game.tileSize / 20;
-    collisionToleranceY = game.tileSize / 20;
-    movementSpeed = game.viewport.width / 12;
-  }
-
-  double collisionToleranceX, collisionToleranceY;
-  int direction = 1;
-  double width, height;
-  bool isDashing = false;
-  double jumpHeight = 30;
-  bool jumping = false;
-  int jumps = 2;
-  double movementSpeed;
-  Paint paint, playerPaint;
-  Rect rect, playerRect;
-  double rotation;
-  double x = 0, y = 0, xV = 0, yV = 0, friction, dashMultiplier = 32;
-
-  @override
-  void render(Canvas c) {
-    paint = Paint();
-    playerPaint = Paint();
-    // Transparent bounding box
-    paint.color = Color(0x00000000);
-    playerPaint.color = Color.fromARGB(255, 200, 200, 200);
-    rect = Rect.fromLTWH(0, 0, width, height);
-    playerRect = Rect.fromLTWH(0, 0, width, height);
-
-    c.save();
-    c.translate(x, y);
-    c.translate(width / 2, height / 2);
-    c.rotate(rotation);
-    c.translate(-width / 2, -height / 2);
-    c.drawRect(rect, paint);
-    c.drawRect(playerRect, playerPaint);
-
-    c.restore();
-  }
-
-  @override
-  void update(double t) {
-    checkCollision();
-  }
-
-  void move({
-    bool left,
-    bool right,
-    bool dash,
-    double time,
+    this.game,
+    Offset initialPosition,
+    this.size,
+    this.color,
   }) {
-    if (dash) {
-      if (!isDashing) {
-        xV += movementSpeed * time * dashMultiplier * direction;
-        isDashing = true;
-      } else {
-        if (xV.roundToPlaces(1) == 0) isDashing = false;
-      }
-    } else {
-      if (left) {
-        xV -= movementSpeed * time;
-        direction = 1;
-      }
-      if (right) {
-        xV += movementSpeed * time;
-        direction = -1;
-      }
-      xV *= 1 - friction;
-      x += xV;
-    }
-
-    if (jumping) {
-      yV = yV * (1 - game.gravity);
-      y -= yV;
-
-      // Cut the jump below 1 unit
-      if (yV < 1) jumping = false;
-    } else {
-      // If max. fallspeed not yet reached
-      if (yV < 30) {
-        yV = yV * (1 + game.gravity);
-      }
-      // if (y < yV) {
-        y += yV;
-      // }
-    }
+    pos = initialPosition;
+    dead = false;
+    vel = Offset(0, 0);
   }
 
-  void checkCollision() {
-    // left wall
-    if (x <= 0) x = 0;
+  void render(Canvas c) {
+    if (dead) dead = true; // do something
 
-    // floor
-    // if (y + height >= game.groundHeight - height) {
-    //   y = game.groundHeight - width;
-    //   yV = 0;
-    // }
+    Paint paint = Paint()..color = color;
+    c.drawRect(Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy), paint);
+  }
+  
+  void update(double t) {
+    if(checkDeath()) dead = true;
+    vel = Offset(
+      vel.dx.abs() > Player.maxSpeed ? Player.maxSpeed * vel.dx.sign : vel.dx,
+      vel.dy.abs() > Player.maxSpeed ? Player.maxSpeed * vel.dy.sign : vel.dy,
+    );
 
-    for (Platform platform in game.currentLevel.levelPlatforms) {
-      if (platform.toRectangle().intersects(this.toCollisionRectangle())) {
-        // left of platform
-        if (x + width + collisionToleranceX <= platform.x) {
-          x = platform.x + width;
-        }
+    // TODO: platform collision
 
-        // right of platform
-        else if (x + collisionToleranceX >= platform.x + platform.width) {
-          x = platform.x + platform.width;
-        }
-
-        // within platform
-        else if (x + collisionToleranceX + width >= platform.x && x <= platform.x + platform.width) {
-          // above platform
-          if (y + collisionToleranceY * 2 + height <= platform.y) {
-            y = platform.y - height;
-            yV = 0;
-            jumps = 2;
-          }
-
-          // below platform
-          else if (y + collisionToleranceY <= platform.y + platform.height) {
-            y = platform.y + platform.height;
-          }
-        }
-      }
-    }
+    pos += vel;
+    vel = vel * Player.friction;
+  } 
+  
+  void move(Gamepad gamepad) {
+    if (gamepad.left) 
+      vel = vel.translate(-Player.speed, 0);
+    
+    if (gamepad.right) 
+      vel = vel.translate(Player.speed, 0);
+    
   }
 
-  Rect toRect() {
-    return Rect.fromLTWH(x, y, width, height);
-  }
-
-  Rect toCollisionRect() {
-    double left = x;
-    double right = x + width;
-    double top = y;
-    double bottom = y + height;
-
-    return Rect.fromLTRB(left + collisionToleranceX, top + collisionToleranceX, right - collisionToleranceX, bottom - collisionToleranceY);
-  }
-
-  Rectangle toCollisionRectangle() {
-    double left = x;
-    double right = x + width;
-    double top = y;
-    double bottom = y + height;
-
-    return Rectangle(left + collisionToleranceX, top + collisionToleranceX, right - collisionToleranceX, bottom - collisionToleranceY);
-  }
-
-  void renderCollisionBox(Canvas c) {
-    Paint paint = Paint();
-    paint.color = Colors.red;
-    Rect collisionRect = this.toCollisionRect();
-
-    c.drawRect(collisionRect, paint);
-  }
-
-  void jump() {
-    print('jump handler');
-    if (jumps != 0) {
-      // jumps--;
-      jumping = true;
-      yV = jumpHeight;
-    }
+  bool checkDeath() {
+    return false;
   }
 }

@@ -1,47 +1,53 @@
 import 'dart:ui';
 
-import 'package:flutter/rendering.dart';
+import 'package:flutter/painting.dart';
 
 import '../game.dart';
 import 'component.dart';
 
 class Background extends GameObject {
-  final Gradient gradient = LinearGradient(
-    begin: Alignment.topCenter,
-    colors: <Color>[
-      Color.fromARGB(255, 1, 101, 177),
-      Color.fromARGB(255, 255, 255, 255),
-    ],
-    stops: [
-      0.0,
-      1.0,
-    ],
-    end: Alignment(0, 01),
-  );
-  Rect rect;
+  MonumentPlatformer game;
+  Color color;
   Paint paint;
+
   Background({
-    MonumentPlatformer game,
-    double x,
-    double y,
-    double width,
-    double height,
-  }) : super(game) {
-    paint = Paint();
-    paint.color = Color(0xff77b5e1);
-
-    rect = Rect.fromLTWH(x, y, width, height);
-    paint = new Paint()..shader = gradient.createShader(rect);
+    this.game, 
+    Color initialColor,
+  }) {
+    paint = Paint()..color = initialColor;
+    color = initialColor;
   }
 
-  @override
   void render(Canvas c) {
-    c.drawRect(rect, paint);
-    // super.render(c);
+    Paint paint = Paint()..color = color;
+
+    c.drawRect(Rect.fromLTWH(0, 0, game.viewport.width, game.viewport.height), paint);
+  }
+  
+  void update(double t) {
+
   }
 
-  @override
-  void update(double t) {
-    super.update(t);
+
+  void updatePosition(Offset playerPos) {
+    if (playerPos.dx < 50)
+      paint.color = Color(0xffffffff);
+    else if (playerPos.dx < 100) 
+      paint.color = Color(0xffcccccc);
+    else if (playerPos.dx < 150) 
+      paint.color = Color(0xff999999);
+    else if (playerPos.dx < 200) 
+      paint.color = Color(0xff444444);
+    else 
+      paint.color = Color(0xff111111);
+    
+    // LinearGradient gradient = LinearGradient(
+    //   colors: [
+    //     Color(0xffffffff),
+    //     Color(0xff000000)
+    //   ]
+    // );  
+
+    // paint.shader = gradient.createShader(Rect.fromLTWH(0, 0, game.viewport.width, game.viewport.height));
   }
 }

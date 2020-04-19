@@ -72,7 +72,7 @@ class _GameStackState extends State<GameStack> {
             overlayButton(
               game: widget.game,
               color: _leftBtnColor,
-              key: Gamepad.left,
+              key: GamepadButton.left,
               icon: Icons.arrow_left,
               update: (newColor) => setState(() => _leftBtnColor = newColor),
             ),
@@ -80,7 +80,7 @@ class _GameStackState extends State<GameStack> {
             overlayButton(
               game: widget.game,
               color: _rightBtnColor,
-              key: Gamepad.right,
+              key: GamepadButton.right,
               icon: Icons.arrow_right,
               update: (newColor) => setState(() => _rightBtnColor = newColor),
             ),
@@ -96,7 +96,7 @@ class _GameStackState extends State<GameStack> {
             overlayButton(
               game: widget.game,
               color: _dashBtnColor,
-              key: Gamepad.dash,
+              key: GamepadButton.dash,
               icon: Icons.fast_forward,
               update: (newColor) => setState(() => _dashBtnColor = newColor),
             ),
@@ -104,7 +104,7 @@ class _GameStackState extends State<GameStack> {
             overlayButton(
               game: widget.game,
               color: _jumpBtnColor,
-              key: Gamepad.jump,
+              key: GamepadButton.jump,
               icon: Icons.arrow_drop_up,
               update: (newColor) => setState(() => _jumpBtnColor = newColor),
             ),
@@ -119,7 +119,7 @@ Widget overlayButton({
   MonumentPlatformer game,
   Color color,
   Function(Color) update,
-  Gamepad key,
+  GamepadButton key,
   IconData icon,
 }) {
   if (color == null) color = _btnColor;

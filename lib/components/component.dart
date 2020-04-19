@@ -5,7 +5,7 @@ import '../game.dart';
 class GameObject {
   final MonumentPlatformer game;
   List<GameObject> children = List<GameObject>();
-  GameObject(this.game);
+  GameObject({this.game});
 
   void render(Canvas c) {
     children.forEach((child) => child.render(c));
