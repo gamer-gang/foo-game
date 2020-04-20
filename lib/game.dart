@@ -13,39 +13,38 @@ enum GamepadButton { left, right, dash, jump }
 enum GameState { playing, paused, gameOver }
 
 class MonumentPlatformer extends Flame.Game {
-  Size viewport;
+  Background background;
   Offset camera;
   Gamepad gamepad;
-
-  Player player;
-  Background background;
   Level level;
+  Player player;
+  Size viewport;
 
   MonumentPlatformer(Size screenDimensions) {
     init(screenDimensions);
     camera = Offset(0, 0);
-    player = Player(
+    player = Player.create(
       game: this,
       debug: true,
       initialPosition: Offset(0, 0),
       size: Offset(50, 50),
       color: Color(0xff1e90ff),
     );
-    background = Background(
+    background = Background.create(
       game: this,
       initialColor: Color(0xffffffff),
     );
     gamepad = Gamepad();
-    level = Level(
+    level = Level.create(
       game: this,
       platforms: [
-        Platform(
+        Platform.create(
           game: this,
           color: Color(0xff333333),
           initialPosition: Offset(30, 30),
           size: Offset(70, 20),
         ),
-        Platform(
+        Platform.create(
           game: this,
           color: Color(0xff333333),
           initialPosition: Offset(60, 60),
@@ -98,6 +97,7 @@ class MonumentPlatformer extends Flame.Game {
 
 class Gamepad {
   bool left, right, dash, jump;
+
   Gamepad() {
     left = false;
     right = false;

@@ -5,19 +5,17 @@ import 'package:flutter/painting.dart';
 import '../game.dart';
 import 'component.dart';
 
-class Platform extends GameObject {
-  MonumentPlatformer game;
+class Platform extends GameObject with RectProperties {
   Color color;
 
-  Offset pos, size;
-
-  Platform({
-    this.game,
+  Platform.create({
+    MonumentPlatformer game,
     this.color,
     Offset initialPosition,
-    this.size,
-  }) {
-    pos = initialPosition;
+    Offset size,
+  }) : super.create(game) {
+    this.size = size;
+    this.pos = initialPosition;
   }
 
   void render(Canvas c) {
@@ -26,8 +24,4 @@ class Platform extends GameObject {
   }
 
   void update(double t) {}
-
-  Rect toRect() {
-    return Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy);
-  }
 }

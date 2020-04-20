@@ -1,12 +1,11 @@
-import 'package:monument_platformer/components/component.dart';
-import 'package:monument_platformer/components/platform.dart';
-import 'package:monument_platformer/game.dart';
+import '../game.dart';
+import 'component.dart';
+import 'platform.dart';
 
 class Level extends GameObject {
-  MonumentPlatformer game;
   List<Platform> platforms;
 
-  Level({this.game, this.platforms}) {
+  Level.create({MonumentPlatformer game, this.platforms}) : super.create(game) {
     platforms.forEach((el) => this.addChild(el));
   }
 

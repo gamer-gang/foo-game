@@ -9,10 +9,9 @@ import '../common.dart';
 import 'component.dart';
 import 'text.dart';
 
-class Player extends GameObject {
-  MonumentPlatformer game;
+class Player extends GameObject with RectProperties {
   Color color;
-  Offset pos, size, vel, accel;
+  Offset vel, accel;
   Text posText, velText, accelText;
   bool dead, debug, jumping;
 
@@ -23,20 +22,21 @@ class Player extends GameObject {
       friction = 0.8,
       gravity = 0.8;
 
-  Player({
-    this.game,
+  Player.create({
+    MonumentPlatformer game,
     Offset initialPosition,
-    this.size,
+    Offset size,
     this.color,
     this.debug = false,
-  }) {
-    pos = initialPosition;
-    dead = false;
-    jumping = false;
-    vel = Offset(0, 0);
-    accel = Offset(0, 0);
+  }) : super.create(game) {
+    this.pos = initialPosition;
+    this.size = size;
+    this.dead = false;
+    this.jumping = false;
+    this.vel = Offset(0, 0);
+    this.accel = Offset(0, 0);
     if (debug) {
-      posText = Text(
+      posText = Text.create(
         align: TextAlign.left,
         pos: pos.translate(0, -15),
         style: TextStyle(
@@ -46,7 +46,7 @@ class Player extends GameObject {
         text: '',
         size: 10,
       );
-      velText = Text(
+      velText = Text.create(
         align: TextAlign.left,
         pos: (pos + vel * 10).translate(0, -15),
         style: TextStyle(
@@ -56,7 +56,7 @@ class Player extends GameObject {
         text: '',
         size: 10,
       );
-      accelText = Text(
+      accelText = Text.create(
         align: TextAlign.left,
         pos: (pos + vel * 10 + accel * 10).translate(0, -15),
         style: TextStyle(
@@ -76,7 +76,11 @@ class Player extends GameObject {
     if (debug) {
       c.drawPoints(
         PointMode.points,
-        [pos, pos + vel * 10, pos + vel * 10 + accel * 10],
+        [
+          pos,
+          pos + vel * 10,
+          pos + vel * 10 + accel * 10,
+        ],
         Paint()
           ..color = Colors.black
           ..strokeCap = StrokeCap.round
@@ -139,40 +143,29 @@ class Player extends GameObject {
     return false;
   }
 
-  Rect toRect() {
-    return Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy);
-  }
-
   void collide(Platform platform) {
-    double tolerance = 0.05;
-    double playerLeft = pos.dx;
-    double playerRight = pos.dx + size.dx;
-    double playerTop = pos.dy;
-    double playerBottom = pos.dy + size.dy;
-    double platformLeft = platform.pos.dx + tolerance;
-    double platformRight = platform.pos.dx + platform.size.dx - tolerance;
-    double platformTop = platform.pos.dy + tolerance;
-    double platformBottom = platform.pos.dy + platform.size.dy - tolerance;
+    // platform.toRect().collision(this);
 
-    if (playerRight > platformLeft && playerLeft < platformRight) {
+    if (this.right > platform.left && this.left < platform.right) {
       // we are within the platform width
 
       if (this.toRect().overlaps(platform.toRect())) {
         // we are intersecting the platform im some way
 
-        if (playerBottom >= platformTop && playerBottom <= platformBottom) {
+        if (this.bottom >= platform.top && this.bottom <= platform.bottom) {
           // we are falling through the platform; move to the top
-          pos = pos.withY(platformTop - size.dy);
+          pos = pos.withY(platform.top - size.dy);
           jumping = false;
-        } else if (playerTop >= platformTop && playerTop <= platformBottom) {
+        } else if (this.top >= platform.top && this.top <= platform.bottom) {
           // we are hitting the bottom of the platform; move to the bottom
-          pos = pos.withY(platformBottom);
-        } else if (playerLeft >= platformLeft && playerLeft <= platformRight) {
-          // we are sliding into the right of the platform; move to the right
-          pos = pos.withX(platformRight);
-        } else if (playerRight >= platformLeft && playerRight <= platformRight) {
+          pos = pos.withY(platform.bottom);
+        } else if (this.right >= platform.left &&
+            this.right <= platform.right) {
           // we are sliding into the left of the platform; move to the left
-          pos = pos.withX(platformLeft - size.dx);
+          pos = pos.withX(platform.left - size.dx);
+        } else if (this.left >= platform.left && this.left <= platform.right) {
+          // we are sliding into the right of the platform; move to the right
+          pos = pos.withX(platform.right);
         }
       }
     }
