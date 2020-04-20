@@ -85,18 +85,18 @@ class LoadingScreen extends StatelessWidget {
 }
 
 class MainApp extends StatefulWidget {
-  MainApp({Key key, this.game}) : super(key: key);
-
   final MonumentPlatformer game;
+
+  MainApp({Key key, this.game}) : super(key: key);
 
   @override
   _MainAppState createState() => _MainAppState(game: game);
 }
 
 class _MainAppState extends State<MainApp> {
-  _MainAppState({this.game});
-
   MonumentPlatformer game;
+
+  _MainAppState({this.game});
 
   @override
   Widget build(BuildContext context) {

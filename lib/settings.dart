@@ -16,6 +16,12 @@ class _SettingsPageState extends State<SettingsPage> {
     "sendUsageData": "",
   };
 
+  @override
+  void initState() {
+    super.initState();
+    setBooleanSettingText(["animations", "sendUsageData"]);
+  }
+
   Future<bool> togglePref(pref, [bool defaultValue]) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool next;
@@ -29,12 +35,6 @@ class _SettingsPageState extends State<SettingsPage> {
     await prefs.setBool(pref, next);
 
     return next;
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    setBooleanSettingText(["animations", "sendUsageData"]);
   }
 
   void setBooleanSettingText(dynamic val) async {

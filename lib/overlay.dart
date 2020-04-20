@@ -10,8 +10,9 @@ final Color _btnColor = darkBlue,
 final double _btnSize = 64, _iconSize = 40, _btnMargin = 20, _btnSpacing = 32;
 
 class GamePage extends StatefulWidget {
-  final MonumentPlatformer game;
   final File file;
+  final MonumentPlatformer game;
+
   GamePage({MonumentPlatformer game, File file})
       : this.game = game,
         this.file = file;
@@ -21,8 +22,9 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  _GamePageState(this.game);
   final MonumentPlatformer game;
+
+  _GamePageState(this.game);
 
   @override
   Widget build(BuildContext context) {
@@ -33,12 +35,12 @@ class _GamePageState extends State<GamePage> {
 }
 
 class GameStack extends StatefulWidget {
+  final MonumentPlatformer game;
+
   const GameStack({
     Key key,
     @required this.game,
   }) : super(key: key);
-
-  final MonumentPlatformer game;
 
   @override
   _GameStackState createState() => _GameStackState();
@@ -46,6 +48,7 @@ class GameStack extends StatefulWidget {
 
 class _GameStackState extends State<GameStack> {
   Color _leftBtnColor, _rightBtnColor, _dashBtnColor, _jumpBtnColor;
+
   @override
   Widget build(BuildContext context) {
     return Stack(children: [

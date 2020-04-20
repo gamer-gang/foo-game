@@ -15,9 +15,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  static bool bottomSheetVisible = false;
+
   MonumentPlatformer game;
 
-  static bool bottomSheetVisible = false;
   _HomePageState({this.game});
 
   @override
@@ -93,9 +94,10 @@ class _HomePageState extends State<HomePage> {
 
 class FileSelector extends StatelessWidget {
   final MonumentPlatformer game;
-  const FileSelector({MonumentPlatformer game}) : this.game = game;
 
   final double _buttonPadding = 8;
+
+  const FileSelector({MonumentPlatformer game}) : this.game = game;
 
   @override
   Widget build(BuildContext context) {

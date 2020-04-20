@@ -6,7 +6,6 @@ jobs:
   build-and-test: 
     runs-on: ubuntu-latest
     steps:
-    # checkout code
     - name: Checkout code
       uses: actions/checkout@v1 
     - name: Setup Java (12.x)
@@ -23,5 +22,5 @@ jobs:
       run: flutter build aot
     - name: Analyze code
       run: flutter analyze
-    # Run tests
+    # - name: Run tests
     # - run: flutter test
