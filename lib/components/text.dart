@@ -1,11 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/painting.dart';
 
-import '../game.dart';
 import 'component.dart';
 
 class Text extends GameObject {
-  MonumentPlatformer game;
   String text;
   TextPainter painter;
   TextStyle style;
@@ -13,7 +11,13 @@ class Text extends GameObject {
   Offset pos;
   double size;
 
-  Text({this.game, this.text, this.size, this.style, this.pos, this.align}) {
+  Text({
+    this.text,
+    this.size,
+    this.style,
+    this.pos,
+    this.align,
+  }) {
     painter = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: TextDirection.ltr,
@@ -31,6 +35,9 @@ class Text extends GameObject {
   void setText(String newText) {
     text = newText;
     painter.text = TextSpan(text: text, style: style);
-    painter.layout();
+  }
+
+  void setPos(Offset newPos) {
+    pos = newPos;
   }
 }

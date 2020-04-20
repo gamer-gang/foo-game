@@ -3,10 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 extension PrecisionRounding on double {
-  double roundToPlaces(int places) {
+  double roundTo(int places) {
     double mod = Math.pow(10.0, places);
     return ((this * mod).round().toDouble() / mod);
   }
+}
+
+extension SingleValues on Offset {
+  Offset withX(double x) => Offset(x, this.dy);
+  Offset withY(double y) => Offset(this.dx, y);
 }
 
 Future<Set<String>> getPrefKeys() async {

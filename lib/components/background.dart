@@ -19,8 +19,6 @@ class Background extends GameObject {
   }
 
   void render(Canvas c) {
-    Paint paint = Paint()..color = color;
-
     c.drawRect(Rect.fromLTWH(0, 0, game.viewport.width, game.viewport.height), paint);
   }
   
@@ -29,17 +27,17 @@ class Background extends GameObject {
   }
 
 
-  void updatePosition(Offset playerPos) {
-    if (playerPos.dx < 50)
-      paint.color = Color(0xffffffff);
-    else if (playerPos.dx < 100) 
-      paint.color = Color(0xffcccccc);
-    else if (playerPos.dx < 150) 
-      paint.color = Color(0xff999999);
-    else if (playerPos.dx < 200) 
-      paint.color = Color(0xff444444);
-    else 
-      paint.color = Color(0xff111111);
+  void updateColor(Offset pos) {
+    // if (pos.dx < 50)
+    //   paint.color = Color(0xffffffff);
+    // else if (pos.dx < 100) 
+    //   paint.color = Color(0xffcccccc);
+    // else if (pos.dx < 150) 
+    //   paint.color = Color(0xff999999);
+    // else if (pos.dx < 200) 
+    //   paint.color = Color(0xff444444);
+    // else 
+    //   paint.color = Color(0xff111111);
     
     // LinearGradient gradient = LinearGradient(
     //   colors: [

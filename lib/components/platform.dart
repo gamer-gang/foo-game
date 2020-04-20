@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/painting.dart';
+
 import '../game.dart';
 import 'component.dart';
 
@@ -7,8 +9,7 @@ class Platform extends GameObject {
   MonumentPlatformer game;
   Color color;
 
-  Offset pos;
-  Offset size;
+  Offset pos, size;
 
   Platform({
     this.game,
@@ -24,9 +25,7 @@ class Platform extends GameObject {
     c.drawRect(Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy), paint);
   }
 
-  void update(double t) {
-    
-  }
+  void update(double t) {}
 
   Rect toRect() {
     return Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy);
