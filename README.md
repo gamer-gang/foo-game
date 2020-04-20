@@ -1,6 +1,12 @@
-<div style="text-align: center;"><img src="https://github.com/gamer-gang/monument-platformer/raw/v2/android/app/src/main/res/mipmap-xxxhdpi/icon.png" alt="game logo" width="100" /><h1 style="margin-top: 0;">Monument Plaftormer</h1><h3>Capstone 2020</h3>An open-source minimalist platformer game</div>
-
-Built with [Flutter](https://flutter.dev) and the [Flame](https://flame-engine.org) game engine
+<p align="center">
+  <img src="https://github.com/gamer-gang/monument-platformer/raw/v2/android/app/src/main/res/mipmap-xxxhdpi/icon.png" alt="game logo" width="100" />
+</p>
+<h1 align="center" style="margin-top: 0;">Monument Plaftormer</h1>
+<h3 align="center">Capstone 2020</h3>
+<p align="center">
+  An open-source minimalist platformer game <br />
+  Built with <a href="https://flutter.dev" target="_blank">Flutter</a> and the <a href="https://flame-engine.org" target="_blank">game engine</a>
+</p>
 
 ## Links
 
