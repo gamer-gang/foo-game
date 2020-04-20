@@ -2,13 +2,12 @@ import 'dart:ui';
 
 import 'package:flame/game.dart' as Flame;
 import 'package:flutter/gestures.dart';
-import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/painting.dart';
 
+import 'components/level.dart';
 import 'components/player.dart';
 import 'components/background.dart';
 import 'components/platform.dart';
-import 'components/text.dart';
 
 enum GamepadButton { left, right, dash, jump }
 enum GameState { playing, paused, gameOver }
@@ -20,16 +19,14 @@ class MonumentPlatformer extends Flame.Game {
 
   Player player;
   Background background;
-  Platform platform;
-
-  Text playerPosX;
-  Text playerPosY;
+  Level level;
 
   MonumentPlatformer(Size screenDimensions) {
     init(screenDimensions);
     camera = Offset(0, 0);
     player = Player(
       game: this,
+      debug: true,
       initialPosition: Offset(0, 0),
       size: Offset(50, 50),
       color: Color(0xff1e90ff),
@@ -39,71 +36,53 @@ class MonumentPlatformer extends Flame.Game {
       initialColor: Color(0xffffffff),
     );
     gamepad = Gamepad();
-    platform = Platform(
+    level = Level(
       game: this,
-      color: Color(0xff333333),
-      initialPosition: Offset(30, 30),
-      size: Offset(70, 20),
-    );
-    playerPosX = Text(
-      game: this,
-      align: TextAlign.left,
-      pos: Offset(30, viewport.width / 4),
-      style: TextStyle(
-        color: Colors.black,
-        fontFamily: "PTSans",
-      ),
-      text: '',
-      size: 14,
-    );
-    playerPosY = Text(
-      game: this,
-      align: TextAlign.left,
-      pos: Offset(30, -(viewport.width / 4)),
-      style: TextStyle(
-        color: Colors.black,
-        fontFamily: "PTSans",
-      ),
-      text: '',
-      size: 14,
+      platforms: [
+        Platform(
+          game: this,
+          color: Color(0xff333333),
+          initialPosition: Offset(30, 30),
+          size: Offset(70, 20),
+        ),
+        Platform(
+          game: this,
+          color: Color(0xff333333),
+          initialPosition: Offset(60, 60),
+          size: Offset(70, 20),
+        ),
+      ],
     );
   }
 
   void init(Size size) {
     viewport = size;
+    // camera = Offset(viewport.width / 2, viewport.height / 2);
     camera = Offset(viewport.width / 2, viewport.height / 2);
   }
 
   void render(Canvas c) {
-    // static things to render, like background
+    // static things to render, like the background or UI
     background.render(c);
-    playerPosX.render(c);
-    playerPosY.render(c);
 
-    // save original location for later
     c.save();
     c.translate(camera.dx, camera.dy);
 
-    // things to render that move when the camera does
     player.render(c);
-    platform.render(c);
-    
-    // reset back to original location
+    level.render(c);
+
     c.restore();
   }
 
   void update(double t) {
     camera = Offset(
-      // (viewport.width - player.size.dx) / 2 + 
-      player.pos.dx,
-      // (viewport.height - player.size.dy) / 2 + 
-      player.pos.dy,
+      (viewport.width - player.size.dx) / 2 - player.pos.dx,
+      (viewport.height - player.size.dy) / 2 - player.pos.dy,
     );
+
     player.update(t);
     player.move(gamepad);
-    background.updatePosition(player.pos);
-    playerPosX.setText(player.pos.dx.toString());
-    playerPosY.setText(player.pos.dy.toString());
+    background.updateColor(player.pos);
   }
 
   void press(GamepadButton pressed, PointerDownEvent event) {
