@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/painting.dart';
-import 'package:monument_platformer/components/platform.dart';
 
 import '../game.dart';
 import '../common.dart';
@@ -12,15 +11,34 @@ import 'text.dart';
 class Player extends GameObject with RectProperties {
   Color color;
   Offset vel, accel;
-  Text posText, velText, accelText;
-  bool dead, debug, jumping;
+  Map<String, Text> texts;
+  bool dead, debug, jumpedThisPress;
+  int jumps;
 
-  static double acceleration = 1,
-      accelFriction = 0.8,
-      verticalFriction = 0.93,
-      maxVelocity = 2,
-      friction = 0.8,
-      gravity = 0.8;
+  /// Horizontal acceleration.
+  static double acceleration = 1.4;
+
+  /// Multiplied by the acceleration every update.
+  static double accelFriction = 0.8;
+
+  /// Velocity is translated by this constant every update.
+  static double gravityConstant = 1;
+
+  /// If jumping, this scale is multiplied by the Y velocity.
+  static double gravityPulldown = 1.15;
+
+  /// Scale of the location of the debug points.
+  static double pointMagnitude = 7;
+
+  /// Added to the acceleration every jump.
+  static double jumpAcceleration = 10.5;
+
+  /// Limit of the velocity.
+  static Offset maxSpeed = Offset(4, 11);
+
+  /// Multiplied by the velocity every frame, exept when the player is jumping;
+  /// in that case, the Y component is replaced with `Player.gravityPulldown`.
+  static Offset friction = Offset(0.85, 0.8);
 
   Player.create({
     MonumentPlatformer game,
@@ -56,51 +74,60 @@ class Player extends GameObject with RectProperties {
         PointMode.points,
         [
           pos,
-          pos + vel * 10,
-          pos + vel * 10 + accel * 10,
+          pos + vel * pointMagnitude,
+          pos + vel * pointMagnitude + accel * pointMagnitude,
         ],
         Paint()
           ..color = Colors.black
           ..strokeCap = StrokeCap.round
           ..strokeWidth = 5,
       );
-      posText.render(c);
-      velText.render(c);
-      accelText.render(c);
+      texts.values.forEach((text) => text.render(c));
     }
   }
 
   void update(double t) {
-    if (checkDeath()) dead = true;
+    // if (checkDeath()) dead = true;
     vel = Offset(
-      vel.dx.abs() > Player.maxVelocity
-          ? Player.maxVelocity * vel.dx.sign
+      vel.dx.abs() > Player.maxSpeed.dx
+          ? Player.maxSpeed.dx * vel.dx.sign
           : vel.dx,
-      vel.dy.abs() > Player.maxVelocity
-          ? Player.maxVelocity * vel.dy.sign
-          : vel.dy,
+      vel.dy > Player.maxSpeed.dy ? Player.maxSpeed.dy : vel.dy,
     );
 
     pos += vel;
     vel += accel;
 
-    game.level.platforms.forEach((platform) => this.collide(platform));
+    game.level.platforms.forEach((platform) => this.collideWith(platform));
 
-    vel = vel.translate(0, Player.gravity);
+    vel = vel.scaleX(Player.friction.dx).scaleX(Player.friction.dx);
 
-    vel = vel.scale(Player.friction, Player.verticalFriction);
+    vel = vel.translateY(Player.gravityConstant);
+
+    if (jumps != 2 && vel.dy.sign == 1)
+      vel = vel.scaleY(Player.gravityPulldown);
+    else
+      vel = vel.scaleY(Player.friction.dy);
+
     accel *= Player.accelFriction;
 
     if (debug) {
-      posText.setText("Pos: (${pos.dx.roundTo(2).toString()}, "
-          "${pos.dy.roundTo(2).toString()})");
-      posText.setPos(pos.withY(pos.dy - 20));
-      velText.setText("Vel: (${vel.dx.roundTo(2).toString()}, "
-          "${vel.dy.roundTo(2).toString()})");
-      velText.setPos((pos + vel * 10).withY(pos.dy - 35));
-      accelText.setText("Accel: (${accel.dx.roundTo(2).toString()}, "
-          "${accel.dy.roundTo(2).toString()})");
-      accelText.setPos((pos + vel * 10 + accel * 10).withY(pos.dy - 50));
+      texts['pos']
+        ..setText("Pos: (${pos.dx.roundTo(2).toString()}, "
+            "${pos.dy.roundTo(2).toString()})")
+        ..setPos(pos.withY(pos.dy - 20));
+      texts['vel']
+        ..setText("Vel: (${vel.dx.roundTo(2).toString()}, "
+            "${vel.dy.roundTo(2).toString()})")
+        ..setPos((pos + vel * pointMagnitude).withY(pos.dy - 35));
+      texts['accel']
+        ..setText("Accel: (${accel.dx.roundTo(2).toString()}, "
+            "${accel.dy.roundTo(2).toString()})")
+        ..setPos((pos + vel * pointMagnitude + accel * pointMagnitude)
+            .withY(pos.dy - 50));
+      texts['jumps']
+        ..setText("Jumps: $jumps")
+        ..setPos(Offset(this.right, this.bottom));
     }
   }
 
@@ -109,43 +136,16 @@ class Player extends GameObject with RectProperties {
     if (gamepad.right) accel = accel.withX(Player.acceleration);
     if (!gamepad.right && !gamepad.left) accel = accel.withX(0);
 
-    if (gamepad.dash) pos = Offset.zero;
+    if (gamepad.dash) pos = Offset(10, -20);
 
-    if (gamepad.jump && !jumping) {
-      accel = Offset(accel.dx, -30);
-      // jumping = true;
-    }
-  }
+    if (gamepad.jump && jumps != 0 && !jumpedThisPress) {
+      accel = accel.withY(-jumpAcceleration);
+      jumps--;
 
-  bool checkDeath() {
-    return false;
-  }
-
-  void collide(Platform platform) {
-    // platform.toRect().collision(this);
-
-    if (this.right > platform.left && this.left < platform.right) {
-      // we are within the platform width
-
-      if (this.toRect().overlaps(platform.toRect())) {
-        // we are intersecting the platform im some way
-
-        if (this.bottom >= platform.top && this.bottom <= platform.bottom) {
-          // we are falling through the platform; move to the top
-          pos = pos.withY(platform.top - size.dy);
-          jumping = false;
-        } else if (this.top >= platform.top && this.top <= platform.bottom) {
-          // we are hitting the bottom of the platform; move to the bottom
-          pos = pos.withY(platform.bottom);
-        } else if (this.right >= platform.left &&
-            this.right <= platform.right) {
-          // we are sliding into the left of the platform; move to the left
-          pos = pos.withX(platform.left - size.dx);
-        } else if (this.left >= platform.left && this.left <= platform.right) {
-          // we are sliding into the right of the platform; move to the right
-          pos = pos.withX(platform.right);
-        }
-      }
+      jumpedThisPress = true;
+      print('jumped; jumps left: $jumps');
+    } else if (!gamepad.jump) {
+      jumpedThisPress = false;
     }
   }
 }

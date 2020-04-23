@@ -47,7 +47,19 @@ class MonumentPlatformer extends Flame.Game {
         Platform.create(
           game: this,
           color: Color(0xff333333),
-          initialPosition: Offset(60, 60),
+          initialPosition: Offset(60, 75),
+          size: Offset(140, 20),
+        ),
+        Platform.create(
+          game: this,
+          color: Color(0xff333333),
+          initialPosition: Offset(280, 70),
+          size: Offset(70, 20),
+        ),
+        Platform.create(
+          game: this,
+          color: Color(0xff333333),
+          initialPosition: Offset(400, 60),
           size: Offset(70, 20),
         ),
       ],
@@ -79,8 +91,8 @@ class MonumentPlatformer extends Flame.Game {
       (viewport.height - player.size.dy) / 2 - player.pos.dy,
     );
 
-    player.update(t);
     player.move(gamepad);
+    player.update(t);
     background.updateColor(player.pos);
   }
 

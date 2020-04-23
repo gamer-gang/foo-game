@@ -3,10 +3,12 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 
 import '../game.dart';
+import '../common.dart';
 
 class GameObject {
   MonumentPlatformer game;
   Offset pos;
+  bool canKillPlayer;
 
   List<GameObject> children = List<GameObject>();
 
@@ -38,9 +40,36 @@ class GameObject {
 
 mixin RectProperties on GameObject {
   Offset size;
+  int jumps;
+
   Rect toRect() => Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy);
-  get left => pos.dx;
-  get top => pos.dy;
-  get right => pos.dx + size.dx;
-  get bottom => pos.dy + size.dy;
+  double get left => pos.dx;
+  double get top => pos.dy;
+  double get right => pos.dx + size.dx;
+  double get bottom => pos.dy + size.dy;
+
+  void collideWith(RectProperties other) {
+    if (this.toRect().overlaps(other.toRect())) {
+      // we are intersecting the platform im some way
+
+      if (other.canKillPlayer) {
+        // kill player
+      } else if (this.toRect().intersect(other.toRect()).width < 3.66) {
+        if (this.right >= other.left && this.right <= other.right) {
+          // we are sliding into the left of the platform; move to the left
+          pos = pos.withX(other.left - size.dx);
+        } else if (this.left >= other.left && this.left <= other.right) {
+          // we are sliding into the right of the platform; move to the right
+          pos = pos.withX(other.right);
+        }
+      } else if (this.bottom >= other.top && this.bottom <= other.bottom) {
+        // we are falling through the platform; move to the top
+        pos = pos.withY(other.top - size.dy);
+        this.jumps = 2;
+      } else if (this.top >= other.top && this.top <= other.bottom) {
+        // we are hitting the bottom of the platform; move to the bottom
+        pos = pos.withY(other.bottom);
+      }
+    }
+  }
 }
