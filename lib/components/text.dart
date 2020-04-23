@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/painting.dart';
 import '../game.dart';
 
@@ -8,14 +9,12 @@ class Text extends GameObject {
   TextAlign align;
   TextPainter painter;
   Offset pos;
-  double size;
   TextStyle style;
   String text;
 
   Text.create({
     MonumentPlatformer game,
     this.text,
-    this.size,
     this.style,
     this.pos,
     this.align,
@@ -24,6 +23,36 @@ class Text extends GameObject {
       text: TextSpan(text: text, style: style),
       textDirection: TextDirection.ltr,
       textAlign: align,
+    );
+  }
+
+  Text.monospace(MonumentPlatformer game) : super.create(game) {
+    text = '';
+    painter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: Colors.black,
+          fontFamily: "Fira Code",
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.left,
+    );
+  }
+
+  Text.sansSerif(MonumentPlatformer game) : super.create(game) {
+    text = '';
+    painter = TextPainter(
+      text: TextSpan(
+        text: text,
+        style: TextStyle(
+          color: Colors.black,
+          fontFamily: "PT Sans",
+        ),
+      ),
+      textDirection: TextDirection.ltr,
+      textAlign: TextAlign.left,
     );
   }
 
@@ -41,5 +70,9 @@ class Text extends GameObject {
 
   void setPos(Offset newPos) {
     pos = newPos;
+  }
+
+  void setStyle(TextStyle newStyle) {
+    style = style.merge(newStyle);
   }
 }

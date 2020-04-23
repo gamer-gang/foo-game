@@ -32,40 +32,18 @@ class Player extends GameObject with RectProperties {
     this.pos = initialPosition;
     this.size = size;
     this.dead = false;
-    this.jumping = false;
+    this.jumps = 2;
     this.vel = Offset(0, 0);
     this.accel = Offset(0, 0);
+    this.jumpedThisPress = false;
+    this.texts = {};
     if (debug) {
-      posText = Text.create(
-        align: TextAlign.left,
-        pos: pos.translate(0, -15),
-        style: TextStyle(
-          color: Colors.black,
-          fontFamily: "Fira Code",
-        ),
-        text: '',
-        size: 10,
-      );
-      velText = Text.create(
-        align: TextAlign.left,
-        pos: (pos + vel * 10).translate(0, -15),
-        style: TextStyle(
-          color: Colors.black,
-          fontFamily: "Fira Code",
-        ),
-        text: '',
-        size: 10,
-      );
-      accelText = Text.create(
-        align: TextAlign.left,
-        pos: (pos + vel * 10 + accel * 10).translate(0, -15),
-        style: TextStyle(
-          color: Colors.black,
-          fontFamily: "Fira Code",
-        ),
-        text: '',
-        size: 10,
-      );
+      texts.addAll({
+        'pos': Text.monospace(game),
+        'vel': Text.monospace(game),
+        'accel': Text.monospace(game),
+        'jumps': Text.monospace(game),
+      });
     }
   }
 
