@@ -25,12 +25,12 @@ class _SettingsPageState extends State<SettingsPage> {
   Future<bool> togglePref(pref, [bool defaultValue]) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     bool next;
-    try {
-      next = !prefs.getBool(pref);
+    // try {
+      next = prefs.getBool(pref) == null ? defaultValue : !prefs.getBool(pref);
       // ignore: unused_catch_clause
-    } on AssertionError catch (err) {
-      next = defaultValue;
-    }
+    // } on AssertionError catch (_) {
+    //   next = defaultValue;
+    // }
 
     await prefs.setBool(pref, next);
 
