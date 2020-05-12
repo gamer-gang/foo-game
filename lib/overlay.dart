@@ -58,7 +58,9 @@ class _GameStackState extends State<GameStack> {
         right: 0,
         child: Row(children: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              
+            },
             icon: Icon(
               Icons.pause,
               color: Colors.white,

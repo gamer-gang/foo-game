@@ -13,7 +13,8 @@ class Player extends GameObject with RectProperties {
   Offset vel, accel;
   Map<String, Text> texts;
   bool dead, debug, jumpedThisPress;
-  int jumps;
+  int jumps, dashes, dashFrames;
+  // dashframes is how many frames you have left to dash
 
   /// Horizontal acceleration.
   static double acceleration = 1.4;
@@ -22,19 +23,22 @@ class Player extends GameObject with RectProperties {
   static double accelFriction = 0.8;
 
   /// Velocity is translated by this constant every update.
-  static double gravityConstant = 1;
+  static double gravityConstant = 2;
 
-  /// If jumping, this scale is multiplied by the Y velocity.
-  static double gravityPulldown = 1.15;
+  /// If jump button is down, the gravity constant is multiplied by this to make you "float".
+  static double gravityPulldown = 0.5;
 
   /// Scale of the location of the debug points.
   static double pointMagnitude = 7;
 
   /// Added to the acceleration every jump.
-  static double jumpAcceleration = 10.5;
+  static double jumpAcceleration = 5;
+
+  /// Added to your x during a dash.
+  static double dashSpeed = 10;
 
   /// Limit of the velocity.
-  static Offset maxSpeed = Offset(4, 11);
+  static Offset maxSpeed = Offset(20, 20);
 
   /// Multiplied by the velocity every frame, exept when the player is jumping;
   /// in that case, the Y component is replaced with `Player.gravityPulldown`.
@@ -50,7 +54,9 @@ class Player extends GameObject with RectProperties {
     this.pos = initialPosition;
     this.size = size;
     this.dead = false;
-    this.jumps = 2;
+    this.jumps = 0;
+    this.dashes = 0;
+    this.dashFrames = 0;
     this.vel = Offset(0, 0);
     this.accel = Offset(0, 0);
     this.jumpedThisPress = false;
@@ -102,13 +108,6 @@ class Player extends GameObject with RectProperties {
 
     vel = vel.scaleX(Player.friction.dx).scaleX(Player.friction.dx);
 
-    vel = vel.translateY(Player.gravityConstant);
-
-    if (jumps != 2 && vel.dy.sign == 1)
-      vel = vel.scaleY(Player.gravityPulldown);
-    else
-      vel = vel.scaleY(Player.friction.dy);
-
     accel *= Player.accelFriction;
 
     if (debug) {
@@ -132,14 +131,28 @@ class Player extends GameObject with RectProperties {
   }
 
   void move(Gamepad gamepad) {
+    // Normal movement code
     if (gamepad.left) accel = accel.withX(-Player.acceleration);
     if (gamepad.right) accel = accel.withX(Player.acceleration);
     if (!gamepad.right && !gamepad.left) accel = accel.withX(0);
 
-    if (gamepad.dash) pos = Offset(10, -20);
+    // Dash code
+    if (gamepad.dash) {
+      if (dashFrames == 0 && dashes != 0) {
+        print('dashed');
+        dashFrames = 30;
+      } else
+        dashFrames--;
+    }
+    if (dashFrames != 0) {
+      accel = accel.withX(Player.dashSpeed);
+    }
 
+    // Jump code
     if (gamepad.jump && jumps != 0 && !jumpedThisPress) {
+      vel = (vel.dy > jumpAcceleration) ? vel.withY(0) : vel;
       accel = accel.withY(-jumpAcceleration);
+
       jumps--;
 
       jumpedThisPress = true;
@@ -147,5 +160,11 @@ class Player extends GameObject with RectProperties {
     } else if (!gamepad.jump) {
       jumpedThisPress = false;
     }
+
+    // Gravity code
+    if (gamepad.jump)
+      vel = vel.translateY(Player.gravityConstant * Player.gravityPulldown);
+    else
+      vel = vel.translateY(Player.gravityConstant);
   }
 }

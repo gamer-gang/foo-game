@@ -8,6 +8,7 @@ import '../common.dart';
 class GameObject {
   MonumentPlatformer game;
   Offset pos;
+  Offset vel;
   bool canKillPlayer;
 
   List<GameObject> children = List<GameObject>();
@@ -65,7 +66,8 @@ mixin RectProperties on GameObject {
       } else if (this.bottom >= other.top && this.bottom <= other.bottom) {
         // we are falling through the platform; move to the top
         pos = pos.withY(other.top - size.dy);
-        this.jumps = 2;
+        if(vel.dy > 0) vel = vel.withY(0); // make the y velocity 0 on platform
+        this.jumps = 1;
       } else if (this.top >= other.top && this.top <= other.bottom) {
         // we are hitting the bottom of the platform; move to the bottom
         pos = pos.withY(other.bottom);
