@@ -9,6 +9,8 @@ import 'components/player.dart';
 import 'components/background.dart';
 import 'components/platform.dart';
 
+
+
 enum GamepadButton { left, right, dash, jump }
 enum GameState { playing, paused, gameOver }
 
@@ -26,7 +28,7 @@ class MonumentPlatformer extends Flame.Game {
     player = Player.create(
       game: this,
       debug: true,
-      initialPosition: Offset(0, 0),
+      initialPosition: Offset(0, -20),
       size: Offset(50, 50),
       color: Color(0xff1e90ff),
     );
@@ -41,26 +43,20 @@ class MonumentPlatformer extends Flame.Game {
         Platform.create(
           game: this,
           color: Color(0xff333333),
-          initialPosition: Offset(30, 30),
-          size: Offset(70, 20),
+          initialPosition: Offset(-500, 30),
+          size: Offset(1000, 20),
         ),
         Platform.create(
           game: this,
           color: Color(0xff333333),
-          initialPosition: Offset(60, 75),
-          size: Offset(140, 20),
+          initialPosition: Offset(100, -10),
+          size: Offset(100, 40),
         ),
         Platform.create(
           game: this,
           color: Color(0xff333333),
-          initialPosition: Offset(280, 70),
-          size: Offset(70, 20),
-        ),
-        Platform.create(
-          game: this,
-          color: Color(0xff333333),
-          initialPosition: Offset(400, 60),
-          size: Offset(70, 20),
+          initialPosition: Offset(400, -100),
+          size: Offset(100, 150),
         ),
       ],
     );
