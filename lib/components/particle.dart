@@ -6,6 +6,7 @@ import 'package:monument_platformer/common.dart';
 
 class GameParticle {
   GameParticle() {
+    // ignore: unused_local_variable
     var a = Particle.generate(
       count: 10,
       generator: (i) {
