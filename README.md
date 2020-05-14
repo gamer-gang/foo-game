@@ -30,11 +30,11 @@ Ensure Flutter is correctly installed and set up by running `flutter doctor`.
 
 ## Steps
 
-1. Clone the repository to your local machine.  
+1. Clone the repository to your local machine.
    `git clone https://github.com/gamer-gang/monument-platformer.git`
 2. In the root directory of the repository, run `flutter pub get`, or use your editor to install dependencies.
 3. With either your emulator running or your device connected, run `flutter run`, or start the app from your editor.
 
 ---
 
-Copyright © 2020 gamer-gang under [BSD-3-Clause](https://github.com/gamer-gang/monument-platformer/blob/v2/LICENSE)
+© 2020 gamer-gang under [BSD-3-Clause](https://github.com/gamer-gang/monument-platformer/blob/v2/LICENSE) unless otherwise noted
