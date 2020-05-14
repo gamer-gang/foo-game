@@ -37,5 +37,7 @@ I added a bit of code for having different backgrounds and foregrounds. We plan 
 
 Thats all for this update. The code took like 5 hours to make. 
 
+note: the black dots in the images show us our player's velocity.
+
 ---
 © 2020 gamer-gang under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
