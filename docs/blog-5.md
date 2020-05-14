@@ -26,4 +26,8 @@ Luan Nico, lead Flame devloper:
 and Ian Hickson, a large contributor to Flutter:
 ![](./images/email-flutter.png)
 
-bye
+That's all for now. Hopefully we get a response soon.
+
+---
+
+© 2020 gamer-gang under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
