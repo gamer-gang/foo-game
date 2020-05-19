@@ -10,6 +10,7 @@ class GameObject {
   Offset pos;
   Offset vel;
   bool canKillPlayer;
+  bool collide = false;
 
   List<GameObject> children = List<GameObject>();
 

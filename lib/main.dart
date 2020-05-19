@@ -7,6 +7,7 @@ import 'game.dart';
 import 'home.dart';
 
 void main() => runApp(LoadingPage());
+int levelNumber = 0;
 
 Future<MonumentPlatformer> setupGame() async {
   // var completer = new Completer<MonumentPlatformerGame>();
@@ -15,7 +16,7 @@ Future<MonumentPlatformer> setupGame() async {
   await Flame.util.fullScreen();
 
   final Size dimensions = await Flame.util.initialDimensions();
-  MonumentPlatformer game = MonumentPlatformer(dimensions);
+  MonumentPlatformer game = MonumentPlatformer(dimensions, levelNumber);
   // TapGestureRecognizer tapRecognizer = TapGestureRecognizer();
   // tapRecognizer.onTapDown = game.onTapDown;
   // tapRecognizer.onTapUp = game.onTapUp;

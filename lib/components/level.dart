@@ -5,17 +5,22 @@ import 'component.dart';
 import 'platform.dart';
 
 class Level extends GameObject {
-  List<Platform> platforms;
+  Map<Layers, List<GameObject>> layers;
+  List<GameObject> background;
+  List<GameObject> middleground;
+  List<GameObject> foreground;
+  List<GameObject> ui;
 
   double voidHeight;
   Platform voidPlatform;
 
   Level.create({
     MonumentPlatformer game,
-    this.platforms,
+    this.foreground,
     this.voidHeight = 300,
   }) : super.create(game) {
-    platforms.forEach((el) => this.addChild(el));
+    foreground.forEach((el) => this.addChild(el));
+
     voidPlatform = Platform.create(
       game: game,
       color: Color(0x00000000),
@@ -23,9 +28,25 @@ class Level extends GameObject {
       size: Offset(100, double.infinity),
       canKillPlayer: true,
     );
+
+    layers = {
+      Layers.background: background,
+      Layers.middleground: middleground,
+      Layers.foreground: foreground,
+      Layers.ui: ui
+    };
   }
 
   render(c) {
     super.render(c);
+  }
+
+  void add(Layers layer, object) {
+    layers = {
+      Layers.background: background,
+      Layers.middleground: middleground,
+      Layers.foreground: foreground,
+      Layers.ui: ui
+    };
   }
 }

@@ -104,7 +104,10 @@ class Player extends GameObject with RectProperties {
     pos += vel;
     vel += accel;
 
-    game.level.platforms.forEach((platform) => this.collideWith(platform));
+    game.level.foreground.forEach((object) =>
+        {if (object.collide == true) this.collideWith(object)});
+    // game.level.foreground.forEach((object) =>
+    //     {this.collideWith(object)});
 
     vel = vel.scaleX(Player.friction.dx).scaleX(Player.friction.dx);
 

@@ -55,6 +55,21 @@ class _GameStackState extends State<GameStack> {
       Container(child: widget.game.widget),
       Positioned(
         top: 0,
+        left: 0,
+        child: Row(children: [
+          IconButton(
+            onPressed: () {
+              
+            },
+            icon: Icon(
+              Icons.refresh,
+              color: Colors.black,
+            ),
+          ),
+        ]),
+      ),
+      Positioned(
+        top: 0,
         right: 0,
         child: Row(children: [
           IconButton(
@@ -63,7 +78,7 @@ class _GameStackState extends State<GameStack> {
             },
             icon: Icon(
               Icons.pause,
-              color: Colors.white,
+              color: Colors.black,
             ),
           ),
         ]),
