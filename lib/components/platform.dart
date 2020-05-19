@@ -12,12 +12,14 @@ class Platform extends GameObject with RectProperties {
     MonumentPlatformer game,
     this.color,
     bool canKillPlayer = false,
+    bool collide = true,
     Offset initialPosition,
     Offset size,
   }) : super.create(game) {
     this.size = size;
     this.pos = initialPosition;
     this.canKillPlayer = canKillPlayer;
+    this.collide = collide;
   }
 
   void render(Canvas c) {

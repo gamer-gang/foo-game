@@ -7,12 +7,12 @@ import 'package:flutter/painting.dart';
 import 'components/level.dart';
 import 'components/player.dart';
 import 'components/background.dart';
-import 'components/platform.dart';
-
+import 'levels/levelArray.dart';
 
 
 enum GamepadButton { left, right, dash, jump }
 enum GameState { playing, paused, gameOver }
+enum Layers { background, middleground, foreground, ui } // layers
 
 class MonumentPlatformer extends Flame.Game {
   Background background;
@@ -22,7 +22,7 @@ class MonumentPlatformer extends Flame.Game {
   Player player;
   Size viewport;
 
-  MonumentPlatformer(Size screenDimensions) {
+  MonumentPlatformer(Size screenDimensions, int levelNumber) {
     init(screenDimensions);
     camera = Offset(0, 0);
     player = Player.create(
@@ -37,29 +37,7 @@ class MonumentPlatformer extends Flame.Game {
       initialColor: Color(0xffffffff),
     );
     gamepad = Gamepad();
-    level = Level.create(
-      game: this,
-      platforms: [
-        Platform.create(
-          game: this,
-          color: Color(0xff333333),
-          initialPosition: Offset(-500, 30),
-          size: Offset(1000, 20),
-        ),
-        Platform.create(
-          game: this,
-          color: Color(0xff333333),
-          initialPosition: Offset(100, -10),
-          size: Offset(100, 40),
-        ),
-        Platform.create(
-          game: this,
-          color: Color(0xff333333),
-          initialPosition: Offset(400, -100),
-          size: Offset(100, 150),
-        ),
-      ],
-    );
+    level = levels[levelNumber](this);
   }
 
   void init(Size size) {
