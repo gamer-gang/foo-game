@@ -5,7 +5,7 @@
 <h3 align="center">Capstone 2020</h3>
 <p align="center">
   An open-source minimalist platformer game <br />
-  Built with <a href="https://flutter.dev" target="_blank">Flutter</a> and the <a href="https://flame-engine.org" target="_blank">game engine</a>
+  Built with <a href="https://flutter.dev" target="_blank">Flutter</a> and the <a href="https://flame-engine.org" target="_blank">Flame Engine</a>
 </p>
 
 ## Links
