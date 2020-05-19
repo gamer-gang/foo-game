@@ -12,7 +12,7 @@ class Player extends GameObject with RectProperties {
   Color color;
   Offset vel, accel;
   Map<String, Text> texts;
-  bool dead, debug, jumpedThisPress;
+  bool dead, debug, jumpedThisPress, dashedThisPress;
   int jumps, dashes, dashFrames;
   // dashframes is how many frames you have left to dash
 
@@ -104,8 +104,8 @@ class Player extends GameObject with RectProperties {
     pos += vel;
     vel += accel;
 
-    game.level.foreground.forEach((object) =>
-        {if (object.collide == true) this.collideWith(object)});
+    game.level.foreground.forEach(
+        (object) => {if (object.collide == true) this.collideWith(object)});
     // game.level.foreground.forEach((object) =>
     //     {this.collideWith(object)});
 
@@ -140,16 +140,15 @@ class Player extends GameObject with RectProperties {
     if (!gamepad.right && !gamepad.left) accel = accel.withX(0);
 
     // Dash code
-    if (gamepad.dash) {
-      if (dashFrames == 0 && dashes != 0) {
-        print('dashed');
-        dashFrames = 30;
-      } else
-        dashFrames--;
+    if (gamepad.dash && dashes != 0 && dashFrames == 0) {
+      print('dashed');
+      dashFrames = 30;
     }
-    if (dashFrames != 0) {
+    if (dashFrames > 0) {
       accel = accel.withX(Player.dashSpeed);
+      dashFrames--;
     }
+    // TODO: stop dashes when colliding with something, make dashes directional
 
     // Jump code
     if (gamepad.jump && jumps != 0 && !jumpedThisPress) {

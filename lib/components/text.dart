@@ -8,7 +8,7 @@ import 'component.dart';
 class Text extends GameObject {
   TextAlign align;
   TextPainter painter;
-  Offset pos;
+  // Offset pos;
   TextStyle style;
   String text;
 
@@ -16,7 +16,7 @@ class Text extends GameObject {
     MonumentPlatformer game,
     this.text,
     this.style,
-    this.pos,
+    // this.pos,
     this.align,
   }) : super.create(game) {
     painter = TextPainter(
@@ -32,7 +32,7 @@ class Text extends GameObject {
       text: TextSpan(
         text: text,
         style: TextStyle(
-          color: Colors.black,
+          color: Colors.blue,
           fontFamily: "Fira Code",
         ),
       ),

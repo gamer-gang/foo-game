@@ -1,12 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/painting.dart';
-import 'package:flutter/material.dart' show Colors;
+// import 'package:flutter/material.dart' show Colors;
 
 import '../components/level.dart';
 import '../components/platform.dart';
 import '../game.dart';
-import '../components/text.dart';
-
+// import '../components/text.dart';
 
 Level level1(MonumentPlatformer game) {
   return Level.create(

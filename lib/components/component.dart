@@ -43,6 +43,7 @@ class GameObject {
 mixin RectProperties on GameObject {
   Offset size;
   int jumps;
+  int dashes;
 
   Rect toRect() => Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy);
   double get left => pos.dx;
@@ -69,6 +70,7 @@ mixin RectProperties on GameObject {
         pos = pos.withY(other.top - size.dy);
         if(vel.dy > 0) vel = vel.withY(0); // make the y velocity 0 on platform
         this.jumps = 1;
+        this.dashes = 1;
       } else if (this.top >= other.top && this.top <= other.bottom) {
         // we are hitting the bottom of the platform; move to the bottom
         pos = pos.withY(other.bottom);

@@ -9,7 +9,6 @@ import 'components/player.dart';
 import 'components/background.dart';
 import 'levels/levelArray.dart';
 
-
 enum GamepadButton { left, right, dash, jump }
 enum GameState { playing, paused, gameOver }
 enum Layers { background, middleground, foreground, ui } // layers
@@ -53,8 +52,8 @@ class MonumentPlatformer extends Flame.Game {
     c.save();
     c.translate(camera.dx, camera.dy);
 
-    player.render(c);
     level.render(c);
+    player.render(c);
 
     c.restore();
   }

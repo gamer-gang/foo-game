@@ -42,6 +42,7 @@ class Level extends GameObject {
   }
 
   void add(Layers layer, object) {
+    
     layers = {
       Layers.background: background,
       Layers.middleground: middleground,
