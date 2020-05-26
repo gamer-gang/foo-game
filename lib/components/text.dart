@@ -3,22 +3,25 @@ import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/painting.dart';
 import '../game.dart';
 
-import 'component.dart';
+import 'gameobject.dart';
 
 class Text extends GameObject {
   TextAlign align;
   TextPainter painter;
   Offset pos;
-  TextStyle style;
-  String text;
+  TextStyle _style;
+
+  String _text;
 
   Text.create({
     MonumentPlatformer game,
-    this.text,
-    this.style,
+    String text,
+    TextStyle style,
     this.pos,
     this.align,
   }) : super.create(game) {
+    _text = text;
+    _style = style;
     painter = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: TextDirection.ltr,
@@ -26,6 +29,7 @@ class Text extends GameObject {
     );
   }
 
+  // TODO convert to factory
   Text.monospace(MonumentPlatformer game) : super.create(game) {
     text = '';
     painter = TextPainter(
@@ -41,6 +45,7 @@ class Text extends GameObject {
     );
   }
 
+  // TODO convert to factory
   Text.sansSerif(MonumentPlatformer game) : super.create(game) {
     text = '';
     painter = TextPainter(
@@ -56,6 +61,17 @@ class Text extends GameObject {
     );
   }
 
+  String get text => _text;
+  set text(String text) {
+    _text = text;
+    painter.text = TextSpan(text: _text, style: style);
+  }
+
+  TextStyle get style => _style;
+  set style(TextStyle style) {
+    _style = style.merge(_style);
+  }
+
   void render(Canvas c) {
     painter.layout();
     painter.paint(c, pos);
@@ -63,16 +79,12 @@ class Text extends GameObject {
 
   void update(double t) {}
 
-  void setText(String newText) {
-    text = newText;
-    painter.text = TextSpan(text: text, style: style);
-  }
+  // void setText(String newText) {
+  //   text = newText;
+  //   painter.text = TextSpan(text: text, style: style);
+  // }
 
-  void setPos(Offset newPos) {
-    pos = newPos;
-  }
-
-  void setStyle(TextStyle newStyle) {
-    style = style.merge(newStyle);
-  }
+  // void setStyle(TextStyle newStyle) {
+  //   style = style.merge(newStyle);
+  // }
 }

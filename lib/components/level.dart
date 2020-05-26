@@ -1,7 +1,7 @@
 import 'package:flutter/painting.dart';
 
 import '../game.dart';
-import 'component.dart';
+import 'gameobject.dart';
 import 'platform.dart';
 
 class Level extends GameObject {
@@ -19,22 +19,18 @@ class Level extends GameObject {
     this.foreground,
     this.voidHeight = 300,
   }) : super.create(game) {
-    foreground.forEach((el) => this.addChild(el));
-
     voidPlatform = Platform.create(
       game: game,
       color: Color(0x00000000),
-      initialPosition: Offset(0, voidHeight),
+      pos: Offset(0, voidHeight),
       size: Offset(100, double.infinity),
       canKillPlayer: true,
     );
 
-    layers = {
-      Layers.background: background,
-      Layers.middleground: middleground,
-      Layers.foreground: foreground,
-      Layers.ui: ui
-    };
+    // add empty layers if not there
+    for (var layer in Layers.values) {
+      layers.putIfAbsent(layer, () => []);
+    }
   }
 
   render(c) {

@@ -22,12 +22,12 @@ class _SettingsPageState extends State<SettingsPage> {
     setBooleanSettingText(["animations", "sendUsageData"]);
   }
 
-  Future<bool> togglePref(pref, [bool defaultValue]) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<bool> togglePref(dynamic pref) async {
+    var prefs = await SharedPreferences.getInstance();
     bool next;
     // try {
-      next = prefs.getBool(pref) == null ? defaultValue : !prefs.getBool(pref);
-      // ignore: unused_catch_clause
+    next = prefs.getBool(pref) == null ? false : !prefs.getBool(pref);
+    // ignore: unused_catch_clause
     // } on AssertionError catch (_) {
     //   next = defaultValue;
     // }
@@ -40,13 +40,13 @@ class _SettingsPageState extends State<SettingsPage> {
   void setBooleanSettingText(dynamic val) async {
     if (val is List) {
       for (dynamic i in val) {
-        String next = ((await getPref(i, bool) ?? false) ? "On" : "Off");
+        var next = ((await getPref(i, bool) ?? false) ? "On" : "Off");
         setState(() {
           settingsText.update(i, (value) => next);
         });
       }
     } else {
-      String next = ((await getPref(val, bool) ?? false) ? "On" : "Off");
+      var next = ((await getPref(val, bool) ?? false) ? "On" : "Off");
       setState(() {
         settingsText.update(val, (value) => next);
       });
@@ -72,7 +72,8 @@ class _SettingsPageState extends State<SettingsPage> {
               Spacer(flex: 1),
               RaisedButton(
                 onPressed: () {
-                  togglePref("animations").then((val) => setBooleanSettingText("animations"));
+                  togglePref("animations")
+                      .then((val) => setBooleanSettingText("animations"));
                 },
                 child: Text(settingsText["animations"] ?? "..."),
               ),
@@ -85,7 +86,8 @@ class _SettingsPageState extends State<SettingsPage> {
               Spacer(flex: 1),
               RaisedButton(
                 onPressed: () {
-                  togglePref("sendUsageData").then((val) => setBooleanSettingText("sendUsageData"));
+                  togglePref("sendUsageData")
+                      .then((val) => setBooleanSettingText("sendUsageData"));
                 },
                 child: Text(settingsText["sendUsageData"] ?? ""),
               ),
