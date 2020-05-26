@@ -3,8 +3,10 @@ import 'dart:ui';
 import 'package:flutter/painting.dart';
 
 import '../game.dart';
-import 'component.dart';
+import 'gameobject.dart';
 
+/// An object for rendering a single color, gradient, etc.
+/// Should be placed in thr background layer.
 class Background extends GameObject {
   Color color;
   Paint paint;
@@ -43,6 +45,7 @@ class Background extends GameObject {
     //   ]
     // );
 
-    // paint.shader = gradient.createShader(Rect.fromLTWH(0, 0, game.viewport.width, game.viewport.height));
+    // paint.shader = gradient.createShader(
+    //    Rect.fromLTWH(0, 0, game.viewport.width, game.viewport.height));
   }
 }

@@ -15,8 +15,8 @@ Future<MonumentPlatformer> setupGame() async {
   await Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
   await Flame.util.fullScreen();
 
-  final Size dimensions = await Flame.util.initialDimensions();
-  MonumentPlatformer game = MonumentPlatformer(dimensions, levelNumber);
+  final dimensions = await Flame.util.initialDimensions();
+  var game = MonumentPlatformer(dimensions, levelNumber);
   // TapGestureRecognizer tapRecognizer = TapGestureRecognizer();
   // tapRecognizer.onTapDown = game.onTapDown;
   // tapRecognizer.onTapUp = game.onTapUp;
@@ -45,7 +45,7 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    setupGame().then((MonumentPlatformer game) {
+    setupGame().then((game) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (context, anim1, anim2) => MainApp(game: game),

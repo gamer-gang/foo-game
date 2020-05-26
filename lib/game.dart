@@ -1,20 +1,17 @@
 import 'dart:ui';
 
-import 'package:flame/game.dart' as Flame;
+import 'package:flame/game.dart' as flame;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/painting.dart';
 
 import 'components/level.dart';
+import 'components/levels/index.dart';
 import 'components/player.dart';
-import 'components/background.dart';
-import 'levels/levelArray.dart';
 
 enum GamepadButton { left, right, dash, jump }
 enum GameState { playing, paused, gameOver }
-enum Layers { background, middleground, foreground, ui } // layers
 
-class MonumentPlatformer extends Flame.Game {
-  Background background;
+class MonumentPlatformer extends flame.Game {
   Offset camera;
   Gamepad gamepad;
   Level level;
@@ -27,13 +24,9 @@ class MonumentPlatformer extends Flame.Game {
     player = Player.create(
       game: this,
       debug: true,
-      initialPosition: Offset(0, -20),
+      pos: Offset(0, -20),
       size: Offset(50, 50),
       color: Color(0xff1e90ff),
-    );
-    background = Background.create(
-      game: this,
-      initialColor: Color(0xffffffff),
     );
     gamepad = Gamepad();
     level = levels[levelNumber](this);
@@ -46,16 +39,27 @@ class MonumentPlatformer extends Flame.Game {
   }
 
   void render(Canvas c) {
-    // static things to render, like the background or UI
-    background.render(c);
+    // background
+    level.renderBackground(c);
 
+    // middleground
+    c.save();
+    c.translate(camera.dx / 2, camera.dy / 2);
+
+    level.renderMiddleground(c);
+
+    c.restore();
+
+    // foreground
     c.save();
     c.translate(camera.dx, camera.dy);
 
-    level.render(c);
     player.render(c);
+    level.renderForeground(c);
 
     c.restore();
+    // UI
+    level.renderUi(c);
   }
 
   void update(double t) {
@@ -66,16 +70,15 @@ class MonumentPlatformer extends Flame.Game {
 
     player.move(gamepad);
     player.update(t);
-    background.updateColor(player.pos);
   }
 
   void press(GamepadButton pressed, PointerDownEvent event) {
-    print("pressed " + pressed.toString());
+    print("pressed $pressed");
     gamepad.press(pressed);
   }
 
   void release(GamepadButton released, PointerUpEvent event) {
-    print("released " + released.toString());
+    print("released $released");
     gamepad.release(released);
   }
 }

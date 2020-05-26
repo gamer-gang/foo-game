@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:monument_platformer/settings.dart';
 
 import 'common.dart';
 import 'game.dart';
 import 'overlay.dart';
+import 'settings.dart';
 
 class HomePage extends StatefulWidget {
   final MonumentPlatformer game;
@@ -97,7 +97,7 @@ class FileSelector extends StatelessWidget {
 
   final double _buttonPadding = 8;
 
-  const FileSelector({MonumentPlatformer game}) : this.game = game;
+  const FileSelector({this.game});
 
   @override
   Widget build(BuildContext context) {

@@ -2,7 +2,8 @@ import 'package:flame/particle.dart';
 import 'package:flame/particles/accelerated_particle.dart';
 import 'package:flame/particles/circle_particle.dart';
 import 'package:flutter/painting.dart';
-import 'package:monument_platformer/common.dart';
+
+import '../common.dart';
 
 class GameParticle {
   GameParticle() {

@@ -3,18 +3,24 @@ import 'dart:ui';
 import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/painting.dart';
 
-import '../game.dart';
 import '../common.dart';
-import 'component.dart';
+import '../game.dart';
+import 'gameobject.dart';
 import 'text.dart';
 
 class Player extends GameObject with RectProperties {
   Color color;
-  Offset vel, accel;
-  Map<String, Text> texts;
-  bool dead, debug, jumpedThisPress, dashedThisPress;
-  int jumps, dashes, dashFrames;
-  // dashframes is how many frames you have left to dash
+  Offset vel = Offset(0, 0);
+  Offset accel = Offset(0, 0);
+  Map<String, Text> texts = {};
+  bool dead = false;
+  bool debug;
+  bool jumpedThisPress = false;
+  int jumps = 0;
+  int dashes = 0;
+
+  /// Number of frames left to dash.
+  int dashFrames = 0;
 
   /// Horizontal acceleration.
   static double acceleration = 1.4;
@@ -25,7 +31,8 @@ class Player extends GameObject with RectProperties {
   /// Velocity is translated by this constant every update.
   static double gravityConstant = 2;
 
-  /// If jump button is down, the gravity constant is multiplied by this to make you "float".
+  /// If jump button is down, the gravity constant is
+  /// multiplied by this to make you "float".
   static double gravityPulldown = 0.5;
 
   /// Scale of the location of the debug points.
@@ -46,21 +53,13 @@ class Player extends GameObject with RectProperties {
 
   Player.create({
     MonumentPlatformer game,
-    Offset initialPosition,
+    Offset pos,
     Offset size,
     this.color,
     this.debug = false,
   }) : super.create(game) {
-    this.pos = initialPosition;
+    this.pos = pos;
     this.size = size;
-    this.dead = false;
-    this.jumps = 0;
-    this.dashes = 0;
-    this.dashFrames = 0;
-    this.vel = Offset(0, 0);
-    this.accel = Offset(0, 0);
-    this.jumpedThisPress = false;
-    this.texts = {};
     if (debug) {
       texts.addAll({
         'pos': Text.monospace(game),
@@ -72,8 +71,8 @@ class Player extends GameObject with RectProperties {
   }
 
   void render(Canvas c) {
-    if (dead) {} // do something
-    Paint paint = Paint()..color = color;
+    if (dead) {} // TODO do something when dead
+    var paint = Paint()..color = color;
     c.drawRect(Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy), paint);
     if (debug) {
       c.drawPoints(
@@ -88,7 +87,10 @@ class Player extends GameObject with RectProperties {
           ..strokeCap = StrokeCap.round
           ..strokeWidth = 5,
       );
-      texts.values.forEach((text) => text.render(c));
+
+      for (var text in texts.values) {
+        text.render(c);
+      }
     }
   }
 
@@ -104,8 +106,10 @@ class Player extends GameObject with RectProperties {
     pos += vel;
     vel += accel;
 
-    game.level.foreground.forEach(
-        (object) => {if (object.collide == true) this.collideWith(object)});
+    for (var object in game.level.foreground) {
+      if (object.collide) collideWith(object);
+    }
+
     // game.level.foreground.forEach((object) =>
     //     {this.collideWith(object)});
 
@@ -115,21 +119,21 @@ class Player extends GameObject with RectProperties {
 
     if (debug) {
       texts['pos']
-        ..setText("Pos: (${pos.dx.roundTo(2).toString()}, "
-            "${pos.dy.roundTo(2).toString()})")
-        ..setPos(pos.withY(pos.dy - 20));
+        ..text = "Pos: (${pos.dx.roundTo(2).toString()}, "
+            "${pos.dy.roundTo(2).toString()})"
+        ..pos = pos.withY(pos.dy - 20);
       texts['vel']
-        ..setText("Vel: (${vel.dx.roundTo(2).toString()}, "
-            "${vel.dy.roundTo(2).toString()})")
-        ..setPos((pos + vel * pointMagnitude).withY(pos.dy - 35));
+        ..text = "Vel: (${vel.dx.roundTo(2).toString()}, "
+            "${vel.dy.roundTo(2).toString()})"
+        ..pos = (pos + vel * pointMagnitude).withY(pos.dy - 35);
       texts['accel']
-        ..setText("Accel: (${accel.dx.roundTo(2).toString()}, "
-            "${accel.dy.roundTo(2).toString()})")
-        ..setPos((pos + vel * pointMagnitude + accel * pointMagnitude)
-            .withY(pos.dy - 50));
+        ..text = "Accel: (${accel.dx.roundTo(2).toString()}, "
+            "${accel.dy.roundTo(2).toString()})"
+        ..pos = (pos + vel * pointMagnitude + accel * pointMagnitude)
+            .withY(pos.dy - 50);
       texts['jumps']
-        ..setText("Jumps: $jumps")
-        ..setPos(Offset(this.right, this.bottom));
+        ..text = "Jumps: $jumps"
+        ..pos = Offset(right, bottom);
     }
   }
 
@@ -150,23 +154,11 @@ class Player extends GameObject with RectProperties {
     }
     // TODO: stop dashes when colliding with something, make dashes directional
 
-    // Jump code
-    if (gamepad.jump && jumps != 0 && !jumpedThisPress) {
-      vel = (vel.dy > jumpAcceleration) ? vel.withY(0) : vel;
-      accel = accel.withY(-jumpAcceleration);
-
-      jumps--;
-
-      jumpedThisPress = true;
-      print('jumped; jumps left: $jumps');
-    } else if (!gamepad.jump) {
-      jumpedThisPress = false;
-    }
-
     // Gravity code
-    if (gamepad.jump)
+    if (gamepad.jump) {
       vel = vel.translateY(Player.gravityConstant * Player.gravityPulldown);
-    else
+    } else {
       vel = vel.translateY(Player.gravityConstant);
+    }
   }
 }

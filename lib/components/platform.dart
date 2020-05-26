@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/painting.dart';
 
 import '../game.dart';
-import 'component.dart';
+import 'gameobject.dart';
 
 class Platform extends GameObject with RectProperties {
   Color color;
@@ -13,17 +13,17 @@ class Platform extends GameObject with RectProperties {
     this.color,
     bool canKillPlayer = false,
     bool collide = true,
-    Offset initialPosition,
+    Offset pos,
     Offset size,
   }) : super.create(game) {
     this.size = size;
-    this.pos = initialPosition;
+    this.pos = pos;
     this.canKillPlayer = canKillPlayer;
     this.collide = collide;
   }
 
   void render(Canvas c) {
-    Paint paint = Paint()..color = color;
+    var paint = Paint()..color = color;
     c.drawRect(Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy), paint);
   }
 

@@ -1,53 +1,67 @@
 import 'package:flutter/painting.dart';
 
 import '../game.dart';
-import 'component.dart';
+import 'gameobject.dart';
 import 'platform.dart';
+
+enum Layers { background, middleground, foreground, ui }
 
 class Level extends GameObject {
   Map<Layers, List<GameObject>> layers;
-  List<GameObject> background;
-  List<GameObject> middleground;
-  List<GameObject> foreground;
-  List<GameObject> ui;
-
   double voidHeight;
   Platform voidPlatform;
 
   Level.create({
     MonumentPlatformer game,
-    this.foreground,
+    this.layers,
     this.voidHeight = 300,
   }) : super.create(game) {
-    foreground.forEach((el) => this.addChild(el));
-
     voidPlatform = Platform.create(
       game: game,
       color: Color(0x00000000),
-      initialPosition: Offset(0, voidHeight),
+      pos: Offset(0, voidHeight),
       size: Offset(100, double.infinity),
       canKillPlayer: true,
     );
 
-    layers = {
-      Layers.background: background,
-      Layers.middleground: middleground,
-      Layers.foreground: foreground,
-      Layers.ui: ui
-    };
+    // add empty layers if not there
+    for (var layer in Layers.values) {
+      layers.putIfAbsent(layer, () => []);
+    }
   }
 
-  render(c) {
-    super.render(c);
+  void render(Canvas c) {}
+
+  /// Alias for `layers[Layers.background]`
+  List<GameObject> get background => layers[Layers.background];
+
+  /// Alias for `layers[Layers.middleground]`
+  List<GameObject> get middleground => layers[Layers.middleground];
+
+  /// Alias for `layers[Layers.foreground]`
+  List<GameObject> get foreground => layers[Layers.foreground];
+
+  /// Alias for `layers[Layers.ui]`
+  List<GameObject> get ui => layers[Layers.ui];
+
+  /// Add a GameObject to the given layer.
+  void add(Layers layer, GameObject object) => layers[layer].add(object);
+
+  void _renderAll(List<GameObject> objects, Canvas c) {
+    for (var object in objects) {
+      object.render(c);
+    }
   }
 
-  void add(Layers layer, object) {
-    
-    layers = {
-      Layers.background: background,
-      Layers.middleground: middleground,
-      Layers.foreground: foreground,
-      Layers.ui: ui
-    };
-  }
+  /// Render each GameObject in the layer.
+  void renderBackground(Canvas c) => _renderAll(background, c);
+
+  /// Render each GameObject in the layer.
+  void renderMiddleground(Canvas c) => _renderAll(background, c);
+
+  /// Render each GameObject in the layer.
+  void renderForeground(Canvas c) => _renderAll(background, c);
+
+  /// Render each GameObject in the layer.
+  void renderUi(Canvas c) => _renderAll(background, c);
 }

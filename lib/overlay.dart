@@ -13,9 +13,7 @@ class GamePage extends StatefulWidget {
   final File file;
   final MonumentPlatformer game;
 
-  GamePage({MonumentPlatformer game, File file})
-      : this.game = game,
-        this.file = file;
+  GamePage({this.game, this.file});
 
   @override
   _GamePageState createState() => _GamePageState(game);
@@ -58,9 +56,7 @@ class _GameStackState extends State<GameStack> {
         left: 0,
         child: Row(children: [
           IconButton(
-            onPressed: () {
-              
-            },
+            onPressed: () {},
             icon: Icon(
               Icons.refresh,
               color: Colors.black,
@@ -73,9 +69,7 @@ class _GameStackState extends State<GameStack> {
         right: 0,
         child: Row(children: [
           IconButton(
-            onPressed: () {
-              
-            },
+            onPressed: () {},
             icon: Icon(
               Icons.pause,
               color: Colors.black,
@@ -144,11 +138,11 @@ Widget overlayButton({
 }) {
   if (color == null) color = _btnColor;
   return Listener(
-    onPointerDown: (PointerDownEvent pointerDownEvent) {
+    onPointerDown: (pointerDownEvent) {
       update(_btnColorPressed);
       game.press(key, pointerDownEvent);
     },
-    onPointerUp: (PointerUpEvent pointerUpEvent) {
+    onPointerUp: (pointerUpEvent) {
       update(_btnColor);
       game.release(key, pointerUpEvent);
     },

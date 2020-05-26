@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class SaveDataStore {
-  String formatMap(Map<String, dynamic> map, [bool indent = false]) {
-    JsonEncoder encoder = new JsonEncoder.withIndent(indent ? "  " : null);
+  String formatMap(Map<String, dynamic> map, {bool indent = false}) {
+    var encoder = JsonEncoder.withIndent(indent ? "  " : null);
     return encoder.convert(jsonDecode(jsonEncode(map)));
   }
 
@@ -32,13 +32,13 @@ class SaveDataStore {
     assert(number == 3 || number == 2 || number == 1,
         "File number ($number) must be 1, 2, or 3.");
     try {
-      final File file = await getSaveFile(number);
-      String contents = await file.readAsString();
+      final file = await getSaveFile(number);
+      var contents = await file.readAsString();
       dynamic parsed = jsonDecode(contents);
       assert(parsed is Map<String, dynamic>,
           "Save data is not valid JSON (file $number):\n$parsed");
       return parsed as Map<String, dynamic>;
-    } catch (error) {
+    } on Exception catch (error) {
       throw ('Error reading save file $number:\n$error');
     }
   }
