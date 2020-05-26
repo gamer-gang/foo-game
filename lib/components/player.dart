@@ -156,18 +156,16 @@ class Player extends GameObject with RectProperties {
       accel = accel.withX(Player.dashSpeed);
     }
 
-    // Jump code
-    if (gamepad.jump && jumps != 0 && !jumpedThisPress) {
-      vel = (vel.dy > jumpAcceleration) ? vel.withY(0) : vel;
-      accel = accel.withY(-jumpAcceleration);
-
-      jumps--;
-
-      jumpedThisPress = true;
-      print('jumped; jumps left: $jumps');
-    } else if (!gamepad.jump) {
-      jumpedThisPress = false;
+    // Dash code
+    if (gamepad.dash && dashes != 0 && dashFrames == 0) {
+      print('dashed');
+      dashFrames = 30;
     }
+    if (dashFrames > 0) {
+      accel = accel.withX(Player.dashSpeed);
+      dashFrames--;
+    }
+    // TODO: stop dashes when colliding with something, make dashes directional
 
     // Gravity code
     if (gamepad.jump) {
