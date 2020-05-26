@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/gamer-gang/monument-platformer/raw/v2/android/app/src/main/res/mipmap-xxxhdpi/icon.png" alt="game logo" width="100" />
+  <img src="https://github.com/gamer-gang/monument-platformer/raw/master/android/app/src/main/res/mipmap-xxxhdpi/icon.png" alt="game logo" width="100" />
 </p>
 <h1 align="center" style="margin-top: 0;">Monument Plaftormer</h1>
 <h3 align="center">Capstone 2020</h3>
