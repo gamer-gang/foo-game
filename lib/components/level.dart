@@ -57,11 +57,11 @@ class Level extends GameObject {
   void renderBackground(Canvas c) => _renderAll(background, c);
 
   /// Render each GameObject in the layer.
-  void renderMiddleground(Canvas c) => _renderAll(background, c);
+  void renderMiddleground(Canvas c) => _renderAll(middleground, c);
 
   /// Render each GameObject in the layer.
-  void renderForeground(Canvas c) => _renderAll(background, c);
+  void renderForeground(Canvas c) => _renderAll(foreground, c);
 
   /// Render each GameObject in the layer.
-  void renderUi(Canvas c) => _renderAll(background, c);
+  void renderUi(Canvas c) => _renderAll(ui, c);
 }
