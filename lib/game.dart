@@ -39,16 +39,27 @@ class MonumentPlatformer extends flame.Game {
   }
 
   void render(Canvas c) {
-    // static things to render, like the background or UI
-    background.render(c);
+    // background
+    level.renderBackground(c);
 
+    // middleground
+    c.save();
+    c.translate(camera.dx / 2, camera.dy / 2);
+
+    level.renderMiddleground(c);
+
+    c.restore();
+
+    // foreground
     c.save();
     c.translate(camera.dx, camera.dy);
 
     player.render(c);
-    level.render(c);
+    level.renderForeground(c);
 
     c.restore();
+    // UI
+    level.renderUi(c);
   }
 
   void update(double t) {
