@@ -9,10 +9,24 @@ import 'text.dart';
 
 double _strokeWidth = 4;
 
-class Obtainable extends GameObject {
+class Obtainable extends GameObject with RectProperties {
   RectProperties child;
   bool debug;
   Text debugText;
+
+  /// Alias for `child.right`
+  double get right => child.right;
+  /// Alias for `child.bottom`
+  double get bottom => child.bottom;
+  /// Alias for `child.width`
+  double get width => child.width;
+  /// Alias for `child.height`
+  double get height => child.height;
+
+  Offset get pos => child.pos;
+  Offset get size => child.size;
+  Rect toRect() => child.toRect();
+
 
   Obtainable.create({
     MonumentPlatformer game,
@@ -24,9 +38,9 @@ class Obtainable extends GameObject {
         ..pos = child.pos.withY(child.pos.dy - 14)
         ..text = 'OBTAINABLE'
         ..style = TextStyle(
-          letterSpacing: 1.2,
-          color: Colors.red.shade800,
-          fontWeight: FontWeight.w500,
+          letterSpacing: 1.3,
+          color: Colors.red.shade700,
+          fontWeight: FontWeight.w600,
           fontSize: 12,
         );
     }
@@ -50,10 +64,12 @@ class Obtainable extends GameObject {
           // bottom left
           child.pos
               .translateY(child.height)
-              .translate(_strokeWidth / 2, -_strokeWidth / 2)
+              .translate(_strokeWidth / 2, -_strokeWidth / 2),
+          // top left
+          child.pos.translate(_strokeWidth / 2, _strokeWidth / 2),
         ],
         Paint()
-          ..color = Colors.red.shade800
+          ..color = Colors.red.shade700
           ..strokeCap = StrokeCap.square
           ..strokeWidth = _strokeWidth,
       );
