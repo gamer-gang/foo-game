@@ -6,48 +6,52 @@ import '../game.dart';
 import 'gameobject.dart';
 
 class Text extends GameObject {
+  TextStyle _style;
+  String _text;
+
   TextAlign align;
   TextPainter painter;
   Offset pos;
-  TextStyle _style;
 
-  String _text;
+  String get text => _text;
+
+  set text(String text) {
+    _text = text;
+    painter.text = TextSpan(text: this.text, style: style);
+  }
+
+  TextStyle get style => _style;
+
+  set style(TextStyle style) {
+    _style = (_style ?? TextStyle()).merge(style);
+    painter.text = TextSpan(text: text, style: this.style);
+  }
 
   Text.create({
     MonumentPlatformer game,
-    String text,
-    TextStyle style,
     this.pos,
-    this.align,
   }) : super.create(game) {
-    _text = text;
-    _style = style;
     painter = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: TextDirection.ltr,
-      textAlign: align,
+      textAlign: align ?? TextAlign.left,
     );
   }
 
-  // TODO convert to factory
   Text.monospace(MonumentPlatformer game) : super.create(game) {
-    text = '';
     painter = TextPainter(
-      text: TextSpan(
-        text: text,
-        style: TextStyle(
-          color: Colors.blue,
-          fontFamily: "Fira Code",
-        ),
-      ),
+      text: TextSpan(text: text, style: style),
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.left,
     );
+    text = '';
+    style = TextStyle(
+      color: Colors.black,
+      fontFamily: "Fira Code",
+    );
   }
 
-  // TODO convert to factory
   Text.sansSerif(MonumentPlatformer game) : super.create(game) {
-    text = '';
     painter = TextPainter(
       text: TextSpan(
         text: text,
@@ -59,17 +63,7 @@ class Text extends GameObject {
       textDirection: TextDirection.ltr,
       textAlign: TextAlign.left,
     );
-  }
-
-  String get text => _text;
-  set text(String text) {
-    _text = text;
-    painter.text = TextSpan(text: _text, style: style);
-  }
-
-  TextStyle get style => _style;
-  set style(TextStyle style) {
-    _style = style.merge(_style);
+    text = '';
   }
 
   void render(Canvas c) {
@@ -78,6 +72,7 @@ class Text extends GameObject {
   }
 
   void update(double t) {}
+<<<<<<<
 
   void setText(String newText) {
     text = newText;
@@ -91,4 +86,7 @@ class Text extends GameObject {
   void setStyle(TextStyle newStyle) {
     style = style.merge(newStyle);
   }
+=======
+
+>>>>>>>
 }

@@ -13,10 +13,9 @@ class Background extends GameObject {
 
   Background.create({
     MonumentPlatformer game,
-    Color initialColor,
+    this.color,
   }) : super.create(game) {
-    paint = Paint()..color = initialColor;
-    color = initialColor;
+    paint = Paint()..color = color;
   }
 
   void render(Canvas c) {
