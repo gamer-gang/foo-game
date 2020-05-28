@@ -144,19 +144,6 @@ class Player extends GameObject with RectProperties {
     if (!gamepad.right && !gamepad.left) accel = accel.withX(0);
 
     // Dash code
-    if (gamepad.dash) {
-      if (dashFrames == 0 && dashes != 0) {
-        print('dashed');
-        dashFrames = 30;
-      } else {
-        dashFrames--;
-      }
-    }
-    if (dashFrames != 0) {
-      accel = accel.withX(Player.dashSpeed);
-    }
-
-    // Dash code
     if (gamepad.dash && dashes != 0 && dashFrames == 0) {
       print('dashed');
       dashFrames = 30;
