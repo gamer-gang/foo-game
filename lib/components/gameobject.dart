@@ -57,8 +57,8 @@ mixin RectProperties on GameObject {
       } else if (bottom >= other.top && bottom <= other.bottom) {
         // we are falling through the platform; move to the top
         pos = pos.withY(other.top - size.dy);
-        if (vel.dy > 0) vel = vel.withY(0); // make the y velocity 0 on platform
         jumps = 1;
+        if (vel.dy > 0) vel = vel.withY(0); // make the y velocity 0 on platform
         dashes = 1;
       } else if (top >= other.top && top <= other.bottom) {
         // we are hitting the bottom of the platform; move to the bottom

@@ -78,4 +78,17 @@ class Text extends GameObject {
   }
 
   void update(double t) {}
+
+  void setText(String newText) {
+    text = newText;
+    painter.text = TextSpan(text: text, style: style);
+  }
+
+  void setPos(Offset newPos) {
+    pos = newPos;
+  }
+
+  void setStyle(TextStyle newStyle) {
+    style = style.merge(newStyle);
+  }
 }
