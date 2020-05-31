@@ -8,6 +8,8 @@ import '../game.dart';
 import 'gameobject.dart';
 import 'text.dart';
 
+enum Facing { left, right }
+
 class Player extends GameObject with RectProperties {
   Color color;
   Offset vel = Offset(0, 0);
@@ -18,6 +20,8 @@ class Player extends GameObject with RectProperties {
   bool jumpedThisPress = false;
   int jumps = 0;
   int dashes = 0;
+  Facing facing = Facing.right;
+  List<Offset> pastPositions = [];
 
   /// Number of frames left to dash.
   int dashFrames = 0;
@@ -42,7 +46,7 @@ class Player extends GameObject with RectProperties {
   static double jumpAcceleration = 5;
 
   /// Added to your x during a dash.
-  static double dashSpeed = 10;
+  static double dashSpeed = 15;
 
   /// Limit of the velocity.
   static Offset maxSpeed = Offset(20, 20);
@@ -74,6 +78,11 @@ class Player extends GameObject with RectProperties {
     if (dead) {} // TODO do something when dead
     var paint = Paint()..color = color;
     c.drawRect(Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy), paint);
+
+    if (dashFrames > 0) {
+      drawTrail(c);
+    }
+
     if (debug) {
       c.drawPoints(
         PointMode.points,
@@ -95,6 +104,9 @@ class Player extends GameObject with RectProperties {
   }
 
   void update(double t) {
+    /* TEMPORARY CODE (for testing) */
+    if (pos.dy > 100) pos = pos.withY(-100);
+
     // if (checkDeath()) dead = true;
     vel = Offset(
       vel.dx.abs() > Player.maxSpeed.dx
@@ -109,9 +121,6 @@ class Player extends GameObject with RectProperties {
     for (var object in game.level.foreground) {
       if (object.collide) collideWith(object);
     }
-
-    // game.level.foreground.forEach((object) =>
-    //     {this.collideWith(object)});
 
     vel = vel.scaleX(Player.friction.dx).scaleX(Player.friction.dx);
 
@@ -139,39 +148,60 @@ class Player extends GameObject with RectProperties {
 
   void move(Gamepad gamepad) {
     // Normal movement code
-    if (gamepad.left) accel = accel.withX(-Player.acceleration);
-    if (gamepad.right) accel = accel.withX(Player.acceleration);
+    if (gamepad.left) {
+      accel = accel.withX(-Player.acceleration);
+      facing = Facing.left;
+    }
+    if (gamepad.right) {
+      accel = accel.withX(Player.acceleration);
+      facing = Facing.right;
+    }
     if (!gamepad.right && !gamepad.left) accel = accel.withX(0);
 
     // Dash code
-    if (gamepad.dash) {
-      if (dashFrames == 0 && dashes != 0) {
-        print('dashed');
-        dashFrames = 30;
-      } else
-        dashFrames--;
+    if (gamepad.dash && dashes != 0 && dashFrames == 0) {
+      pastPositions = [];
+      print('dashed');
+      dashFrames = 10;
     }
     if (dashFrames > 0) {
-      accel = accel.withX(Player.dashSpeed);
+      pastPositions = [pos, ...?pastPositions];
+      accel = facing == Facing.right
+          ? accel.withX(Player.dashSpeed)
+          : accel.withX(-Player.dashSpeed);
       dashFrames--;
     }
     // TODO: stop dashes when colliding with something, make dashes directional
 
-    // TODO: stop dashes when colliding with something, make dashes directional
+    // Jump code
+    if (gamepad.jump && jumps != 0 && !jumpedThisPress) {
+      vel = (vel.dy > jumpAcceleration) ? vel.withY(0) : vel;
+      accel = accel.withY(-jumpAcceleration);
+
+      jumps--;
+
+      jumpedThisPress = true;
+      print('jumped; jumps left: $jumps');
+    } else if (!gamepad.jump) {
+      jumpedThisPress = false;
     }
-      dashFrames--;
-      accel = accel.withX(Player.dashSpeed);
-    if (dashFrames > 0) {
-      dashFrames = 30;
-    }
-      print('dashed');
-    if (gamepad.dash && dashes != 0 && dashFrames == 0) {
-    // Dash code
+
     // Gravity code
-    if (gamepad.jump) {
-      vel = vel.translateY(Player.gravityConstant * Player.gravityPulldown);
-    } else {
-      vel = vel.translateY(Player.gravityConstant);
+    if (dashFrames == 0) {
+      if (gamepad.jump) {
+        vel = vel.translateY(Player.gravityConstant * Player.gravityPulldown);
+      } else {
+        vel = vel.translateY(Player.gravityConstant);
+      }
+    }
+  }
+
+  void drawTrail(Canvas c) {
+    for (var i = 1; i < pastPositions.length; i++) {
+      var paint = Paint()..color = color.withAlpha(200 ~/ i);
+      var trailPos = pastPositions[i - 1];
+      c.drawRect(
+          Rect.fromLTWH(trailPos.dx, trailPos.dy, size.dx, size.dy), paint);
     }
   }
 }

@@ -6,7 +6,7 @@ import 'package:flutter/painting.dart';
 import '../../game.dart';
 import '../background.dart';
 import '../level.dart';
-import '../obtainable.dart';
+// import '../obtainable.dart';
 import '../platform.dart';
 
 Level level1(MonumentPlatformer game) {
@@ -22,16 +22,16 @@ Level level1(MonumentPlatformer game) {
         ),
       ],
       Layers.foreground: [
-        Obtainable.create(
-          game: game,
-          debug: true,
-          child: Platform.create(
-            game: game,
-            color: Colors.orange,
-            pos: Offset(420, -150),
-            size: Offset(50, 50),
-          ),
-        ),
+        // Obtainable.create(
+        //   game: game,
+        //   debug: true,
+        //   child: Platform.create(
+        //     game: game,
+        //     color: Colors.orange,
+        //     pos: Offset(420, -150),
+        //     size: Offset(50, 50),
+        //   ),
+        // ),
         Platform.create(
           game: game,
           color: platformColor,
@@ -42,6 +42,12 @@ Level level1(MonumentPlatformer game) {
           game: game,
           color: platformColor,
           pos: Offset(100, -10),
+          size: Offset(100, 40),
+        ),
+        Platform.create(
+          game: game,
+          color: platformColor,
+          pos: Offset(100, -250),
           size: Offset(100, 40),
         ),
         Platform.create(
