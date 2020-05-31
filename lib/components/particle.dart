@@ -1,27 +1,73 @@
-import 'package:flame/particle.dart';
-import 'package:flame/particles/accelerated_particle.dart';
-import 'package:flame/particles/circle_particle.dart';
+import 'dart:math';
+import 'dart:ui';
 import 'package:flutter/painting.dart';
+import 'package:flutter/material.dart' show Colors;
 
-import '../common.dart';
+// import '../common.dart';
+import '../game.dart';
+import 'gameobject.dart';
 
-class GameParticle {
-  GameParticle() {
-    // ignore: unused_local_variable
-    var a = Particle.generate(
-      count: 10,
-      generator: (i) {
-        return AcceleratedParticle(
-          acceleration: OffsetUtil.random(),
-          child: CircleParticle(
-            paint: Paint()
-              ..color = Color(0xff3a3a3e)
-              ..strokeWidth = 1
-              ..style = PaintingStyle.fill,
-            lifespan: 15,
-          ),
-        );
-      },
-    );
+class ParticleEffect extends GameObject {
+  List<GameParticle> particles;
+  GameParticle particle;
+  int particleCount;
+
+  ParticleEffect.create(
+      MonumentPlatformer game, this.particle, this.particleCount
+  ) : super.create(game) {
+    for (var i = 0; i < particleCount; i++) {
+      particles.add(particle);
+    }
+  }
+
+  void update(double t) {
+    for (var i = 0; i < particles.length; i++) {
+      particles[i].update(t);
+    }
+  }
+
+  void render(Canvas c) {
+    for (var i = 0; i < particles.length; i++) {
+      particles[i].render(c);
+    }
+  }
+}
+
+class GameParticle extends GameObject {
+  int lifetime, points;
+  // points is how many points the particle will have (always regular polygon)
+  double angle = 0, angVel = 0, angFriction = 0.8, friction = 0.8, radius;
+  // angle is measured in degrees, friction is multiplied every frame
+  Offset pos, vel; // position is measured from the center
+  Color color = Colors.black;
+
+  GameParticle.create(
+      MonumentPlatformer game,
+      this.points,
+      this.lifetime,
+      this.points,
+      this.angle,
+      this.angVel,
+      this.angFriction,
+      this.pos,
+      this.vel,
+      this.friction,
+      this.color)
+      : super.create(game);
+
+  void update(double t) {
+    pos += vel;
+    vel *= friction;
+  }
+
+  void render(Canvas c) {
+    List<Offset> verticies;
+    var paint = Paint()..color = color;
+    var angles = 2 * pi / points;
+
+    for (var i = 0; i < points; i++) {
+      verticies.add(Offset(cos(angles * i) * radius, sin(angles * i) * radius));
+    }
+    c.drawPoints(PointMode.polygon, verticies, paint);
   }
 }
