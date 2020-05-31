@@ -148,6 +148,10 @@ class Player extends GameObject with RectProperties {
 
   void move(Gamepad gamepad) {
     // Normal movement code
+    // Dash code
+
+    if (!gamepad.right && !gamepad.left) accel = accel.withX(0);
+    }
     if (gamepad.left) {
       accel = accel.withX(-Player.acceleration);
       facing = Facing.left;
@@ -155,10 +159,6 @@ class Player extends GameObject with RectProperties {
     if (gamepad.right) {
       accel = accel.withX(Player.acceleration);
       facing = Facing.right;
-    }
-    if (!gamepad.right && !gamepad.left) accel = accel.withX(0);
-
-    // Dash code
     if (gamepad.dash && dashes != 0 && dashFrames == 0) {
       pastPositions = [];
       print('dashed');
@@ -171,7 +171,6 @@ class Player extends GameObject with RectProperties {
           : accel.withX(-Player.dashSpeed);
       dashFrames--;
     }
-    // TODO: stop dashes when colliding with something, make dashes directional
 
     // Jump code
     if (gamepad.jump && jumps != 0 && !jumpedThisPress) {
