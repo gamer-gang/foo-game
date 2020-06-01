@@ -12,18 +12,18 @@ double _strokeWidth = 4;
 class Obtainable extends GameObject with RectProperties {
   RectProperties child;
   bool debug;
-  Text debugText;
+  Text _debugText;
 
-  /// Alias for `child.right`
+  /// Alias to `child.right`
   double get right => child.right;
 
-  /// Alias for `child.bottom`
+  /// Alias to `child.bottom`
   double get bottom => child.bottom;
 
-  /// Alias for `child.width`
+  /// Alias to `child.width`
   double get width => child.width;
 
-  /// Alias for `child.height`
+  /// Alias to `child.height`
   double get height => child.height;
 
   Offset get pos => child.pos;
@@ -36,7 +36,7 @@ class Obtainable extends GameObject with RectProperties {
     this.debug = false,
   }) : super.create(game) {
     if (debug) {
-      debugText = Text.monospace(game)
+      _debugText = Text.monospace(game)
         ..pos = child.pos.withY(child.pos.dy - 14)
         ..text = 'OBTAINABLE'
         ..style = TextStyle(
@@ -76,11 +76,11 @@ class Obtainable extends GameObject with RectProperties {
           ..strokeWidth = _strokeWidth,
       );
 
-      debugText.render(c);
+      _debugText.render(c);
     }
   }
 
   void update(double t) {
-    debugText.pos = child.pos.translateY(-14);
+    _debugText.pos = child.pos.translateY(-14);
   }
 }

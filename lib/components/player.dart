@@ -6,6 +6,7 @@ import 'package:flutter/painting.dart';
 import '../common.dart';
 import '../game.dart';
 import 'gameobject.dart';
+// import 'obtainable.dart';
 import 'text.dart';
 
 enum Facing { left, right }
@@ -70,6 +71,7 @@ class Player extends GameObject with RectProperties {
         'vel': Text.monospace(game),
         'accel': Text.monospace(game),
         'jumps': Text.monospace(game),
+        'dashes': Text.monospace(game),
       });
     }
   }
@@ -77,7 +79,7 @@ class Player extends GameObject with RectProperties {
   void render(Canvas c) {
     if (dead) {} // TODO do something when dead
     var paint = Paint()..color = color;
-    c.drawRect(Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy), paint);
+    c.drawRect(Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy + 1), paint);
 
     if (dashFrames > 0) {
       drawTrail(c);
@@ -109,22 +111,20 @@ class Player extends GameObject with RectProperties {
 
     // if (checkDeath()) dead = true;
     vel = Offset(
-      vel.dx.abs() > Player.maxSpeed.dx
-          ? Player.maxSpeed.dx * vel.dx.sign
-          : vel.dx,
-      vel.dy > Player.maxSpeed.dy ? Player.maxSpeed.dy : vel.dy,
+      vel.dx.abs() > maxSpeed.dx ? maxSpeed.dx * vel.dx.sign : vel.dx,
+      vel.dy > maxSpeed.dy ? maxSpeed.dy : vel.dy,
     );
 
     pos += vel;
     vel += accel;
 
     for (var object in game.level.foreground) {
-      if (object.collide) collideWith(object);
+      if (object.collide ?? false) collideWith(object);
     }
 
-    vel = vel.scaleX(Player.friction.dx).scaleX(Player.friction.dx);
+    vel = vel.scaleX(friction.dx).scaleX(friction.dx);
 
-    accel *= Player.accelFriction;
+    accel *= accelFriction;
 
     if (debug) {
       texts['pos']
@@ -143,6 +143,9 @@ class Player extends GameObject with RectProperties {
       texts['jumps']
         ..text = "Jumps: $jumps"
         ..pos = Offset(right, bottom);
+      texts['dashes']
+        ..text = "Dashes: $dashes"
+        ..pos = Offset(right, bottom + 15);
     }
   }
 
@@ -163,6 +166,7 @@ class Player extends GameObject with RectProperties {
       pastPositions = [];
       print('dashed');
       dashFrames = 10;
+
     }
     if (dashFrames > 0) {
       pastPositions = [pos, ...?pastPositions];
@@ -172,18 +176,7 @@ class Player extends GameObject with RectProperties {
       dashFrames--;
     }
 
-    // Jump code
-    if (gamepad.jump && jumps != 0 && !jumpedThisPress) {
-      vel = (vel.dy > jumpAcceleration) ? vel.withY(0) : vel;
-      accel = accel.withY(-jumpAcceleration);
-
-      jumps--;
-
-      jumpedThisPress = true;
-      print('jumped; jumps left: $jumps');
-    } else if (!gamepad.jump) {
-      jumpedThisPress = false;
-    }
+    
 
     // Jump code
     if (gamepad.jump && jumps != 0 && !jumpedThisPress) {
@@ -213,7 +206,17 @@ class Player extends GameObject with RectProperties {
       var paint = Paint()..color = color.withAlpha(200 ~/ i);
       var trailPos = pastPositions[i - 1];
       c.drawRect(
-          Rect.fromLTWH(trailPos.dx, trailPos.dy, size.dx, size.dy), paint);
+          Rect.fromLTWH(trailPos.dx, trailPos.dy, size.dx + 1, size.dy), paint);
     }
   }
+
+  // void collectItems() {
+  //   for (var obj in game.level.foreground) {
+  //     if (obj is Obtainable) {
+  //       obj;
+  //     } else {
+  //       obj;
+  //     }
+  //   }
+  // }
 }

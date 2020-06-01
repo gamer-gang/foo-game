@@ -9,10 +9,12 @@ abstract class GameObject {
   MonumentPlatformer game;
   Offset pos, vel;
   bool canKillPlayer;
-  bool collide = false;
+  bool collide;
 
   @mustCallSuper
-  GameObject.create(this.game);
+  GameObject.create(this.game) {
+    collide ??= false;
+  }
 
   void render(Canvas c);
 

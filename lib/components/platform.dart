@@ -7,20 +7,17 @@ import 'gameobject.dart';
 
 class Platform extends GameObject with RectProperties {
   Color color;
+  bool canKillPlayer, collide;
+  Offset pos, size;
 
   Platform.create({
     MonumentPlatformer game,
     this.color,
-    bool canKillPlayer = false,
-    bool collide = true,
-    Offset pos,
-    Offset size,
-  }) : super.create(game) {
-    this.size = size;
-    this.pos = pos;
-    this.canKillPlayer = canKillPlayer;
-    this.collide = collide;
-  }
+    this.canKillPlayer = false,
+    this.collide = true,
+    this.pos,
+    this.size,
+  }) : super.create(game);
 
   void render(Canvas c) {
     var paint = Paint()..color = color;

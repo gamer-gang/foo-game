@@ -12,9 +12,18 @@ class ParticleEffect extends GameObject {
   GameParticle particle;
   int particleCount;
 
-  ParticleEffect.create(
-      MonumentPlatformer game, this.particle, this.particleCount
-  ) : super.create(game) {
+  ParticleEffect.create({
+    MonumentPlatformer game,
+    this.particle,
+    this.particleCount,
+  }) : super.create(game) {
+    for (var i = 0; i < particleCount; i++) {
+      particles.add(particle);
+    }
+  }
+
+  ParticleEffect.dead(MonumentPlatformer game) : super.create(game) {
+    // TODO assign this.particle & this.particleCount
     for (var i = 0; i < particleCount; i++) {
       particles.add(particle);
     }
@@ -42,32 +51,38 @@ class GameParticle extends GameObject {
   Color color = Colors.black;
 
   GameParticle.create(
-      MonumentPlatformer game,
-      this.points,
-      this.lifetime,
-      this.points,
-      this.angle,
-      this.angVel,
-      this.angFriction,
-      this.pos,
-      this.vel,
-      this.friction,
-      this.color)
-      : super.create(game);
+    MonumentPlatformer game,
+    this.points,
+    this.lifetime,
+    this.points,
+    this.angle,
+    this.angVel,
+    this.angFriction,
+    this.pos,
+    this.vel,
+    this.friction,
+    this.color,
+  ) : super.create(game);
 
   void update(double t) {
     pos += vel;
     vel *= friction;
+    lifetime--;
   }
 
   void render(Canvas c) {
-    List<Offset> verticies;
+    List<Offset> vertices;
     var paint = Paint()..color = color;
     var angles = 2 * pi / points;
 
     for (var i = 0; i < points; i++) {
-      verticies.add(Offset(cos(angles * i) * radius, sin(angles * i) * radius));
+      vertices.add(Offset(
+        pos.dx + cos(angles * i) * radius,
+        pos.dy + sin(angles * i) * radius,
+      ));
     }
-    c.drawPoints(PointMode.polygon, verticies, paint);
+    vertices.add(Offset(pos.dx + radius, pos.dy));
+
+    c.drawPoints(PointMode.polygon, vertices, paint);
   }
 }

@@ -5,7 +5,9 @@ part 'savedata.g.dart';
 @JsonSerializable()
 class SaveData {
   int fileNumber;
-
+  int level;
+  List collectedItems;
+  
   SaveData({this.fileNumber});
 
   factory SaveData.fromJson(Map<String, dynamic> json) =>
