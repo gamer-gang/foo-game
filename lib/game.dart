@@ -1,85 +1,41 @@
-import 'dart:ui';
-
-import 'package:flame/game.dart' as flame;
-import 'package:flutter/gestures.dart';
-import 'package:flutter/painting.dart';
-
-import 'components/level.dart';
-import 'components/levels/index.dart';
-import 'components/player.dart';
+// import 'dart:ui';
+// import 'package:box2d_flame/box2d.dart' as b2;
+import 'package:flame/box2d/box2d_game.dart';
+import 'package:flame/box2d/box2d_component.dart';
+// import 'package:flutter/gestures.dart';
+// import 'package:flutter/painting.dart';
 
 enum GamepadButton { left, right, dash, jump }
 enum GameState { playing, paused, gameOver }
 
-class MonumentPlatformer extends flame.Game {
-  Offset camera;
-  Gamepad gamepad;
-  Level level;
-  Player player;
-  Size viewport;
+class MonumentPlatformer extends Box2DGame {
+  MonumentPlatformer(Box2DComponent box) : super(box);
+  /*
+    class MyGame extends Box2DGame with TapDetector {
+      MyGame(Box2DComponent box) : super(box) {
+        final boundaries = createBoundaries(box);
+        boundaries.forEach(add);
+        addContactCallback(BallContactCallback());
+        addContactCallback(BallWallContactCallback());
+        addContactCallback(WhiteBallContactCallback());
+      }
+    }
 
-  MonumentPlatformer(Size screenDimensions, int levelNumber) {
-    init(screenDimensions);
-    camera = Offset(0, 0);
-    player = Player.create(
-      game: this,
-      debug: true,
-      pos: Offset(0, -20),
-      size: Offset(50, 50),
-      color: Color(0xff1e90ff),
-    );
-    gamepad = Gamepad();
-    level = levels[levelNumber](this);
-  }
+    class MyBox2D extends Box2DComponent {
+      MyBox2D() : super(scale: 4.0, gravity: -10.0);
 
-  void init(Size size) {
-    viewport = size;
-    // camera = Offset(viewport.width / 2, viewport.height / 2);
-    camera = Offset(viewport.width / 2, viewport.height / 2);
-  }
+      @override
+      void initializeWorld() {}
+    }
+  */
+}
 
-  void render(Canvas c) {
-    // background
-    level.renderBackground(c);
+class MonumentPlatformerBox2D extends Box2DComponent {
+  MonumentPlatformerBox2D() : super(scale: 4.0, gravity: -10.0);
 
-    // middleground
-    c.save();
-    c.translate(camera.dx / 2, camera.dy / 2);
+  @override
+  void initializeWorld() {
 
-    level.renderMiddleground(c);
-
-    c.restore();
-
-    // foreground
-    c.save();
-    c.translate(camera.dx, camera.dy);
-
-    player.render(c);
-    level.renderForeground(c);
-
-    c.restore();
-    // UI
-    level.renderUi(c);
-  }
-
-  void update(double t) {
-    camera = Offset(
-      (viewport.width - player.size.dx) / 2 - player.pos.dx,
-      (viewport.height - player.size.dy) / 2 - player.pos.dy,
-    );
-
-    player.move(gamepad);
-    player.update(t);
-  }
-
-  void press(GamepadButton pressed, PointerDownEvent event) {
-    print("pressed $pressed");
-    gamepad.press(pressed);
-  }
-
-  void release(GamepadButton released, PointerUpEvent event) {
-    print("released $released");
-    gamepad.release(released);
   }
 }
 

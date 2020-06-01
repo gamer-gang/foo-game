@@ -1,3 +1,6 @@
+import 'dart:html';
+
+import 'package:flame/box2d/box2d_component.dart';
 import 'package:flame/flame.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,8 +18,11 @@ Future<MonumentPlatformer> setupGame() async {
   await Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
   await Flame.util.fullScreen();
 
-  final dimensions = await Flame.util.initialDimensions();
-  var game = MonumentPlatformer(dimensions, levelNumber);
+
+  Box2DComponent box = Box2DComponent();
+
+  // final dimensions = await Flame.util.initialDimensions();
+  var game = MonumentPlatformer(box /* dimensions, levelNumber */);
   // TapGestureRecognizer tapRecognizer = TapGestureRecognizer();
   // tapRecognizer.onTapDown = game.onTapDown;
   // tapRecognizer.onTapUp = game.onTapUp;
@@ -48,7 +54,7 @@ class LoadingScreen extends StatelessWidget {
     setupGame().then((game) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, anim1, anim2) => MainApp(game: game),
+          pageBuilder: (context, anim1, anim2) => game.widget,
           transitionsBuilder: pageTransition,
         ),
       );

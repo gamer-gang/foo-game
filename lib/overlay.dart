@@ -140,11 +140,12 @@ Widget overlayButton({
   return Listener(
     onPointerDown: (pointerDownEvent) {
       update(_btnColorPressed);
-      game.press(key, pointerDownEvent);
+      // game.press(key, pointerDownEvent);
     },
     onPointerUp: (pointerUpEvent) {
       update(_btnColor);
-      game.release(key, pointerUpEvent);
+      // TODO: fix!!!
+      // game.release(key, pointerUpEvent);
     },
     child: AnimatedContainer(
       curve: Curves.easeOut,
