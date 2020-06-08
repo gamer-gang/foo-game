@@ -20,7 +20,9 @@ class Background extends GameObject {
 
   void render(Canvas c) {
     c.drawRect(
-        Rect.fromLTWH(0, 0, game.viewport.width, game.viewport.height), paint);
+      Rect.fromLTWH(0, 0, game.viewport.width, game.viewport.height),
+      paint,
+    );
   }
 
   void update(double t) {}

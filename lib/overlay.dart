@@ -136,7 +136,7 @@ Widget overlayButton({
   GamepadButton key,
   IconData icon,
 }) {
-  if (color == null) color = _btnColor;
+  color ??= _btnColor;
   return Listener(
     onPointerDown: (pointerDownEvent) {
       update(_btnColorPressed);
@@ -165,18 +165,3 @@ Widget overlayButton({
     ),
   );
 }
-
-// class OverlayButton extends StatelessWidget {
-//   const OverlayButton({
-//     Key key,
-//     @required Color buttonColor,
-//   })  : _buttonColor = buttonColor,
-//         super(key: key);
-
-//   final Color _buttonColor;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return
-//   }
-// }

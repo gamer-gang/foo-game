@@ -7,6 +7,39 @@ import 'package:flutter/material.dart' show Colors;
 import '../game.dart';
 import 'gameobject.dart';
 
+class ParticleManager {
+  final List<ParticleEffect> _particles;
+
+  ParticleManager({
+    List<ParticleEffect> particles,
+  }) : _particles = particles ?? [];
+
+  int add(ParticleEffect particle) {
+    _particles.add(particle);
+    return _particles.length - 1;
+  }
+
+  void remove(ParticleEffect particle) => _particles.remove(particle);
+  void removeAt(int index) => _particles.removeAt(index);
+  void clear() => _particles.clear();
+
+  void indexOf(ParticleEffect particle) => _particles.indexOf(particle);
+  
+  void renderAt(int index, Canvas c) => _particles[index].render(c);
+  void renderAll(Canvas c) {
+    for (final particle in _particles) {
+      particle.render(c);
+    }
+  }
+  
+  void updateAt(int index, double t) => _particles[index].update(t);
+  void updateAll(double t) {
+    for (final particle in _particles) {
+      particle.update(t);
+    }
+  }
+}
+
 class ParticleEffect extends GameObject {
   List<GameParticle> particles;
   GameParticle particle;
@@ -45,24 +78,23 @@ class ParticleEffect extends GameObject {
 class GameParticle extends GameObject {
   int lifetime, points;
   // points is how many points the particle will have (always regular polygon)
-  double angle = 0, angVel = 0, angFriction = 0.8, friction = 0.8, radius;
+  double angle, angleVelocity, angleFriction, friction, radius;
   // angle is measured in degrees, friction is multiplied every frame
   Offset pos, vel; // position is measured from the center
   Color color = Colors.black;
 
-  GameParticle.create(
+  GameParticle.create({
     MonumentPlatformer game,
-    this.points,
+    this.points = 3,
     this.lifetime,
-    this.points,
-    this.angle,
-    this.angVel,
-    this.angFriction,
+    this.angle = 0,
+    this.angleVelocity = 0,
+    this.angleFriction = 0.8,
     this.pos,
     this.vel,
-    this.friction,
+    this.friction = 8,
     this.color,
-  ) : super.create(game);
+  }) : super.create(game);
 
   void update(double t) {
     pos += vel;

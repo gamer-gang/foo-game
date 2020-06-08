@@ -6,6 +6,7 @@ import 'package:flutter/painting.dart';
 
 import 'components/level.dart';
 import 'components/levels/index.dart';
+import 'components/particle.dart';
 import 'components/player.dart';
 
 enum GamepadButton { left, right, dash, jump }
@@ -17,6 +18,7 @@ class MonumentPlatformer extends flame.Game {
   Level level;
   Player player;
   Size viewport;
+  ParticleManager particleManager;
 
   MonumentPlatformer(Size screenDimensions, int levelNumber) {
     init(screenDimensions);
@@ -30,6 +32,7 @@ class MonumentPlatformer extends flame.Game {
     );
     gamepad = Gamepad();
     level = levels[levelNumber](this);
+    particleManager = ParticleManager();
   }
 
   void init(Size size) {
@@ -38,26 +41,33 @@ class MonumentPlatformer extends flame.Game {
     camera = Offset(viewport.width / 2, viewport.height / 2);
   }
 
+  void _renderLayer(
+    Canvas c,
+    Offset translation,
+    void Function() renderLayer,
+  ) {
+    c.save();
+    c.translate(translation.dx, translation.dy);
+    renderLayer();
+    c.restore();
+  }
+
   void render(Canvas c) {
     // background
     level.renderBackground(c);
 
     // middleground
-    c.save();
-    c.translate(camera.dx / 2, camera.dy / 2);
-
-    level.renderMiddleground(c);
-
-    c.restore();
+    _renderLayer(c, camera / 2, () {
+      level.renderMiddleground(c);
+    });
 
     // foreground
-    c.save();
-    c.translate(camera.dx, camera.dy);
+    _renderLayer(c, camera, () {
+      player.render(c);
+      level.renderForeground(c);
+      particleManager.renderAll(c);
+    });
 
-    player.render(c);
-    level.renderForeground(c);
-
-    c.restore();
     // UI
     level.renderUi(c);
   }
