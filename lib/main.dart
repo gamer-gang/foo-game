@@ -67,3 +67,25 @@ class _MainAppState extends State<MainApp> {
     );
   }
 }
+
+/// Transition for file selection.
+SlideTransition fileSelectTransition(
+  BuildContext context,
+  Animation<double> animation,
+  Animation<double> secondaryAnimation,
+  Widget child,
+) {
+  var tween = Tween(
+    begin: Offset(0, 1),
+    end: Offset(0, 0.8),
+  ).chain(
+    CurveTween(curve: Curves.ease),
+  );
+
+  var offsetAnimation = animation.drive(tween);
+
+  return SlideTransition(
+    position: offsetAnimation,
+    child: child,
+  );
+}

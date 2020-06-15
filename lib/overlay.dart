@@ -1,38 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flame/flame.dart';
+// import 'package:flame/flame.dart';
 
 import 'common.dart';
-import 'data/savedata.dart';
+// import 'data/savedata.dart';
 import 'data/store.dart';
 import 'game.dart';
 
-enum File { file1, file2, file3 }
-
-final Color _btnColor = darkBlue,
-    _btnColorPressed = Color.fromARGB(255, 85, 109, 135);
+final Color _btnColor = darkBlue;
+    // _btnColorPressed = Color.fromARGB(255, 85, 109, 135);
 final double _btnSize = 64, _iconSize = 40, _btnMargin = 20, _btnSpacing = 32;
 
-Future<SaveData> getSave(File file) async {
-  var store = SaveDataStore();
-  var saveFileNumber =
-      int.parse(file.toString().replaceAll(RegExp(r'File\.file'), ''));
-
-  return await store.readFile(saveFileNumber);
-}
-
-Future<MonumentPlatformer> setupGame(File file) async {
-  var dimensions = await Flame.util.initialDimensions();
-
-  var save = await getSave(file);
-
-  return MonumentPlatformer(
-    dimensions: dimensions,
-    save: save,
-  );
-}
-
 class GamePage extends StatefulWidget {
-  final File file;
+  final SaveFile file;
 
   GamePage({this.file});
 
@@ -41,7 +20,7 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
-  final File file;
+  final SaveFile file;
 
   _GamePageState(this.file);
 
@@ -52,7 +31,7 @@ class _GamePageState extends State<GamePage> {
           future: setupGame(file),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return GameStack(game: snapshot.data);
+              return GameManager(game: snapshot.data);
             } else {
               return loadingScreen();
             }
@@ -61,34 +40,53 @@ class _GamePageState extends State<GamePage> {
   }
 }
 
-class GameStack extends StatefulWidget {
+class GameManager extends StatefulWidget {
   final MonumentPlatformer game;
 
-  const GameStack({
-    Key key,
-    @required this.game,
-  }) : super(key: key);
+  const GameManager({Key key, @required this.game}) : super(key: key);
 
   @override
-  _GameStackState createState() => _GameStackState();
+  _GameManagerState createState() => _GameManagerState(game);
 }
 
 bool reloadPressed = false;
 
-class _GameStackState extends State<GameStack> {
-  Color _leftBtnColor, _rightBtnColor, _dashBtnColor, _jumpBtnColor;
+class ColorManager {
+  Color left;
+  Color right;
+  Color dash;
+  Color jump;
+  ColorManager({this.left, this.right, this.dash, this.jump});
+}
+
+class _GameManagerState extends State<GameManager> {
+  ColorManager colors = ColorManager(
+    left: _btnColor,
+    right: _btnColor,
+    jump: _btnColor,
+    dash: _btnColor,
+  );
+
+  MonumentPlatformer game;
+
+  _GameManagerState(this.game);
+
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Container(child: widget.game.widget),
+      Container(child: game.widget),
       Positioned(
         top: 0,
         left: 0,
         child: Row(children: [
           overlayButton(
-            game: widget.game,
-            color: Color(0x00),
+            game: game,
+            color: Colors.transparent,
+            iconColor: Colors.black,            
             key: GamepadButton.restart,
             icon: Icons.refresh,
           ),
@@ -114,19 +112,19 @@ class _GameStackState extends State<GameStack> {
           width: _btnSize * 2 + _btnSpacing,
           child: Row(children: [
             overlayButton(
-              game: widget.game,
-              color: _leftBtnColor,
+              game: game,
+              color: colors.left,
               key: GamepadButton.left,
               icon: Icons.arrow_left,
-              update: (newColor) => setState(() => _leftBtnColor = newColor),
+              update: (newColor) => setState(() => colors.left = newColor),
             ),
             Spacer(),
             overlayButton(
-              game: widget.game,
-              color: _rightBtnColor,
+              game: game,
+              color: colors.right,
               key: GamepadButton.right,
               icon: Icons.arrow_right,
-              update: (newColor) => setState(() => _rightBtnColor = newColor),
+              update: (newColor) => setState(() => colors.right = newColor),
             ),
           ]),
         ),
@@ -138,19 +136,19 @@ class _GameStackState extends State<GameStack> {
           width: _btnSize * 2 + _btnSpacing,
           child: Row(children: [
             overlayButton(
-              game: widget.game,
-              color: _dashBtnColor,
+              game: game,
+              color: colors.dash,
               key: GamepadButton.dash,
               icon: Icons.fast_forward,
-              update: (newColor) => setState(() => _dashBtnColor = newColor),
+              update: (newColor) => setState(() => colors.dash = newColor),
             ),
             Spacer(),
             overlayButton(
-              game: widget.game,
-              color: _jumpBtnColor,
+              game: game,
+              color: colors.jump,
               key: GamepadButton.jump,
               icon: Icons.arrow_drop_up,
-              update: (newColor) => setState(() => _jumpBtnColor = newColor),
+              update: (newColor) => setState(() => colors.jump = newColor),
             ),
           ]),
         ),
@@ -162,18 +160,21 @@ class _GameStackState extends State<GameStack> {
 Widget overlayButton({
   MonumentPlatformer game,
   Color color,
+  Color iconColor = Colors.white,
   Function(Color) update,
   GamepadButton key,
   IconData icon,
 }) {
-  color ??= _btnColor;
+  // var releaseColor = Color(color != null ? color.value : _btnColor.value);
+  // var pressColor =
+  // Color(pressedColor != null ? pressedColor.value : _btnColorPressed.value);
   return Listener(
     onPointerDown: (pointerDownEvent) {
-      update(_btnColorPressed);
+      // update(pressColor);
       game.press(key, pointerDownEvent);
     },
     onPointerUp: (pointerUpEvent) {
-      update(_btnColor);
+      // update(releaseColor);
       game.release(key, pointerUpEvent);
     },
     child: AnimatedContainer(
@@ -188,7 +189,7 @@ Widget overlayButton({
       child: Center(
         child: Icon(
           icon,
-          color: Colors.white,
+          color: iconColor,
           size: _iconSize,
         ),
       ),

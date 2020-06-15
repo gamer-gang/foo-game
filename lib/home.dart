@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'common.dart';
+import 'data/store.dart';
 import 'overlay.dart';
 import 'settings.dart';
 
@@ -174,10 +175,13 @@ class FileSelector extends StatelessWidget {
               Navigator.of(context).push(
                 PageRouteBuilder(
                   pageBuilder: (context, anim1, anim2) =>
-                      GamePage(file: File.file1),
+                      GamePage(file: SaveFile.file1),
                   transitionsBuilder: pageTransition,
                 ),
               );
+            },
+            onLongPress: () {
+              // clearSaveFile(1);
             },
           ),
           Spacer(flex: 4),
@@ -191,7 +195,7 @@ class FileSelector extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(PageRouteBuilder(
                 pageBuilder: (context, anim1, anim2) =>
-                    GamePage(file: File.file2),
+                    GamePage(file: SaveFile.file2),
                 transitionsBuilder: pageTransition,
               ));
             },
@@ -207,7 +211,7 @@ class FileSelector extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(PageRouteBuilder(
                 pageBuilder: (context, anim1, anim2) =>
-                    GamePage(file: File.file3),
+                    GamePage(file: SaveFile.file3),
                 transitionsBuilder: pageTransition,
               ));
             },

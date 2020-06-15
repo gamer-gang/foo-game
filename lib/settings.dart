@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'common.dart';
+import 'data/store.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage({Key key}) : super(key: key);
@@ -14,6 +15,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Map<String, String> settingsText = {
     "animations": "",
     "sendUsageData": "",
+    "clear": "Yes",
   };
 
   @override
@@ -90,6 +92,46 @@ class _SettingsPageState extends State<SettingsPage> {
                       .then((val) => setBooleanSettingText("sendUsageData"));
                 },
                 child: Text(settingsText["sendUsageData"] ?? ""),
+              ),
+              Spacer(flex: 20),
+            ]),
+            Spacer(flex: 1),
+            Row(children: [
+              Spacer(flex: 1),
+              Text("Clear 1 file data"),
+              Spacer(flex: 1),
+              RaisedButton(
+                onPressed: () {
+                  var store = SaveDataStore();
+                  store.clearSaveFile(1);
+                },
+                child: Text(settingsText["clear"] ?? ""),
+              ),
+              Spacer(flex: 20),
+            ]),
+            Row(children: [
+              Spacer(flex: 1),
+              Text("Clear 2 file data"),
+              Spacer(flex: 1),
+              RaisedButton(
+                onPressed: () {
+                  var store = SaveDataStore();
+                  store.clearSaveFile(2);
+                },
+                child: Text(settingsText["clear"] ?? ""),
+              ),
+              Spacer(flex: 20),
+            ]),
+            Row(children: [
+              Spacer(flex: 1),
+              Text("Clear 3 file data"),
+              Spacer(flex: 1),
+              RaisedButton(
+                onPressed: () {
+                  var store = SaveDataStore();
+                  store.clearSaveFile(3);
+                },
+                child: Text(settingsText["clear"] ?? ""),
               ),
               Spacer(flex: 20),
             ]),

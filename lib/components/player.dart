@@ -22,7 +22,6 @@ class Player extends GameObject with RectProperties {
   Offset accel = Offset(0, 0);
   Offset lastCheckpoint = Offset(0, -20);
   Map<String, Text> texts = {};
-  bool debug;
   bool invincible = false;
   bool dead = false;
   bool jumpedThisPress = false;
@@ -76,17 +75,18 @@ class Player extends GameObject with RectProperties {
     Offset pos,
     Offset size,
     this.color,
-    this.debug = false,
   }) : super.create(game) {
     this.pos = pos;
     this.size = size;
-    if (debug) {
+    if (game.debug) {
       texts.addAll({
         'pos': Text.monospace(game)..pos = Offset(0, 0),
         'vel': Text.monospace(game)..pos = Offset(0, 0),
         'accel': Text.monospace(game)..pos = Offset(0, 0),
         'jumps': Text.monospace(game)..pos = Offset(0, 0),
         'dashes': Text.monospace(game)..pos = Offset(0, 0),
+        'deathFrames': Text.monospace(game)..pos = Offset(0, 0),
+        'winFrames': Text.monospace(game)..pos = Offset(0, 0),
       });
     }
   }
@@ -99,7 +99,7 @@ class Player extends GameObject with RectProperties {
       drawTrail(c);
     }
 
-    if (debug) {
+    if (game.debug) {
       c.drawPoints(
         PointMode.points,
         [
@@ -148,7 +148,7 @@ class Player extends GameObject with RectProperties {
 
     accel *= accelFriction;
 
-    if (debug) {
+    if (game.debug) {
       texts['pos']
         ..text = "Pos: (${pos.dx.roundTo(2).toString()}, "
             "${pos.dy.roundTo(2).toString()})"
@@ -168,6 +168,12 @@ class Player extends GameObject with RectProperties {
       texts['dashes']
         ..text = "Dashes: $dashes"
         ..pos = Offset(right, bottom + 15);
+      texts['deathFrames']
+        ..text = "deathFrames: $deathFrames"
+        ..pos = Offset(left-100, bottom);
+      texts['winFrames']
+        ..text = "winFrames: $winFrames"
+        ..pos = Offset(left-100, bottom + 15);
     }
   }
 
@@ -307,6 +313,7 @@ class Player extends GameObject with RectProperties {
       lastCheckpoint = pos;
 
       nextLevel = false;
+      winFrames--;
     }
   }
 

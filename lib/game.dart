@@ -4,6 +4,7 @@ import 'package:flame/game.dart' as flame;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/painting.dart';
 
+import 'common.dart';
 import 'components/level.dart';
 import 'components/levels/index.dart';
 import 'components/particle.dart';
@@ -11,7 +12,7 @@ import 'components/player.dart';
 import 'data/savedata.dart';
 import 'data/store.dart';
 
-enum GamepadButton { left, right, dash, jump, restart }
+enum GamepadButton { left, right, dash, jump, restart, pause }
 enum GameState { playing, paused, gameOver }
 
 class MonumentPlatformer extends flame.Game {
@@ -23,11 +24,13 @@ class MonumentPlatformer extends flame.Game {
   SaveData save;
   ParticleManager particleManager = ParticleManager();
 
-  bool _shouldUpdate = true;
-  int slowdown = 1;
   int frame = 0;
+  bool _shouldUpdate = true;
+  final int slowdown = 1;
+  final bool updateWhenPressed = false;
 
   bool debug = true;
+  GameState state = GameState.playing;
 
   MonumentPlatformer({Size dimensions, this.save}) {
     initScreen(dimensions);
@@ -35,7 +38,6 @@ class MonumentPlatformer extends flame.Game {
     camera = Offset(0, 0);
     player = Player.create(
       game: this,
-      debug: true,
       pos: Offset(0, -20),
       size: Offset(50, 50),
       color: Color(0xff1e90ff),
@@ -91,6 +93,8 @@ class MonumentPlatformer extends flame.Game {
 
   void update(double t) {
     if (!_shouldUpdate) return;
+    if (updateWhenPressed && gamepad.allReleased) return;
+    if (state == GameState.paused) return;
 
     camera = Offset(
       (viewport.width - player.size.dx) / 2 - player.pos.dx,
@@ -119,10 +123,13 @@ class MonumentPlatformer extends flame.Game {
   }
 }
 
-class Gamepad {
+class Gamepad extends EventTarget {
   bool left, right, dash, jump;
 
   final MonumentPlatformer game;
+
+  bool get allReleased => !left && !right && !dash && !jump;
+  bool get allPressed => left && right && dash && jump;
 
   Gamepad(this.game) {
     left = false;
@@ -135,18 +142,27 @@ class Gamepad {
     switch (button) {
       case GamepadButton.left:
         left = true;
+        emit('press', {'key': GamepadButton.left});
         break;
       case GamepadButton.right:
         right = true;
+        emit('press', {'key': GamepadButton.right});
         break;
       case GamepadButton.jump:
         jump = true;
+        emit('press', {'key': GamepadButton.jump});
         break;
       case GamepadButton.dash:
         dash = true;
+        emit('press', {'key': GamepadButton.dash});
         break;
       case GamepadButton.restart:
-        // TODO handle restart
+        if (!game.player.dead) game.player.deathFrames = 60;
+        emit('press', {'key': GamepadButton.restart});
+        break;
+      case GamepadButton.pause:
+        // TODO handle pause
+        emit('press', {'key': GamepadButton.pause});
         break;
     }
   }
@@ -155,18 +171,27 @@ class Gamepad {
     switch (button) {
       case GamepadButton.left:
         left = false;
+        emit('release', {'key': GamepadButton.left});
         break;
       case GamepadButton.right:
         right = false;
+        emit('release', {'key': GamepadButton.right});
         break;
       case GamepadButton.jump:
         jump = false;
+        emit('release', {'key': GamepadButton.jump});
         break;
       case GamepadButton.dash:
         dash = false;
+        emit('release', {'key': GamepadButton.dash});
         break;
       case GamepadButton.restart:
-        // TODO handle restart
+        // nothing
+        emit('release', {'key': GamepadButton.restart});
+        break;
+      case GamepadButton.pause:
+        // TODO handle pause
+        emit('release', {'key': GamepadButton.pause});
         break;
     }
   }

@@ -84,6 +84,45 @@ dynamic getPref(String pref, Type type) async {
   }
 }
 
+/// JS-style event dispatching.
+class EventTarget {
+  Map<String, List<void Function(String, Map<String, dynamic>)>> listeners = {};
+
+  EventTarget();
+
+  void on(String type, void Function(String, Map<String, dynamic>) callback) {
+    if (!(listeners.containsKey(type))) {
+      listeners[type] = [];
+    }
+    listeners[type].add(callback);
+  }
+
+  void cancel(
+    String type,
+    void Function(String, Map<String, dynamic>) callback,
+  ) {
+    if (!(listeners.containsKey(type))) return;
+
+    var stack = listeners[type];
+    for (var i = 0, l = stack.length; i < l; i++) {
+      if (stack[i] == callback) {
+        stack.removeAt(i);
+        return;
+      }
+    }
+  }
+
+  void emit(String type, [Map<String, dynamic> data]) {
+    if (!(listeners.containsKey(type))) return;
+
+    var stack = listeners[type].sublist(0);
+
+    for (var i = 0, l = stack.length; i < l; i++) {
+      stack[i](type, data);
+    }
+  }
+}
+
 /// Default page transition for this app.
 SlideTransition pageTransition(
   BuildContext context,
@@ -94,29 +133,6 @@ SlideTransition pageTransition(
   var tween = Tween(
     begin: Offset(0, 1),
     end: Offset.zero,
-  ).chain(
-    CurveTween(curve: Curves.ease),
-  );
-
-  var offsetAnimation = animation.drive(tween);
-
-  return SlideTransition(
-    position: offsetAnimation,
-    child: child,
-  );
-}
-
-/// Transition for file selection.
-// TODO move to appropriate file
-SlideTransition fileSelectTransition(
-  BuildContext context,
-  Animation<double> animation,
-  Animation<double> secondaryAnimation,
-  Widget child,
-) {
-  var tween = Tween(
-    begin: Offset(0, 1),
-    end: Offset(0, 0.8),
   ).chain(
     CurveTween(curve: Curves.ease),
   );

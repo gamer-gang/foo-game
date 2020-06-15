@@ -1,8 +1,31 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flame/flame.dart';
 import 'package:path_provider/path_provider.dart';
+import '../game.dart';
 import 'savedata.dart';
+
+enum SaveFile { file1, file2, file3 }
+
+Future<SaveData> getSave(SaveFile file) async {
+  var store = SaveDataStore();
+  var saveFileNumber =
+      int.parse(file.toString().replaceAll(RegExp(r'SaveFile\.file'), ''));
+
+  return await store.readFile(saveFileNumber);
+}
+
+Future<MonumentPlatformer> setupGame(SaveFile file) async {
+  var dimensions = await Flame.util.initialDimensions();
+
+  var save = await getSave(file);
+
+  return MonumentPlatformer(
+    dimensions: dimensions,
+    save: save,
+  );
+}
 
 class SaveDataStore {
   String formatMap(Map<String, dynamic> map, {bool indent = false}) {
@@ -44,6 +67,21 @@ class SaveDataStore {
     await file.writeAsString(jsonEncode(save.toJson()));
 
     print("Done writing.");
+  }
+
+  Future<void> clearSaveFile(int number) async {
+    assert(number == 3 || number == 2 || number == 1,
+        "File number ($number) must be 1, 2, or 3.");
+
+    print('Deleting file $number...');
+
+    final file = await getSaveFile(number);
+
+    print("Got file path ${file.path}, deleting...");
+
+    await file.delete(recursive: true); // everyone loves recursive deleting
+
+    print("Done deleting.");
   }
 
   Future<SaveData> readFile(int number) async {
