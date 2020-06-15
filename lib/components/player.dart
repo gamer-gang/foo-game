@@ -74,11 +74,11 @@ class Player extends GameObject with RectProperties {
     this.size = size;
     if (debug) {
       texts.addAll({
-        'pos': Text.monospace(game),
-        'vel': Text.monospace(game),
-        'accel': Text.monospace(game),
-        'jumps': Text.monospace(game),
-        'dashes': Text.monospace(game),
+        'pos': Text.monospace(game)..pos = Offset(0, 0),
+        'vel': Text.monospace(game)..pos = Offset(0, 0),
+        'accel': Text.monospace(game)..pos = Offset(0, 0),
+        'jumps': Text.monospace(game)..pos = Offset(0, 0),
+        'dashes': Text.monospace(game)..pos = Offset(0, 0),
       });
     }
   }
@@ -216,10 +216,12 @@ class Player extends GameObject with RectProperties {
     }
   }
 
-  void handleCheckpoint(Checkpoint object) {
-    if (Rect.fromLTWH(object.pos.dx, object.pos.dy, 40, 75)
-        .overlaps(Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy))) {
-      lastCheckpoint = Offset(object.pos.dx, object.pos.dy);
+  void handleCheckpoint(Checkpoint chkpt) {
+    if (Rect.fromLTWH(chkpt.pos.dx, chkpt.pos.dy, 40, 75).overlaps(
+      Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy),
+    )) {
+      chkpt.reached = true;
+      lastCheckpoint = Offset(chkpt.pos.dx, chkpt.pos.dy);
     }
   }
 
@@ -227,7 +229,7 @@ class Player extends GameObject with RectProperties {
     assert(deathFrames >= 0);
 
     if (deathFrames == 60) {
-      ParticleEffect.death(game: game, pos: pos + (size / 2));
+      ParticleEffect.death(game: game, pos: pos + (size.scaleX(0.5)));
     }
 
     if (deathFrames > 0) {
