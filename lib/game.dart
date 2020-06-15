@@ -50,7 +50,16 @@ class MonumentPlatformer extends flame.Game {
     c.restore();
   }
 
+  bool shouldUpdate = true;
+
+  int slowdown = 1;
+
+  int frameNumber = 0;
+
   void render(Canvas c) {
+    frameNumber++;
+    shouldUpdate = frameNumber % slowdown == 0;
+
     // background
     level.renderBackground(c);
 
@@ -71,6 +80,8 @@ class MonumentPlatformer extends flame.Game {
   }
 
   void update(double t) {
+    if (!shouldUpdate) return;
+
     camera = Offset(
       (viewport.width - player.size.dx) / 2 - player.pos.dx,
       (viewport.height - player.size.dy) / 2 - player.pos.dy,
