@@ -7,7 +7,7 @@ class SaveData {
   int fileNumber;
   int level;
   List collectedItems;
-  
+
   SaveData({this.fileNumber, this.level, this.collectedItems});
 
   factory SaveData.fromJson(Map<String, dynamic> json) =>
