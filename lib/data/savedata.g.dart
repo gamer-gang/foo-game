@@ -10,10 +10,9 @@ SaveData _$SaveDataFromJson(Map<String, dynamic> json) {
   return $checkedNew('SaveData', json, () {
     final val = SaveData(
       fileNumber: $checkedConvert(json, 'fileNumber', (v) => v as int),
+      level: $checkedConvert(json, 'level', (v) => v as int),
+      collectedItems: $checkedConvert(json, 'collectedItems', (v) => v as List),
     );
-    $checkedConvert(json, 'level', (v) => val.level = v as int);
-    $checkedConvert(
-        json, 'collectedItems', (v) => val.collectedItems = v as List);
     return val;
   });
 }

@@ -15,9 +15,10 @@ Future<MonumentPlatformer> setupGame(File file) async {
   var dimensions = await Flame.util.initialDimensions();
 
   var store = SaveDataStore();
+  var saveFileNumber = int.parse(file.toString().replaceAll('File.file', ''));
+  var data = await store.readFile(saveFileNumber);
 
-
-  return MonumentPlatformer(dimensions, levelNumber);
+  return MonumentPlatformer(dimensions, data.level);
 }
 
 class GamePage extends StatefulWidget {
