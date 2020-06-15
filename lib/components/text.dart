@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart' show Colors;
 import 'package:flutter/painting.dart';
@@ -13,6 +14,9 @@ class Text extends GameObject {
   TextPainter painter;
   Offset pos;
 
+  /// rotation in degrees clockwise
+  int rotation = 0;
+
   String get text => _text;
 
   set text(String text) {
@@ -27,10 +31,7 @@ class Text extends GameObject {
     painter.text = TextSpan(text: text, style: this.style);
   }
 
-  Text.create({
-    MonumentPlatformer game,
-    this.pos,
-  }) : super.create(game) {
+  Text.create(MonumentPlatformer game) : super.create(game) {
     painter = TextPainter(
       text: TextSpan(text: text, style: style),
       textDirection: TextDirection.ltr,
@@ -68,7 +69,14 @@ class Text extends GameObject {
 
   void render(Canvas c) {
     painter.layout();
-    painter.paint(c, pos);
+
+    c.save();
+    c.translate(pos.dx, pos.dy);
+    c.rotate(rotation * (pi / 180));
+
+    painter.paint(c, Offset.zero);
+
+    c.restore();
   }
 
   void update(double t) {}

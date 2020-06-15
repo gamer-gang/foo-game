@@ -25,7 +25,7 @@ Level level1(MonumentPlatformer game) {
       Layers.foreground: [
         Checkpoint.create(
           game: game,
-          pos: Offset(430, -175)
+          pos: Offset(430, -190)
         ),
         // Obtainable.create(
         //   game: game,
