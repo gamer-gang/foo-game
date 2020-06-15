@@ -14,11 +14,11 @@ enum GameState { playing, paused, gameOver }
 
 class MonumentPlatformer extends flame.Game {
   Offset camera;
-  Gamepad gamepad;
+  Gamepad gamepad = Gamepad();
   Level level;
   Player player;
   Size viewport;
-  ParticleManager particleManager;
+  ParticleManager particleManager = ParticleManager();
 
   MonumentPlatformer(Size screenDimensions, int levelNumber) {
     init(screenDimensions);
@@ -30,9 +30,7 @@ class MonumentPlatformer extends flame.Game {
       size: Offset(50, 50),
       color: Color(0xff1e90ff),
     );
-    gamepad = Gamepad();
     level = levels[levelNumber](this);
-    particleManager = ParticleManager();
   }
 
   void init(Size size) {
@@ -63,8 +61,8 @@ class MonumentPlatformer extends flame.Game {
 
     // foreground
     _renderLayer(c, camera, () {
-      player.render(c);
       level.renderForeground(c);
+      player.render(c);
       particleManager.renderAll(c);
     });
 
@@ -80,9 +78,16 @@ class MonumentPlatformer extends flame.Game {
 
     player.move(gamepad);
     player.update(t);
+
+    particleManager.updateAll(t);
+
+    level.updateBackground(t);
+    level.updateForeground(t);
+    level.updateMiddleground(t);
+    level.updateUi(t);
   }
 
-  void press(GamepadButton pressed, PointerDownEvent event) {
+  void press(GamepadButton  pressed, PointerDownEvent event) {
     print("pressed $pressed");
     gamepad.press(pressed);
   }

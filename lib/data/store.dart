@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path_provider/path_provider.dart';
+import ''
 
 class SaveDataStore {
   String formatMap(Map<String, dynamic> map, {bool indent = false}) {
@@ -12,7 +13,7 @@ class SaveDataStore {
   Future<Directory> get localPath async =>
       await getApplicationDocumentsDirectory();
 
-  Future<File> getSaveFile(int number) async {
+  Future<SaveData> getSaveFile(int number) async {
     assert(number == 3 || number == 2 || number == 1,
         "File number ($number) must be 1, 2, or 3.");
 

@@ -5,8 +5,10 @@ import 'package:flutter/painting.dart';
 
 import '../common.dart';
 import '../game.dart';
+import 'checkpoint.dart';
 import 'gameobject.dart';
 // import 'obtainable.dart';
+import 'particle.dart';
 import 'text.dart';
 
 enum Facing { left, right }
@@ -15,9 +17,11 @@ class Player extends GameObject with RectProperties {
   Color color;
   Offset vel = Offset(0, 0);
   Offset accel = Offset(0, 0);
+  Offset lastCheckpoint = Offset(0, -20);
   Map<String, Text> texts = {};
-  bool dead = false;
   bool debug;
+  bool invincible = false;
+  bool dead = false;
   bool jumpedThisPress = false;
   int jumps = 0;
   int dashes = 0;
@@ -26,6 +30,9 @@ class Player extends GameObject with RectProperties {
 
   /// Number of frames left to dash.
   int dashFrames = 0;
+
+  /// Number of frames left to die
+  int deathFrames = 0;
 
   /// Horizontal acceleration.
   static double acceleration = 1.4;
@@ -77,7 +84,6 @@ class Player extends GameObject with RectProperties {
   }
 
   void render(Canvas c) {
-    if (dead) {} // TODO do something when dead
     var paint = Paint()..color = color;
     c.drawRect(Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy + 1), paint);
 
@@ -106,10 +112,9 @@ class Player extends GameObject with RectProperties {
   }
 
   void update(double t) {
-    /* TEMPORARY CODE (for testing) */
-    if (pos.dy > 100) pos = pos.withY(-100);
+    handleColorChange();
+    handleDeath();
 
-    // if (checkDeath()) dead = true;
     vel = Offset(
       vel.dx.abs() > maxSpeed.dx ? maxSpeed.dx * vel.dx.sign : vel.dx,
       vel.dy > maxSpeed.dy ? maxSpeed.dy : vel.dy,
@@ -120,6 +125,10 @@ class Player extends GameObject with RectProperties {
 
     for (var object in game.level.foreground) {
       if (object.collide ?? false) collideWith(object);
+    }
+
+    for (var object in game.level.foreground) {
+      if (object is Checkpoint) handleCheckpoint(object);
     }
 
     vel = vel.scaleX(friction.dx).scaleX(friction.dx);
@@ -166,7 +175,7 @@ class Player extends GameObject with RectProperties {
       pastPositions = [];
       print('dashed');
       dashFrames = 10;
-
+      dashes--;
     }
     if (dashFrames > 0) {
       pastPositions = [pos, ...?pastPositions];
@@ -176,16 +185,13 @@ class Player extends GameObject with RectProperties {
       dashFrames--;
     }
 
-    
-
     // Jump code
-    if (gamepad.jump && jumps != 0 && !jumpedThisPress) {
+    if (gamepad.jump && jumps > 0 && !jumpedThisPress) {
       vel = (vel.dy > jumpAcceleration) ? vel.withY(0) : vel;
       accel = accel.withY(-jumpAcceleration);
-
+      jumpedThisPress = true;
       jumps--;
 
-      jumpedThisPress = true;
       print('jumped; jumps left: $jumps');
     } else if (!gamepad.jump) {
       jumpedThisPress = false;
@@ -207,6 +213,45 @@ class Player extends GameObject with RectProperties {
       var trailPos = pastPositions[i - 1];
       c.drawRect(
           Rect.fromLTWH(trailPos.dx, trailPos.dy, size.dx + 1, size.dy), paint);
+    }
+  }
+
+  void handleCheckpoint(Checkpoint object) {
+    if (Rect.fromLTWH(object.pos.dx, object.pos.dy, 40, 75)
+        .overlaps(Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy))) {
+      lastCheckpoint = Offset(object.pos.dx, object.pos.dy);
+    }
+  }
+
+  void handleDeath() {
+    assert(deathFrames >= 0);
+
+    if (deathFrames == 60) {
+      ParticleEffect.death(game: game, pos: pos + (size / 2));
+    }
+
+    if (deathFrames > 0) {
+      print('dead');
+      dashFrames = 0;
+      color = Color(0x00000000);
+      invincible = true;
+      dead = true;
+      vel = Offset.zero;
+      accel = Offset.zero;
+      deathFrames--;
+    } else if (deathFrames == 0 && dead) {
+      dead = false;
+      invincible = false;
+      pos = lastCheckpoint;
+      color = Color(0xff1e90ff);
+    }
+  }
+
+  void handleColorChange() {
+    if (dashes == 1 && jumps == 1) {
+      color = Color(0xff1e90ff);
+    } else if (dashes == 0 && jumps == 0) {
+      color = Color(0xff696969);
     }
   }
 

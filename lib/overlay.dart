@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flame/flame.dart';
 
 import 'common.dart';
+import 'data/store.dart';
 import 'game.dart';
 
 enum File { file1, file2, file3 }
@@ -9,25 +11,42 @@ final Color _btnColor = darkBlue,
     _btnColorPressed = Color.fromARGB(255, 85, 109, 135);
 final double _btnSize = 64, _iconSize = 40, _btnMargin = 20, _btnSpacing = 32;
 
+Future<MonumentPlatformer> setupGame(File file) async {
+  var dimensions = await Flame.util.initialDimensions();
+
+  var store = SaveDataStore();
+
+
+  return MonumentPlatformer(dimensions, levelNumber);
+}
+
 class GamePage extends StatefulWidget {
   final File file;
-  final MonumentPlatformer game;
 
-  GamePage({this.game, this.file});
+  GamePage({this.file});
 
   @override
-  _GamePageState createState() => _GamePageState(game);
+  _GamePageState createState() => _GamePageState(file);
 }
 
 class _GamePageState extends State<GamePage> {
-  final MonumentPlatformer game;
+  final File file;
 
-  _GamePageState(this.game);
+  _GamePageState(this.file);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GameStack(game: game),
+      body: FutureBuilder(
+        future: setupGame(file),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return GameStack(game: snapshot.data);
+          } else {
+            return Container();
+          }
+        }
+      ),
     );
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'common.dart';
-import 'game.dart';
 import 'overlay.dart';
 import 'settings.dart';
 
@@ -36,20 +35,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.''';
 
 class HomePage extends StatefulWidget {
-  final MonumentPlatformer game;
-
-  HomePage({Key key, this.game}) : super(key: key);
+  HomePage({Key key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState(game: game);
+  _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
   static bool bottomSheetVisible = false;
-
-  MonumentPlatformer game;
-
-  _HomePageState({this.game});
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +104,7 @@ class _HomePageState extends State<HomePage> {
                       showBottomSheet(
                         elevation: 4,
                         context: context,
-                        builder: (context) => FileSelector(game: game),
+                        builder: (context) => FileSelector(),
                       );
                     }
                   },
@@ -146,11 +139,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class FileSelector extends StatelessWidget {
-  final MonumentPlatformer game;
-
   final double _buttonPadding = 8;
-
-  const FileSelector({this.game});
 
   @override
   Widget build(BuildContext context) {
@@ -184,10 +173,8 @@ class FileSelector extends StatelessWidget {
             onPressed: () {
               Navigator.of(context).push(
                 PageRouteBuilder(
-                  pageBuilder: (context, anim1, anim2) => GamePage(
-                    game: game,
-                    file: File.file1,
-                  ),
+                  pageBuilder: (context, anim1, anim2) =>
+                      GamePage(file: File.file1),
                   transitionsBuilder: pageTransition,
                 ),
               );
@@ -203,10 +190,8 @@ class FileSelector extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.of(context).push(PageRouteBuilder(
-                pageBuilder: (context, anim1, anim2) => GamePage(
-                  game: game,
-                  file: File.file2,
-                ),
+                pageBuilder: (context, anim1, anim2) =>
+                    GamePage(file: File.file2),
                 transitionsBuilder: pageTransition,
               ));
             },
@@ -221,10 +206,8 @@ class FileSelector extends StatelessWidget {
             ),
             onPressed: () {
               Navigator.of(context).push(PageRouteBuilder(
-                pageBuilder: (context, anim1, anim2) => GamePage(
-                  game: game,
-                  file: File.file1,
-                ),
+                pageBuilder: (context, anim1, anim2) =>
+                    GamePage(file: File.file3),
                 transitionsBuilder: pageTransition,
               ));
             },

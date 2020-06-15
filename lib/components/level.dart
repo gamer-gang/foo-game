@@ -14,20 +14,23 @@ class Level extends GameObject {
   Level.create({
     MonumentPlatformer game,
     this.layers,
-    this.voidHeight = 300,
+    this.voidHeight = 100,
   }) : super.create(game) {
     voidPlatform = Platform.create(
       game: game,
       color: Color(0x00000000),
-      pos: Offset(0, voidHeight),
-      size: Offset(100, double.infinity),
+      pos: Offset(-1000000, voidHeight),
+      size: Offset(2000000, 100),
       canKillPlayer: true,
+      collide: true,
     );
 
     // add empty layers if not there
     for (var layer in Layers.values) {
       layers.putIfAbsent(layer, () => []);
     }
+
+    foreground.add(voidPlatform);
   }
 
   void render(Canvas c) {}
@@ -53,6 +56,12 @@ class Level extends GameObject {
     }
   }
 
+  void _updateAll(List<GameObject> objects, double t) {
+    for (var objectIndex = 0; objectIndex < objects.length; objectIndex++) {
+      objects[objectIndex].update(t);
+    }
+  }
+
   /// Render each GameObject in the layer.
   void renderBackground(Canvas c) => _renderAll(background, c);
 
@@ -64,4 +73,16 @@ class Level extends GameObject {
 
   /// Render each GameObject in the layer.
   void renderUi(Canvas c) => _renderAll(ui, c);
+
+  /// Update each GameObject in the layer.
+  void updateBackground(double t) => _updateAll(background, t);
+
+  /// Update each GameObject in the layer.
+  void updateMiddleground(double t) => _updateAll(middleground, t);
+
+  /// Update each GameObject in the layer.
+  void updateForeground(double t) => _updateAll(foreground, t);
+
+  /// Update each GameObject in the layer.
+  void updateUi(double t) => _updateAll(ui, t);
 }

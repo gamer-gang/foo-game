@@ -3,28 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'common.dart';
-import 'game.dart';
 import 'home.dart';
 
 void main() => runApp(LoadingPage());
 int levelNumber = 0;
 
-Future<MonumentPlatformer> setupGame() async {
+Future<void> setupScreen() async {
   // var completer = new Completer<MonumentPlatformerGame>();
 
   await Flame.util.setOrientation(DeviceOrientation.landscapeLeft);
   await Flame.util.fullScreen();
 
-  final dimensions = await Flame.util.initialDimensions();
-  var game = MonumentPlatformer(dimensions, levelNumber);
-  // TapGestureRecognizer tapRecognizer = TapGestureRecognizer();
-  // tapRecognizer.onTapDown = game.onTapDown;
-  // tapRecognizer.onTapUp = game.onTapUp;
-  // Flame.util.addGestureRecognizer(tapRecognizer);
-
-  // completer.complete(game);
-  // return completer.future;
-  return game;
 }
 
 class LoadingPage extends StatelessWidget {
@@ -45,10 +34,10 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    setupGame().then((game) {
+    setupScreen().then((_) {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, anim1, anim2) => MainApp(game: game),
+          pageBuilder: (context, anim1, anim2) => MainApp(),
           transitionsBuilder: pageTransition,
         ),
       );
@@ -86,25 +75,21 @@ class LoadingScreen extends StatelessWidget {
 }
 
 class MainApp extends StatefulWidget {
-  final MonumentPlatformer game;
-
-  MainApp({Key key, this.game}) : super(key: key);
+  MainApp({Key key}) : super(key: key);
 
   @override
-  _MainAppState createState() => _MainAppState(game: game);
+  _MainAppState createState() => _MainAppState();
 }
 
 class _MainAppState extends State<MainApp> {
-  MonumentPlatformer game;
-
-  _MainAppState({this.game});
-
+  _MainAppState();
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: commonTheme(),
-      home: Scaffold(body: HomePage(game: game)),
+      home: Scaffold(body: HomePage()),
     );
   }
 }

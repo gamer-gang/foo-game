@@ -1,65 +1,129 @@
 import 'dart:math';
+// import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/painting.dart';
 import 'package:flutter/material.dart' show Colors;
 
 // import '../common.dart';
+// import '../common.dart';
 import '../game.dart';
 import 'gameobject.dart';
 
 class ParticleManager {
-  final List<ParticleEffect> _particles;
+  final List<dynamic> _particles;
 
   ParticleManager({
-    List<ParticleEffect> particles,
+    List<dynamic> particles,
   }) : _particles = particles ?? [];
 
-  int add(ParticleEffect particle) {
+  int add(dynamic particle) {
     _particles.add(particle);
     return _particles.length - 1;
   }
 
-  void remove(ParticleEffect particle) => _particles.remove(particle);
+  void remove(dynamic particle) => _particles.remove(particle);
   void removeAt(int index) => _particles.removeAt(index);
   void clear() => _particles.clear();
 
-  void indexOf(ParticleEffect particle) => _particles.indexOf(particle);
-  
+  void indexOf(dynamic particle) => _particles.indexOf(particle);
+
   void renderAt(int index, Canvas c) => _particles[index].render(c);
   void renderAll(Canvas c) {
     for (final particle in _particles) {
       particle.render(c);
     }
   }
-  
+
   void updateAt(int index, double t) => _particles[index].update(t);
   void updateAll(double t) {
-    for (final particle in _particles) {
-      particle.update(t);
+    for (var particleIndex = 0;
+        particleIndex < _particles.length;
+        particleIndex++) {
+      _particles[particleIndex].update(t);
     }
   }
 }
 
 class ParticleEffect extends GameObject {
   List<GameParticle> particles;
-  GameParticle particle;
-  int particleCount;
 
   ParticleEffect.create({
     MonumentPlatformer game,
-    this.particle,
-    this.particleCount,
-  }) : super.create(game) {
-    for (var i = 0; i < particleCount; i++) {
-      particles.add(particle);
-    }
+    this.particles,
+  }) : super.create(game);
+
+  factory ParticleEffect.checkpoint({MonumentPlatformer game, Offset pos}) {
+    return ParticleEffect.create(particles: [
+      GameParticle.create(
+        pos: pos,
+        vel: Offset(0, 1),
+        color: Color(0xaa90ff1e),
+        manager: game.particleManager,
+        points: 3,
+        angle: Random().nextDouble() * pi * 2 / 3,
+        angleVelocity: Random().nextDouble() * 0.5 - 0.25,
+      )
+    ]);
   }
 
-  ParticleEffect.dead(MonumentPlatformer game) : super.create(game) {
-    // TODO assign this.particle & this.particleCount
-    for (var i = 0; i < particleCount; i++) {
-      particles.add(particle);
-    }
+  factory ParticleEffect.death({MonumentPlatformer game, Offset pos}) {
+    return ParticleEffect.create(particles: [
+      GameParticle.create(
+        pos: pos,
+        vel: Offset(Random().nextInt(50) - 25.toDouble(),
+            -Random().nextInt(10) - 20.toDouble()),
+        color: Color(0xff1e90ff),
+        manager: game.particleManager,
+        points: Random().nextInt(3) + 2,
+        angle: 0,
+        fall: true,
+        friction: 0.9,
+      ),
+      GameParticle.create(
+        pos: pos,
+        vel: Offset(Random().nextInt(50) - 25.toDouble(),
+            -Random().nextInt(10) - 20.toDouble()),
+        color: Color(0xff1e90ff),
+        manager: game.particleManager,
+        points: Random().nextInt(3) + 2,
+        angle: 0,
+        fall: true,
+        friction: 0.9,
+      ),
+      GameParticle.create(
+        pos: pos,
+        vel: Offset(Random().nextInt(50) - 25.toDouble(),
+            -Random().nextInt(10) - 20.toDouble()),
+        color: Color(0xff1e90ff),
+        manager: game.particleManager,
+        points: Random().nextInt(3) + 2,
+        angle: 0,
+        fall: true,
+        friction: 0.9,
+      ),
+      GameParticle.create(
+        pos: pos,
+        vel: Offset(Random().nextInt(50) - 25.toDouble(),
+            -Random().nextInt(10) - 20.toDouble()),
+        color: Color(0xff1e90ff),
+        manager: game.particleManager,
+        points: Random().nextInt(3) + 2,
+        angle: 0,
+        fall: true,
+        friction: 0.9,
+      ),
+      GameParticle.create(
+        pos: pos,
+        vel: Offset(Random().nextInt(50) - 25.toDouble(),
+            -Random().nextInt(10) - 20.toDouble()),
+        color: Color(0xff1e90ff),
+        manager: game.particleManager,
+        points: Random().nextInt(3) + 2,
+        angle: 0,
+        fall: true,
+        friction: 0.9,
+      ),
+    ]);
   }
 
   void update(double t) {
@@ -79,42 +143,67 @@ class GameParticle extends GameObject {
   int lifetime, points;
   // points is how many points the particle will have (always regular polygon)
   double angle, angleVelocity, angleFriction, friction, radius;
+
   // angle is measured in degrees, friction is multiplied every frame
   Offset pos, vel; // position is measured from the center
   Color color = Colors.black;
 
-  GameParticle.create({
-    MonumentPlatformer game,
-    this.points = 3,
-    this.lifetime,
-    this.angle = 0,
-    this.angleVelocity = 0,
-    this.angleFriction = 0.8,
-    this.pos,
-    this.vel,
-    this.friction = 8,
-    this.color,
-  }) : super.create(game);
+  bool fall;
+
+  ParticleManager manager;
+
+  GameParticle.create(
+      {MonumentPlatformer game,
+      this.manager,
+      this.points = 5,
+      this.radius = 5,
+      this.lifetime = 60,
+      this.angle = 0,
+      this.angleVelocity = 0,
+      this.angleFriction = 1,
+      this.pos,
+      this.vel,
+      this.friction = 1,
+      this.color = Colors.white,
+      this.fall = false})
+      : super.create(game) {
+    manager.add(this);
+  }
 
   void update(double t) {
+    angle += angleVelocity;
+    angleVelocity *= angleFriction;
     pos += vel;
     vel *= friction;
+    if (fall) {
+      vel = Offset(vel.dx, vel.dy + 5);
+      print(vel.dy);
+    }
     lifetime--;
+    if (lifetime == 0) manager.remove(this);
   }
 
   void render(Canvas c) {
-    List<Offset> vertices;
+    var vertices = <Offset>[];
     var paint = Paint()..color = color;
-    var angles = 2 * pi / points;
+    var angles = 2 * pi / points + angle;
+    var path = Path();
 
-    for (var i = 0; i < points; i++) {
+    if (angles > 2 * pi) angles = 0;
+
+    for (var i = 1; i <= points; i++) {
       vertices.add(Offset(
         pos.dx + cos(angles * i) * radius,
         pos.dy + sin(angles * i) * radius,
       ));
     }
-    vertices.add(Offset(pos.dx + radius, pos.dy));
+    // vertices.add(Offset(pos.dx + radius, pos.dy));
 
-    c.drawPoints(PointMode.polygon, vertices, paint);
+    path.addPolygon(vertices, true);
+
+    c.drawPath(path, paint);
+
+    c.drawRect(
+        Rect.fromLTWH(pos.dx, pos.dy, 1, 1), Paint()..color = Colors.black);
   }
 }
