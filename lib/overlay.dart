@@ -15,10 +15,12 @@ Future<MonumentPlatformer> setupGame(File file) async {
   var dimensions = await Flame.util.initialDimensions();
 
   var store = SaveDataStore();
-  var saveFileNumber = int.parse(file.toString().replaceAll('File.file', ''));
-  var data = await store.readFile(saveFileNumber);
+  var saveFileNumber =
+      int.parse(file.toString().replaceAll(RegExp(r'File\.file'), ''));
 
-  return MonumentPlatformer(dimensions, data.level);
+  var save = await store.readFile(saveFileNumber);
+
+  return MonumentPlatformer(dimensions, save.level);
 }
 
 class GamePage extends StatefulWidget {
@@ -39,15 +41,15 @@ class _GamePageState extends State<GamePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-        future: setupGame(file),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            return GameStack(game: snapshot.data);
-          } else {
-            return Container();
-          }
-        }
-      ),
+          future: setupGame(file),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return GameStack(game: snapshot.data);
+            } else {
+              // TODO render something
+              return Container();
+            }
+          }),
     );
   }
 }
