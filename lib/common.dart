@@ -150,3 +150,33 @@ ThemeData commonTheme() {
     ),
   );
 }
+
+Widget loadingScreen() {
+  return Container(
+    color: darkBlue,
+    child: Center(
+      child: Column(children: <Widget>[
+        Spacer(flex: 16),
+        Text(
+          "MONUMENT PLATFORMER",
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            letterSpacing: 1.5,
+          ),
+        ),
+        Spacer(),
+        Text(
+          "Loading...",
+          style: TextStyle(fontSize: 16),
+        ),
+        Spacer(),
+        CircularProgressIndicator(
+          strokeWidth: 2,
+          value: null,
+        ),
+        Spacer(flex: 16)
+      ]),
+    ),
+  );
+}

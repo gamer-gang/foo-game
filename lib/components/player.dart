@@ -6,7 +6,10 @@ import 'package:flutter/painting.dart';
 import '../common.dart';
 import '../game.dart';
 import 'checkpoint.dart';
+import 'crystals.dart';
 import 'gameobject.dart';
+import 'goal.dart';
+import 'levels/index.dart';
 // import 'obtainable.dart';
 import 'particle.dart';
 import 'text.dart';
@@ -27,12 +30,17 @@ class Player extends GameObject with RectProperties {
   int dashes = 0;
   Facing facing = Facing.right;
   List<Offset> pastPositions = [];
+  List<Crystal> crystalsUsed = [];
+  bool nextLevel = false;
 
   /// Number of frames left to dash.
   int dashFrames = 0;
 
   /// Number of frames left to die
   int deathFrames = 0;
+
+  /// Number of frames left to play win animation
+  int winFrames = 0;
 
   /// Horizontal acceleration.
   static double acceleration = 1.4;
@@ -113,6 +121,7 @@ class Player extends GameObject with RectProperties {
 
   void update(double t) {
     handleColorChange();
+    handleCrystals();
     handleDeath();
 
     vel = Offset(
@@ -129,6 +138,10 @@ class Player extends GameObject with RectProperties {
 
     for (var object in game.level.foreground) {
       if (object is Checkpoint) handleCheckpoint(object);
+    }
+
+    for (var object in game.level.foreground) {
+      if (object is Goal) handleWin(object);
     }
 
     vel = vel.scaleX(friction.dx).scaleX(friction.dx);
@@ -191,14 +204,14 @@ class Player extends GameObject with RectProperties {
       accel = accel.withY(-jumpAcceleration);
       jumpedThisPress = true;
       jumps--;
-
+      dashFrames = 0;
       print('jumped; jumps left: $jumps');
     } else if (!gamepad.jump) {
       jumpedThisPress = false;
     }
 
     // Gravity code
-    if (dashFrames == 0) {
+    if (dashFrames == 0 && winFrames == 0 && deathFrames == 0) {
       if (gamepad.jump) {
         vel = vel.translateY(Player.gravityConstant * Player.gravityPulldown);
       } else {
@@ -244,6 +257,8 @@ class Player extends GameObject with RectProperties {
     } else if (deathFrames == 0 && dead) {
       dead = false;
       invincible = false;
+      jumps = 1;
+      dashes = 1;
       pos = lastCheckpoint;
       color = Color(0xff1e90ff);
     }
@@ -254,6 +269,66 @@ class Player extends GameObject with RectProperties {
       color = Color(0xff1e90ff);
     } else if (dashes == 0 && jumps == 0) {
       color = Color(0xff696969);
+    }
+  }
+
+  void handleWin(Goal goal) {
+    if (toRect().overlaps(Rect.fromLTWH(goal.pos.dx, goal.pos.dy, 60, 60)) &&
+        winFrames == 0) {
+      // Colliding with goal
+      winFrames = 180;
+      print('game has been won');
+    }
+    if (winFrames == 180) {
+      winFrames--;
+      ParticleEffect.goal(game: game, pos: pos + size / 2);
+      ParticleEffect.goal(game: game, pos: pos + size / 2);
+    } else if (winFrames > 1) {
+      winFrames--;
+      vel = Offset.zero;
+      accel = Offset.zero;
+      dashFrames = 0;
+      color = Color(0x00000000);
+    }
+    if (winFrames == 1) {
+      print('previous level: ${game.save.level}');
+      game.save.level++;
+      print('incremented, level is now ${game.save.level}');
+
+      print('writing file');
+      game.saveToFile();
+
+      nextLevel = true;
+    }
+    if (nextLevel) {
+      // start next level
+      game.level = levels[game.save.level](game);
+      pos = Offset(0, -20);
+      lastCheckpoint = pos;
+
+      nextLevel = false;
+    }
+  }
+
+  void handleCrystals() {
+    for (var index = 0; index < game.level.foreground.length; index++) {
+      var obj = game.level.foreground[index];
+      if (obj is Crystal && !crystalsUsed.contains(obj)) {
+        if (toRect().overlaps(Rect.fromLTWH(obj.pos.dx, obj.pos.dy, 30, 30))) {
+          crystalsUsed.add(obj);
+          switch (obj.replenish) {
+            case Replenish.jump:
+              jumps++;
+              break;
+            case Replenish.dash:
+              dashes++;
+              break;
+            case Replenish.both:
+              jumps++;
+              dashes++;
+          }
+        }
+      }
     }
   }
 

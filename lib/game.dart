@@ -8,20 +8,30 @@ import 'components/level.dart';
 import 'components/levels/index.dart';
 import 'components/particle.dart';
 import 'components/player.dart';
+import 'data/savedata.dart';
+import 'data/store.dart';
 
-enum GamepadButton { left, right, dash, jump }
+enum GamepadButton { left, right, dash, jump, restart }
 enum GameState { playing, paused, gameOver }
 
 class MonumentPlatformer extends flame.Game {
   Offset camera;
-  Gamepad gamepad = Gamepad();
   Level level;
+  Gamepad gamepad;
   Player player;
   Size viewport;
+  SaveData save;
   ParticleManager particleManager = ParticleManager();
 
-  MonumentPlatformer(Size screenDimensions, int levelNumber) {
-    init(screenDimensions);
+  bool _shouldUpdate = true;
+  int slowdown = 1;
+  int frame = 0;
+
+  bool debug = true;
+
+  MonumentPlatformer({Size dimensions, this.save}) {
+    initScreen(dimensions);
+    gamepad = Gamepad(this);
     camera = Offset(0, 0);
     player = Player.create(
       game: this,
@@ -30,13 +40,19 @@ class MonumentPlatformer extends flame.Game {
       size: Offset(50, 50),
       color: Color(0xff1e90ff),
     );
-    level = levels[levelNumber](this);
+    level = levels[save.level](this);
   }
 
-  void init(Size size) {
+  void initScreen(Size size) {
     viewport = size;
     // camera = Offset(viewport.width / 2, viewport.height / 2);
     camera = Offset(viewport.width / 2, viewport.height / 2);
+  }
+
+  Future<void> saveToFile() async {
+    var store = SaveDataStore();
+    await store.writeSaveFile(save.fileNumber, save);
+    return;
   }
 
   void _renderLayer(
@@ -50,15 +66,9 @@ class MonumentPlatformer extends flame.Game {
     c.restore();
   }
 
-  bool shouldUpdate = true;
-
-  int slowdown = 1;
-
-  int frameNumber = 0;
-
   void render(Canvas c) {
-    frameNumber++;
-    shouldUpdate = frameNumber % slowdown == 0;
+    frame++;
+    _shouldUpdate = frame % slowdown == 0;
 
     // background
     level.renderBackground(c);
@@ -80,7 +90,7 @@ class MonumentPlatformer extends flame.Game {
   }
 
   void update(double t) {
-    if (!shouldUpdate) return;
+    if (!_shouldUpdate) return;
 
     camera = Offset(
       (viewport.width - player.size.dx) / 2 - player.pos.dx,
@@ -98,7 +108,7 @@ class MonumentPlatformer extends flame.Game {
     level.updateUi(t);
   }
 
-  void press(GamepadButton  pressed, PointerDownEvent event) {
+  void press(GamepadButton pressed, PointerDownEvent event) {
     print("pressed $pressed");
     gamepad.press(pressed);
   }
@@ -112,7 +122,9 @@ class MonumentPlatformer extends flame.Game {
 class Gamepad {
   bool left, right, dash, jump;
 
-  Gamepad() {
+  final MonumentPlatformer game;
+
+  Gamepad(this.game) {
     left = false;
     right = false;
     dash = false;
@@ -133,6 +145,9 @@ class Gamepad {
       case GamepadButton.dash:
         dash = true;
         break;
+      case GamepadButton.restart:
+        // TODO handle restart
+        break;
     }
   }
 
@@ -149,6 +164,9 @@ class Gamepad {
         break;
       case GamepadButton.dash:
         dash = false;
+        break;
+      case GamepadButton.restart:
+        // TODO handle restart
         break;
     }
   }

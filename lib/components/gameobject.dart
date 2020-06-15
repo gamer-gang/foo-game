@@ -1,9 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
+// import 'package:monument_platformer/components/player.dart';
 
 import '../common.dart';
 import '../game.dart';
+import 'crystals.dart';
 
 abstract class GameObject {
   MonumentPlatformer game;
@@ -33,6 +35,7 @@ mixin RectProperties on GameObject {
   int dashFrames;
   int deathFrames;
   bool invincible;
+  List<Crystal> crystalsUsed;
 
   Rect toRect() => Rect.fromLTWH(pos.dx, pos.dy, size.dx, size.dy);
 
@@ -84,6 +87,7 @@ mixin RectProperties on GameObject {
         } // make the y velocity 0 on platform
         jumps = 1;
         dashes = 1;
+        crystalsUsed = [];
       }
 
       if (left < other.right || right > other.left) {

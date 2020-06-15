@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flame/flame.dart';
 
 import 'common.dart';
+import 'data/savedata.dart';
 import 'data/store.dart';
 import 'game.dart';
 
@@ -11,16 +12,23 @@ final Color _btnColor = darkBlue,
     _btnColorPressed = Color.fromARGB(255, 85, 109, 135);
 final double _btnSize = 64, _iconSize = 40, _btnMargin = 20, _btnSpacing = 32;
 
-Future<MonumentPlatformer> setupGame(File file) async {
-  var dimensions = await Flame.util.initialDimensions();
-
+Future<SaveData> getSave(File file) async {
   var store = SaveDataStore();
   var saveFileNumber =
       int.parse(file.toString().replaceAll(RegExp(r'File\.file'), ''));
 
-  var save = await store.readFile(saveFileNumber);
+  return await store.readFile(saveFileNumber);
+}
 
-  return MonumentPlatformer(dimensions, save.level);
+Future<MonumentPlatformer> setupGame(File file) async {
+  var dimensions = await Flame.util.initialDimensions();
+
+  var save = await getSave(file);
+
+  return MonumentPlatformer(
+    dimensions: dimensions,
+    save: save,
+  );
 }
 
 class GamePage extends StatefulWidget {
@@ -46,8 +54,7 @@ class _GamePageState extends State<GamePage> {
             if (snapshot.hasData) {
               return GameStack(game: snapshot.data);
             } else {
-              // TODO render something
-              return Container();
+              return loadingScreen();
             }
           }),
     );
@@ -66,6 +73,8 @@ class GameStack extends StatefulWidget {
   _GameStackState createState() => _GameStackState();
 }
 
+bool reloadPressed = false;
+
 class _GameStackState extends State<GameStack> {
   Color _leftBtnColor, _rightBtnColor, _dashBtnColor, _jumpBtnColor;
 
@@ -77,12 +86,11 @@ class _GameStackState extends State<GameStack> {
         top: 0,
         left: 0,
         child: Row(children: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.refresh,
-              color: Colors.black,
-            ),
+          overlayButton(
+            game: widget.game,
+            color: Color(0x00),
+            key: GamepadButton.restart,
+            icon: Icons.refresh,
           ),
         ]),
       ),

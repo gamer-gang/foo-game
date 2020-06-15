@@ -31,12 +31,19 @@ class SaveDataStore {
     return file;
   }
 
-  Future<void> writeData(Map<String, dynamic> dataAsJson, int number) async {
+  Future<void> writeSaveFile(int number, SaveData save) async {
     assert(number == 3 || number == 2 || number == 1,
         "File number ($number) must be 1, 2, or 3.");
 
+    print('Writing ${save.toString()} to file $number...');
+
     final file = await getSaveFile(number);
-    await file.writeAsString(jsonEncode(dataAsJson));
+
+    print("Got file path ${file.path}, writing data...");
+
+    await file.writeAsString(jsonEncode(save.toJson()));
+
+    print("Done writing.");
   }
 
   Future<SaveData> readFile(int number) async {
