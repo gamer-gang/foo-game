@@ -68,61 +68,21 @@ class ParticleEffect extends GameObject {
 
   factory ParticleEffect.death({MonumentPlatformer game, Offset pos}) {
     return ParticleEffect.create(particles: [
-      GameParticle.create(
-        pos: pos,
-        vel: Offset(Random().nextInt(50) - 25.toDouble(),
-            -Random().nextInt(10) - 20.toDouble()),
-        color: Color(0xff1e90ff),
-        manager: game.particleManager,
-        points: Random().nextInt(3) + 2,
-        angle: 0,
-        fall: true,
-        friction: 0.9,
-      ),
-      GameParticle.create(
-        pos: pos,
-        vel: Offset(Random().nextInt(50) - 25.toDouble(),
-            -Random().nextInt(10) - 20.toDouble()),
-        color: Color(0xff1e90ff),
-        manager: game.particleManager,
-        points: Random().nextInt(3) + 2,
-        angle: 0,
-        fall: true,
-        friction: 0.9,
-      ),
-      GameParticle.create(
-        pos: pos,
-        vel: Offset(Random().nextInt(50) - 25.toDouble(),
-            -Random().nextInt(10) - 20.toDouble()),
-        color: Color(0xff1e90ff),
-        manager: game.particleManager,
-        points: Random().nextInt(3) + 2,
-        angle: 0,
-        fall: true,
-        friction: 0.9,
-      ),
-      GameParticle.create(
-        pos: pos,
-        vel: Offset(Random().nextInt(50) - 25.toDouble(),
-            -Random().nextInt(10) - 20.toDouble()),
-        color: Color(0xff1e90ff),
-        manager: game.particleManager,
-        points: Random().nextInt(3) + 2,
-        angle: 0,
-        fall: true,
-        friction: 0.9,
-      ),
-      GameParticle.create(
-        pos: pos,
-        vel: Offset(Random().nextInt(50) - 25.toDouble(),
-            -Random().nextInt(10) - 20.toDouble()),
-        color: Color(0xff1e90ff),
-        manager: game.particleManager,
-        points: Random().nextInt(3) + 2,
-        angle: 0,
-        fall: true,
-        friction: 0.9,
-      ),
+      for (int i = 0, total = Random().nextInt(15) + 5; i < total; i++)
+        GameParticle.create(
+          pos: pos,
+          vel: Offset(
+            Random().nextInt(50) - 25.toDouble(),
+            -Random().nextInt(10) - 20.toDouble(),
+          ),
+          color: Color(0xffff901e),
+          manager: game.particleManager,
+          points: Random().nextInt(3) + 2,
+          angle: 0, // Random().nextInt(10).toDouble(),
+          fall: true,
+          radius: 10,
+          friction: 0.94,
+        ),
     ]);
   }
 
@@ -152,21 +112,21 @@ class GameParticle extends GameObject {
 
   ParticleManager manager;
 
-  GameParticle.create(
-      {MonumentPlatformer game,
-      this.manager,
-      this.points = 5,
-      this.radius = 5,
-      this.lifetime = 60,
-      this.angle = 0,
-      this.angleVelocity = 0,
-      this.angleFriction = 1,
-      this.pos,
-      this.vel,
-      this.friction = 1,
-      this.color = Colors.white,
-      this.fall = false})
-      : super.create(game) {
+  GameParticle.create({
+    MonumentPlatformer game,
+    this.manager,
+    this.points = 5,
+    this.radius = 5,
+    this.lifetime = 60,
+    this.angle = 0,
+    this.angleVelocity = 0,
+    this.angleFriction = 1,
+    this.pos,
+    this.vel,
+    this.friction = 1,
+    this.color = Colors.white,
+    this.fall = false,
+  }) : super.create(game) {
     manager.add(this);
   }
 
@@ -203,7 +163,7 @@ class GameParticle extends GameObject {
 
     c.drawPath(path, paint);
 
-    c.drawRect(
-        Rect.fromLTWH(pos.dx, pos.dy, 1, 1), Paint()..color = Colors.black);
+    // c.drawRect(
+    //     Rect.fromLTWH(pos.dx, pos.dy, 1, 1), Paint()..color = Colors.black);
   }
 }
