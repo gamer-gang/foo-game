@@ -7,6 +7,7 @@ import '../../game.dart';
 import '../background.dart';
 // import '../checkpoint.dart';
 import '../crystals.dart';
+import '../goal.dart';
 import '../level.dart';
 import '../platform.dart';
 import 'index.dart' show platformColor;
@@ -42,6 +43,13 @@ Level level2(MonumentPlatformer game) {
               'size': Offset(40, 150)
             },
             {'pos': Offset(-65, -120), 'size': Offset(340, 40)},
+            {
+              'color': Colors.red,
+              'canKillPlayer': true,
+              'pos': Offset(-265, -120),
+              'size': Offset(100, 80),
+            },
+            {'pos': Offset(-265, 30), 'size': Offset(100, 40)},
           ],
         ),
         Crystal.create(
@@ -49,6 +57,10 @@ Level level2(MonumentPlatformer game) {
           game: game,
           defaultColor: Colors.blue,
           replenish: Replenish.both,
+        ),
+        Goal.create(
+          pos: Offset(-245, -30),
+          color: Colors.orange,
         ),
       ]
     },

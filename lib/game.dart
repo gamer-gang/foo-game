@@ -27,7 +27,7 @@ class MonumentPlatformer extends flame.Game {
   int frame = 0;
   bool _shouldUpdate = true;
   final int slowdown = 1;
-  final bool updateWhenPressed = false;
+  final bool updateWhenPressed = true;
 
   bool debug = true;
   GameState state = GameState.playing;
@@ -93,7 +93,9 @@ class MonumentPlatformer extends flame.Game {
 
   void update(double t) {
     if (!_shouldUpdate) return;
-    if (updateWhenPressed && gamepad.allReleased) return;
+    if (updateWhenPressed && gamepad.allReleased && !player.jumpedThisPress) {
+      return;
+    }
     if (state == GameState.paused) return;
 
     camera = Offset(
@@ -124,7 +126,7 @@ class MonumentPlatformer extends flame.Game {
 }
 
 class Gamepad extends EventTarget {
-  bool left, right, dash, jump;
+  bool left, right, dash, jump, pause;
 
   final MonumentPlatformer game;
 
@@ -136,6 +138,7 @@ class Gamepad extends EventTarget {
     right = false;
     dash = false;
     jump = false;
+    pause = false;
   }
 
   void press(GamepadButton button) {
@@ -161,7 +164,7 @@ class Gamepad extends EventTarget {
         emit('press', {'key': GamepadButton.restart});
         break;
       case GamepadButton.pause:
-        // TODO handle pause
+        pause = true;
         emit('press', {'key': GamepadButton.pause});
         break;
     }
