@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 import '../game.dart';
@@ -12,8 +13,8 @@ class Background extends GameObject {
   Paint paint;
 
   Background.create({
-    MonumentPlatformer game,
-    this.color,
+    @required MonumentPlatformer game,
+    @required this.color,
   }) : super.create(game) {
     paint = Paint()..color = color;
   }

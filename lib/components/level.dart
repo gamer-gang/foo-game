@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 import '../game.dart';
@@ -12,7 +13,7 @@ class Level extends GameObject {
   Platform voidPlatform;
 
   Level.create({
-    MonumentPlatformer game,
+    @required MonumentPlatformer game,
     this.layers,
     this.voidHeight = 100,
   }) : super.create(game) {

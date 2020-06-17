@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
 import '../game.dart';
 import 'gameobject.dart';
 // import 'player.dart';
@@ -13,8 +15,8 @@ class Crystal extends GameObject {
   int id;
 
   Crystal.create({
-    MonumentPlatformer game,
-    this.pos,
+    @required MonumentPlatformer game,
+    @required this.pos,
     this.defaultColor,
     this.replenish,
   }) : super.create(game) {

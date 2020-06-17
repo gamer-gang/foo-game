@@ -59,6 +59,7 @@ Level level2(MonumentPlatformer game) {
           replenish: Replenish.both,
         ),
         Goal.create(
+          game: game,
           pos: Offset(-245, -30),
           color: Colors.orange,
         ),

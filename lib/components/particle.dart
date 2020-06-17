@@ -2,7 +2,7 @@ import 'dart:math';
 // import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/painting.dart';
-import 'package:flutter/material.dart' show Colors;
+import 'package:flutter/material.dart' show Colors, required;
 
 import '../common.dart';
 import '../game.dart';
@@ -47,13 +47,15 @@ class ParticleEffect extends GameObject {
   List<GameParticle> particles;
 
   ParticleEffect.create({
+    @required
     MonumentPlatformer game,
     this.particles,
   }) : super.create(game);
 
   factory ParticleEffect.checkpoint({MonumentPlatformer game, Offset pos}) {
-    return ParticleEffect.create(particles: [
+    return ParticleEffect.create(game: game, particles: [
       GameParticle.create(
+        game: game,
         pos: pos,
         vel: Offset(0, 1),
         color: Color(0xaa90ff1e),
@@ -66,9 +68,10 @@ class ParticleEffect extends GameObject {
   }
 
   factory ParticleEffect.death({MonumentPlatformer game, Offset pos}) {
-    return ParticleEffect.create(particles: [
+    return ParticleEffect.create(game: game, particles: [
       for (int i = 0, total = Random().nextInt(10) + 10; i < total; i++)
         GameParticle.create(
+          game: game,
           pos: pos,
           vel: Offset(
             Random().nextInt(50) - 25.toDouble(),
@@ -86,13 +89,15 @@ class ParticleEffect extends GameObject {
   }
 
   factory ParticleEffect.ambientGoalEffect({
-    MonumentPlatformer game,
-    Offset pos,
-    Color color,
+    @required MonumentPlatformer game,
+    @required Offset pos,
+    @required Color color,
   }) {
-    print(color.toString());
-    return ParticleEffect.create(particles: [
+    assert(game != null, 'null passed to ParticleEffect.ambientGoalEffect');
+
+    return ParticleEffect.create(game: game, particles: [
       GameParticle.create(
+        game: game,
         pos: pos +
             Offset(Random().nextInt(60).toDouble(),
                 Random().nextInt(60).toDouble()),
@@ -107,9 +112,11 @@ class ParticleEffect extends GameObject {
   }
 
   factory ParticleEffect.goal({MonumentPlatformer game, Offset pos}) {
-    return ParticleEffect.create(particles: [
+    return ParticleEffect.create(game: game, particles: [
       for (int i = 0, total = Random().nextInt(15) + 5; i < total; i++)
         GameParticle.create(
+          game: game,
+
           pos: pos,
           vel: Offset(
             Random().nextInt(50) - 25.toDouble(),
@@ -152,8 +159,8 @@ class GameParticle extends GameObject {
   ParticleManager manager;
 
   GameParticle.create({
-    MonumentPlatformer game,
-    this.manager,
+    @required MonumentPlatformer game,
+    @required this.manager,
     this.points = 5,
     this.radius = 5,
     this.lifetime = 60,

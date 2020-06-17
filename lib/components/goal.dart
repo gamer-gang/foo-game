@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 import '../game.dart';
@@ -10,9 +11,9 @@ class Goal extends GameObject {
   int framesSinceLastEffect = 0;
 
   Goal.create({
-    MonumentPlatformer game,
-    this.color,
-    this.pos,
+    @required MonumentPlatformer game,
+    @required this.color,
+    @required this.pos,
   }) : super.create(game);
 
   void render(Canvas c) {

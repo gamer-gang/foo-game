@@ -15,6 +15,7 @@ abstract class GameObject {
 
   @mustCallSuper
   GameObject.create(this.game) {
+    assert(game != null, 'null passed to GameObject.create');
     collide ??= false;
   }
 

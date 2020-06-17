@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:flutter/material.dart' show Colors;
+import 'package:flutter/material.dart' show Colors, required;
 import 'package:flutter/painting.dart';
 
 import '../common.dart';
@@ -71,10 +71,10 @@ class Player extends GameObject with RectProperties {
   static Offset friction = Offset(0.85, 0.8);
 
   Player.create({
-    MonumentPlatformer game,
-    Offset pos,
-    Offset size,
-    this.color,
+    @required MonumentPlatformer game,
+    @required Offset pos,
+    @required Offset size,
+    @required this.color,
   }) : super.create(game) {
     this.pos = pos;
     this.size = size;
@@ -170,10 +170,10 @@ class Player extends GameObject with RectProperties {
         ..pos = Offset(right, bottom + 15);
       texts['deathFrames']
         ..text = "deathFrames: $deathFrames"
-        ..pos = Offset(left-100, bottom);
+        ..pos = Offset(left - 100, bottom);
       texts['winFrames']
         ..text = "winFrames: $winFrames"
-        ..pos = Offset(left-100, bottom + 15);
+        ..pos = Offset(left - 100, bottom + 15);
     }
   }
 

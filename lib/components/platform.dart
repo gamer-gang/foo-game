@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 import '../game.dart';
@@ -11,7 +12,7 @@ class Platform extends GameObject with RectProperties {
   Offset pos, size;
 
   Platform.create({
-    MonumentPlatformer game,
+    @required MonumentPlatformer game,
     this.color,
     this.canKillPlayer = false,
     this.collide = true,

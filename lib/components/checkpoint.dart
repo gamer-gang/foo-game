@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/painting.dart';
-import 'package:flutter/material.dart' show Colors;
+import 'package:flutter/material.dart' show Colors, required;
 
 import '../common.dart';
 import '../game.dart';
@@ -19,8 +19,8 @@ class Checkpoint extends GameObject {
   static Offset size = Offset(50, 90);
 
   Checkpoint.create({
-    MonumentPlatformer game,
-    this.pos,
+    @required MonumentPlatformer game,
+    @required this.pos,
   })  : text = Text.monospace(game)
           ..text = 'checkpoint'
           ..pos = pos.translateY(size.dy - 2.5)
