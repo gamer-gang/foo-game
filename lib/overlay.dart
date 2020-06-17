@@ -31,7 +31,7 @@ class _GamePageState extends State<GamePage> {
           future: setupGame(file),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return GameManager(game: snapshot.data);
+              return GameOverlay(game: snapshot.data);
             } else {
               return loadingScreen();
             }
@@ -40,16 +40,14 @@ class _GamePageState extends State<GamePage> {
   }
 }
 
-class GameManager extends StatefulWidget {
+class GameOverlay extends StatefulWidget {
   final MonumentPlatformer game;
 
-  const GameManager({Key key, @required this.game}) : super(key: key);
+  const GameOverlay({Key key, @required this.game}) : super(key: key);
 
   @override
-  _GameManagerState createState() => _GameManagerState(game);
+  _GameOverlayState createState() => _GameOverlayState(game);
 }
-
-bool reloadPressed = false;
 
 class ColorManager {
   Color left;
@@ -59,7 +57,7 @@ class ColorManager {
   ColorManager({this.left, this.right, this.dash, this.jump});
 }
 
-class _GameManagerState extends State<GameManager> {
+class _GameOverlayState extends State<GameOverlay> {
   ColorManager colors = ColorManager(
     left: _btnColor,
     right: _btnColor,
@@ -69,11 +67,18 @@ class _GameManagerState extends State<GameManager> {
 
   MonumentPlatformer game;
 
-  _GameManagerState(this.game);
+  _GameOverlayState(this.game);
 
   void initState() {
     super.initState();
-    game.gamepad.on('release-pause', (data) {});
+    game.gamepad.on('release-pause', (data) {
+      game.gamepad.emit('pause');
+      showDialog(
+        context: context,
+        builder: (context) => PauseMenu(game: game),
+        barrierDismissible: false,
+      );
+    });
   }
 
   @override
@@ -97,12 +102,13 @@ class _GameManagerState extends State<GameManager> {
         top: 0,
         right: 0,
         child: Row(children: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.pause,
-              color: Colors.black,
-            ),
+          overlayButton(
+            game: game,
+            color: Color(0x00000000),
+            key: GamepadButton.pause,
+            iconColor: Colors.black,
+            icon: Icons.pause,
+            update: (newColor) {},
           ),
         ]),
       ),
@@ -199,13 +205,18 @@ Widget overlayButton({
 }
 
 class PauseMenu extends StatefulWidget {
-  PauseMenu({Key key}) : super(key: key);
+  final MonumentPlatformer game;
+  PauseMenu({Key key, @required this.game}) : super(key: key);
 
   @override
-  _PauseMenuState createState() => _PauseMenuState();
+  _PauseMenuState createState() => _PauseMenuState(game);
 }
 
 class _PauseMenuState extends State<PauseMenu> {
+  MonumentPlatformer game;
+
+  _PauseMenuState(this.game);
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
@@ -219,7 +230,10 @@ class _PauseMenuState extends State<PauseMenu> {
           Text('pause menu'),
           RaisedButton(
             child: Text('goodbey'),
-            onPressed: Navigator.of(context).pop,
+            onPressed: () {
+              Navigator.pop(context);
+              game.gamepad.emit('unpause');
+            },
           ),
         ]),
       ),

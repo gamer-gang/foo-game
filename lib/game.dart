@@ -9,11 +9,32 @@ import 'components/level.dart';
 import 'components/levels/index.dart';
 import 'components/particle.dart';
 import 'components/player.dart';
+import 'components/text.dart';
 import 'data/savedata.dart';
 import 'data/store.dart';
 
 enum GamepadButton { left, right, dash, jump, restart, pause }
 enum GameState { playing, paused, gameOver }
+
+extension on Duration {
+  String get formatted {
+    String padNum(int n, int padding) {
+      // if (n >= pow(10, padding - 1)) return "$n";
+      // var zeroes = [for (var i = 1; i < padding; i++) "0"].join();
+      // return "$zeroes$n";
+
+      return n.toString().length >= padding
+          ? n.toString()
+          : [for (var i = 0; i < padding - n.toString().length; i++) "0"]
+                  .join() +
+              n.toString();
+    }
+
+    return "${padNum(inMinutes.remainder(60), 2)}:"
+        "${padNum(inSeconds.remainder(60), 2)}."
+        "${padNum(inMilliseconds.remainder(1000), 3)}";
+  }
+}
 
 class MonumentPlatformer extends flame.Game {
   Offset camera;
@@ -29,6 +50,13 @@ class MonumentPlatformer extends flame.Game {
   final int slowdown = 1;
   final bool updateWhenPressed = false;
 
+  double time = 0;
+  Duration timer = Duration.zero;
+  Text timerText;
+
+  int unpauseFrames = 0;
+  Text unpauseText;
+
   bool debug = true;
   GameState state = GameState.playing;
 
@@ -43,6 +71,30 @@ class MonumentPlatformer extends flame.Game {
       color: Color(0xff1e90ff),
     );
     level = levels[save.level](this);
+
+    unpauseText = Text.monospace(this)
+      ..text = unpauseFrames.toString()
+      ..style = TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+      )
+      ..align = TextAlign.center
+      ..pos = Offset(viewport.width / 2, viewport.height / 4);
+
+    timerText = Text.monospace(this)
+      ..text = timer.toString()
+      ..style = TextStyle(
+        fontSize: 18,
+        fontWeight: FontWeight.w500,
+      )
+      ..align = TextAlign.center
+      ..pos = Offset(60, 20);
+
+    gamepad.on('pause', (data) => state = GameState.paused);
+    gamepad.on('unpause', (data) {
+      state = GameState.playing;
+      unpauseFrames = 150;
+    });
   }
 
   void initScreen(Size size) {
@@ -89,14 +141,27 @@ class MonumentPlatformer extends flame.Game {
 
     // UI
     level.renderUi(c);
+    timerText.render(c);
+
+    if (unpauseFrames != 0) unpauseText.render(c);
   }
 
   void update(double t) {
+    time += t;
     if (!_shouldUpdate) return;
     if (updateWhenPressed && gamepad.allReleased && !player.jumpedThisPress) {
       return;
     }
+
     if (state == GameState.paused) return;
+    if (unpauseFrames != 0) {
+      unpauseFrames--;
+      unpauseText.text = unpauseFrames.toString();
+      return;
+    }
+
+    timer = Duration(microseconds: (time * 1000000).round());
+    timerText.text = timer.formatted;
 
     camera = Offset(
       (viewport.width - player.size.dx) / 2 - player.pos.dx,
