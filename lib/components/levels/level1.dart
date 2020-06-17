@@ -66,7 +66,7 @@ Level level1(MonumentPlatformer game) {
         Goal.create(
           game: game,
           pos: Offset(620, -580),
-          color: Colors.purple,
+          color: Colors.red,
         ),
         // Platform.create(
         //   game: game,

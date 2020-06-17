@@ -4,8 +4,7 @@ import 'dart:ui';
 import 'package:flutter/painting.dart';
 import 'package:flutter/material.dart' show Colors;
 
-// import '../common.dart';
-// import '../common.dart';
+import '../common.dart';
 import '../game.dart';
 import 'gameobject.dart';
 
@@ -83,6 +82,27 @@ class ParticleEffect extends GameObject {
           radius: 10,
           friction: 0.94,
         ),
+    ]);
+  }
+
+  factory ParticleEffect.ambientGoalEffect({
+    MonumentPlatformer game,
+    Offset pos,
+    Color color,
+  }) {
+    print(color.toString());
+    return ParticleEffect.create(particles: [
+      GameParticle.create(
+        pos: pos +
+            Offset(Random().nextInt(60).toDouble(),
+                Random().nextInt(60).toDouble()),
+        vel: Offset(0, 1),
+        color: color.withBrightness(2),
+        manager: game.particleManager,
+        points: 3,
+        angle: Random().nextDouble() * pi * 2 / 3,
+        angleVelocity: Random().nextDouble() * 0.5 - 0.25,
+      )
     ]);
   }
 

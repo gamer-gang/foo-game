@@ -7,7 +7,7 @@ import 'data/store.dart';
 import 'game.dart';
 
 final Color _btnColor = darkBlue;
-    // _btnColorPressed = Color.fromARGB(255, 85, 109, 135);
+// _btnColorPressed = Color.fromARGB(255, 85, 109, 135);
 final double _btnSize = 64, _iconSize = 40, _btnMargin = 20, _btnSpacing = 32;
 
 class GamePage extends StatefulWidget {
@@ -73,6 +73,7 @@ class _GameManagerState extends State<GameManager> {
 
   void initState() {
     super.initState();
+    game.gamepad.on('release-pause', (data) {});
   }
 
   @override
@@ -86,7 +87,7 @@ class _GameManagerState extends State<GameManager> {
           overlayButton(
             game: game,
             color: Colors.transparent,
-            iconColor: Colors.black,            
+            iconColor: Colors.black,
             key: GamepadButton.restart,
             icon: Icons.refresh,
           ),
@@ -195,4 +196,33 @@ Widget overlayButton({
       ),
     ),
   );
+}
+
+class PauseMenu extends StatefulWidget {
+  PauseMenu({Key key}) : super(key: key);
+
+  @override
+  _PauseMenuState createState() => _PauseMenuState();
+}
+
+class _PauseMenuState extends State<PauseMenu> {
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Container(
+        width: 300,
+        height: 300,
+        child: Column(children: [
+          Text('pause menu'),
+          RaisedButton(
+            child: Text('goodbey'),
+            onPressed: Navigator.of(context).pop,
+          ),
+        ]),
+      ),
+    );
+  }
 }

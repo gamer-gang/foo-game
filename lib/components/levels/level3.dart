@@ -38,6 +38,7 @@ Level level3(MonumentPlatformer game) {
             },
             {'pos': Offset(75, -200), 'size': Offset(100, 40)},
             {'pos': Offset(-25, -340), 'size': Offset(100, 40)},
+            
           ],
         ),
         Checkpoint.create(pos: Offset(100, -290), game: game),

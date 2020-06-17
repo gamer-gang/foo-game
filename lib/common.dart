@@ -53,6 +53,17 @@ extension OffsetUtil on Offset {
   }
 }
 
+extension ColorBrightness on Color {
+  Color withBrightness(double scale) {
+    return Color.fromARGB(
+      alpha,
+      (red * scale).round(),
+      (green * scale).round(),
+      (blue * scale).round(),
+    );
+  }
+}
+
 /// Retrieve all keys using `prefs.getKeys()`.
 Future<Set<String>> getPrefKeys() async {
   var prefs = await SharedPreferences.getInstance();
@@ -86,11 +97,11 @@ dynamic getPref(String pref, Type type) async {
 
 /// JS-style event dispatching.
 class EventTarget {
-  Map<String, List<void Function(String, Map<String, dynamic>)>> listeners = {};
+  Map<String, List<void Function(Map<String, dynamic>)>> listeners = {};
 
   EventTarget();
 
-  void on(String type, void Function(String, Map<String, dynamic>) callback) {
+  void on(String type, void Function(Map<String, dynamic>) callback) {
     if (!(listeners.containsKey(type))) {
       listeners[type] = [];
     }
@@ -118,7 +129,7 @@ class EventTarget {
     var stack = listeners[type].sublist(0);
 
     for (var i = 0, l = stack.length; i < l; i++) {
-      stack[i](type, data);
+      stack[i](data);
     }
   }
 }

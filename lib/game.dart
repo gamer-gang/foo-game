@@ -27,7 +27,7 @@ class MonumentPlatformer extends flame.Game {
   int frame = 0;
   bool _shouldUpdate = true;
   final int slowdown = 1;
-  final bool updateWhenPressed = true;
+  final bool updateWhenPressed = false;
 
   bool debug = true;
   GameState state = GameState.playing;
@@ -138,34 +138,32 @@ class Gamepad extends EventTarget {
     right = false;
     dash = false;
     jump = false;
-    pause = false;
   }
 
   void press(GamepadButton button) {
     switch (button) {
       case GamepadButton.left:
         left = true;
-        emit('press', {'key': GamepadButton.left});
+        emit('press-left', {'key': GamepadButton.left});
         break;
       case GamepadButton.right:
         right = true;
-        emit('press', {'key': GamepadButton.right});
+        emit('press-right', {'key': GamepadButton.right});
         break;
       case GamepadButton.jump:
         jump = true;
-        emit('press', {'key': GamepadButton.jump});
+        emit('press-jump', {'key': GamepadButton.jump});
         break;
       case GamepadButton.dash:
         dash = true;
-        emit('press', {'key': GamepadButton.dash});
+        emit('press-dash', {'key': GamepadButton.dash});
         break;
       case GamepadButton.restart:
         if (!game.player.dead) game.player.deathFrames = 60;
-        emit('press', {'key': GamepadButton.restart});
+        emit('press-restart', {'key': GamepadButton.restart});
         break;
       case GamepadButton.pause:
-        pause = true;
-        emit('press', {'key': GamepadButton.pause});
+        emit('press-pause', {'key': GamepadButton.pause});
         break;
     }
   }
@@ -174,27 +172,27 @@ class Gamepad extends EventTarget {
     switch (button) {
       case GamepadButton.left:
         left = false;
-        emit('release', {'key': GamepadButton.left});
+        emit('release-left', {'key': GamepadButton.left});
         break;
       case GamepadButton.right:
         right = false;
-        emit('release', {'key': GamepadButton.right});
+        emit('release-right', {'key': GamepadButton.right});
         break;
       case GamepadButton.jump:
         jump = false;
-        emit('release', {'key': GamepadButton.jump});
+        emit('release-jump', {'key': GamepadButton.jump});
         break;
       case GamepadButton.dash:
         dash = false;
-        emit('release', {'key': GamepadButton.dash});
+        emit('release-dash', {'key': GamepadButton.dash});
         break;
       case GamepadButton.restart:
         // nothing
-        emit('release', {'key': GamepadButton.restart});
+        emit('release-restart', {'key': GamepadButton.restart});
         break;
       case GamepadButton.pause:
-        // TODO handle pause
-        emit('release', {'key': GamepadButton.pause});
+        pause = false;
+        emit('release-pause', {'key': GamepadButton.pause});
         break;
     }
   }
