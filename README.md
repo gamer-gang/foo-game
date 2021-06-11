@@ -10,7 +10,7 @@
 
 ## Links
 
-- [Google Play Listing](https://www.youtube.com/watch?v=dQw4w9WgXcQ) (coming soon, probably may 16)
+- [Google Play Listing](https://www.youtube.com/watch?v=dQw4w9WgXcQ) (not coming soon.)
 
 ## Building and Running
 
